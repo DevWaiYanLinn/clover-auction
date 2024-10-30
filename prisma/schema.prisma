@@ -14,35 +14,38 @@ datasource db {
 }
 
 model User {
-    id          Int           @id @default(autoincrement())
-    name        String        @db.VarChar(50)
-    email       String        @unique @db.VarChar(100)
-    password    String        @db.VarChar(255)
-    balance     Decimal       @db.Decimal(10, 2)
-    reputation  Int
-    createdAt   DateTime      @default(now()) @map("created_at")
-    updatedAt   DateTime      @updatedAt @map("updated_at")
-    UserOnRoles UserRole[]
-    Item        Item[]
-    Bid         Bid[]
-    Transaction Transaction[]
+    id              Int           @id @default(autoincrement())
+    name            String        @db.VarChar(50)
+    email           String        @unique @db.VarChar(100)
+    password        String        @db.VarChar(255)
+    balance         Decimal       @default(0) @db.Decimal(10, 2)
+    reputation      Int           @default(3)
+    emailVerifiedAt DateTime?     @map("email_verified_at")
+    createdAt       DateTime      @default(now()) @map("created_at")
+    updatedAt       DateTime      @updatedAt @map("updated_at")
+    roles           UserRole[]
+    items           Item[]
+    bids            Bid[]
+    transcations    Transaction[]
 
     @@map("users")
 }
 
 model Role {
-    id                Int               @id @default(autoincrement())
-    name              String            @unique @db.VarChar(100)
-    RoleOnPermissions RolePermissions[]
-    UserOnRoles       UserRole[]
+    id          Int               @id @default(autoincrement())
+    name        String            @unique @db.VarChar(100)
+    permissions RolePermissions[]
+    roles       UserRole[]
 
     @@map("roles")
 }
 
 model Permission {
-    id                Int               @id @default(autoincrement())
-    name              String            @unique @db.VarChar(100)
-    RoleOnPermissions RolePermissions[]
+    id    Int               @id @default(autoincrement())
+    name  String            @unique @db.VarChar(100)
+    roles RolePermissions[]
+
+    @@map("permissions")
 }
 
 model RolePermissions {
@@ -66,27 +69,39 @@ model UserRole {
 }
 
 model Category {
-    id        Int      @id @default(autoincrement())
-    name      String   @db.VarChar(100)
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
-    Item      Item[]
+    id            Int           @id @default(autoincrement())
+    name          String        @db.VarChar(100)
+    createdAt     DateTime      @default(now()) @map("created_at")
+    updatedAt     DateTime      @updatedAt @map("updated_at")
+    subcategories SubCategory[]
 
     @@map("categories")
 }
 
+model SubCategory {
+    id         Int      @id @default(autoincrement())
+    name       String   @db.VarChar(100)
+    category   Category @relation(fields: [categoryId], references: [id])
+    categoryId Int      @map("category_id")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+    Item       Item[]
+
+    @@map("subcategories")
+}
+
 model Item {
-    id          Int       @id @default(autoincrement())
-    seller      User      @relation(fields: [userId], references: [id])
-    userId      Int       @map("user_id")
-    category    Category  @relation(fields: [categoryId], references: [id])
-    categoryId  Int       @map("category_id")
-    name        String    @db.VarChar(100)
-    description String    @db.Text()
-    image_url   String    @db.VarChar(255)
-    createdAt   DateTime  @default(now()) @map("created_at")
-    updatedAt   DateTime  @updatedAt @map("updated_at")
-    Auction     Auction[]
+    id            Int         @id @default(autoincrement())
+    seller        User        @relation(fields: [userId], references: [id])
+    userId        Int         @map("user_id")
+    subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
+    subCategoryId Int         @map("subcategory_id")
+    name          String      @db.VarChar(100)
+    description   String      @db.Text()
+    imageUrl      String      @map("image_url") @db.VarChar(255)
+    createdAt     DateTime    @default(now()) @map("created_at")
+    updatedAt     DateTime    @updatedAt @map("updated_at")
+    auctions      Auction[]
 
     @@map("items")
 }
@@ -104,13 +119,13 @@ model Auction {
     startingPrice Decimal       @map("starting_price") @db.Decimal(10, 2)
     currentBid    Decimal       @map("current_bid") @db.Decimal(10, 2)
     buyoutPrice   Decimal       @map("buyout_price") @db.Decimal(10, 2)
-    starTime      DateTime      @map("start_time") @db.Timestamp()
-    endTime       DateTime      @map("end_Time") @db.Timestamp()
+    starTime      DateTime      @map("start_time")
+    endTime       DateTime      @map("end_Time")
     status        AuctionStatus @default(CLOSED)
     createdAt     DateTime      @default(now()) @map("created_at")
     updatedAt     DateTime      @updatedAt @map("updated_at")
-    Bid           Bid[]
-    Transaction   Transaction[]
+    bids          Bid[]
+    transcations  Transaction[]
 
     @@map("auctions")
 }
@@ -122,7 +137,7 @@ model Bid {
     bidder    User     @relation(fields: [userId], references: [id])
     userId    Int      @map("user_id")
     amount    Decimal  @db.Decimal(10, 2)
-    bitTime   DateTime @default(now()) @map("bit_time") @db.Timestamp()
+    bidTime   DateTime @default(now()) @map("bid_time")
 
     @@map("bids")
 }

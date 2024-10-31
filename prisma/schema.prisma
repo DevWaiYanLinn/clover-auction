@@ -5,159 +5,172 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id              Int           @id @default(autoincrement())
-    name            String        @db.VarChar(50)
-    email           String        @unique @db.VarChar(100)
-    password        String        @db.VarChar(255)
-    balance         Decimal       @default(0) @db.Decimal(10, 2)
-    reputation      Int           @default(3)
-    emailVerifiedAt DateTime?     @map("email_verified_at")
-    createdAt       DateTime      @default(now()) @map("created_at")
-    updatedAt       DateTime      @updatedAt @map("updated_at")
-    roles           UserRole[]
-    items           Item[]
-    bids            Bid[]
-    transcations    Transaction[]
+  id              Int           @id @default(autoincrement())
+  name            String        @db.VarChar(50)
+  email           String        @unique @db.VarChar(100)
+  password        String        @db.VarChar(255)
+  balance         Decimal       @default(0) @db.Decimal(10, 2)
+  reputation      Int           @default(3)
+  emailVerifiedAt DateTime?     @map("email_verified_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  roles           UserRole[]
+  items           Item[]
+  bids            Bid[]
+  transcations    Transaction[]
+  Token           Token[]
 
-    @@map("users")
+  @@map("users")
+}
+
+model Token {
+  id           Int      @id @default(autoincrement())
+  refreshToken String   @unique @db.VarChar(255)
+  user         User     @relation(fields: [userId], references: [id])
+  expiresAt    DateTime @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  userId       Int      @map("user_id")
+
+  @@map("tokens")
 }
 
 model Role {
-    id          Int               @id @default(autoincrement())
-    name        String            @unique @db.VarChar(100)
-    permissions RolePermissions[]
-    roles       UserRole[]
+  id          Int               @id @default(autoincrement())
+  name        String            @unique @db.VarChar(100)
+  permissions RolePermissions[]
+  roles       UserRole[]
 
-    @@map("roles")
+  @@map("roles")
 }
 
 model Permission {
-    id    Int               @id @default(autoincrement())
-    name  String            @unique @db.VarChar(100)
-    roles RolePermissions[]
+  id    Int               @id @default(autoincrement())
+  name  String            @unique @db.VarChar(100)
+  roles RolePermissions[]
 
-    @@map("permissions")
+  @@map("permissions")
 }
 
 model RolePermissions {
-    role         Role       @relation(fields: [roleId], references: [id])
-    roleId       Int        @map("role_id")
-    permission   Permission @relation(fields: [permissionId], references: [id])
-    permissionId Int        @map("permission_id")
+  role         Role       @relation(fields: [roleId], references: [id])
+  roleId       Int        @map("role_id")
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  permissionId Int        @map("permission_id")
 
-    @@id([roleId, permissionId])
-    @@map("role_permissions")
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
 }
 
 model UserRole {
-    role   Role @relation(fields: [roleId], references: [id])
-    roleId Int  @map("role_id")
-    user   User @relation(fields: [userId], references: [id])
-    userId Int  @map("user_id")
+  role   Role @relation(fields: [roleId], references: [id])
+  roleId Int  @map("role_id")
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @map("user_id")
 
-    @@id([roleId, userId])
-    @@map("user_roles")
+  @@id([roleId, userId])
+  @@map("user_roles")
 }
 
 model Category {
-    id            Int           @id @default(autoincrement())
-    name          String        @db.VarChar(100)
-    createdAt     DateTime      @default(now()) @map("created_at")
-    updatedAt     DateTime      @updatedAt @map("updated_at")
-    subcategories SubCategory[]
+  id            Int           @id @default(autoincrement())
+  name          String        @db.VarChar(100)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  subcategories SubCategory[]
 
-    @@map("categories")
+  @@map("categories")
 }
 
 model SubCategory {
-    id         Int      @id @default(autoincrement())
-    name       String   @db.VarChar(100)
-    category   Category @relation(fields: [categoryId], references: [id])
-    categoryId Int      @map("category_id")
-    createdAt  DateTime @default(now()) @map("created_at")
-    updatedAt  DateTime @updatedAt @map("updated_at")
-    Item       Item[]
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(100)
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int      @map("category_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  Item       Item[]
 
-    @@map("subcategories")
+  @@map("subcategories")
 }
 
 model Item {
-    id            Int         @id @default(autoincrement())
-    seller        User        @relation(fields: [userId], references: [id])
-    userId        Int         @map("user_id")
-    subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
-    subCategoryId Int         @map("subcategory_id")
-    name          String      @db.VarChar(100)
-    description   String      @db.Text()
-    imageUrl      String      @map("image_url") @db.VarChar(255)
-    createdAt     DateTime    @default(now()) @map("created_at")
-    updatedAt     DateTime    @updatedAt @map("updated_at")
-    auctions      Auction[]
+  id            Int         @id @default(autoincrement())
+  seller        User        @relation(fields: [userId], references: [id])
+  userId        Int         @map("user_id")
+  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
+  subCategoryId Int         @map("subcategory_id")
+  name          String      @db.VarChar(100)
+  description   String      @db.Text()
+  imageUrl      String      @map("image_url") @db.VarChar(255)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  auctions      Auction[]
 
-    @@map("items")
+  @@map("items")
 }
 
 enum AuctionStatus {
-    OPEN
-    CLOSED
-    FINISHED
+  OPEN
+  CLOSED
+  FINISHED
 }
 
 model Auction {
-    id            Int           @id @default(autoincrement())
-    item          Item          @relation(fields: [itemId], references: [id])
-    itemId        Int           @map("item_id")
-    startingPrice Decimal       @map("starting_price") @db.Decimal(10, 2)
-    currentBid    Decimal       @map("current_bid") @db.Decimal(10, 2)
-    buyoutPrice   Decimal       @map("buyout_price") @db.Decimal(10, 2)
-    starTime      DateTime      @map("start_time")
-    endTime       DateTime      @map("end_Time")
-    status        AuctionStatus @default(CLOSED)
-    createdAt     DateTime      @default(now()) @map("created_at")
-    updatedAt     DateTime      @updatedAt @map("updated_at")
-    bids          Bid[]
-    transcations  Transaction[]
+  id            Int           @id @default(autoincrement())
+  item          Item          @relation(fields: [itemId], references: [id])
+  itemId        Int           @map("item_id")
+  startingPrice Decimal       @map("starting_price") @db.Decimal(10, 2)
+  currentBid    Decimal       @map("current_bid") @db.Decimal(10, 2)
+  buyoutPrice   Decimal       @map("buyout_price") @db.Decimal(10, 2)
+  starTime      DateTime      @map("start_time")
+  endTime       DateTime      @map("end_Time")
+  status        AuctionStatus @default(CLOSED)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  bids          Bid[]
+  transcations  Transaction[]
 
-    @@map("auctions")
+  @@map("auctions")
 }
 
 model Bid {
-    id        Int      @id @default(autoincrement())
-    auction   Auction  @relation(fields: [auctionId], references: [id])
-    auctionId Int      @map("auction_id")
-    bidder    User     @relation(fields: [userId], references: [id])
-    userId    Int      @map("user_id")
-    amount    Decimal  @db.Decimal(10, 2)
-    bidTime   DateTime @default(now()) @map("bid_time")
+  id        Int      @id @default(autoincrement())
+  auction   Auction  @relation(fields: [auctionId], references: [id])
+  auctionId Int      @map("auction_id")
+  bidder    User     @relation(fields: [userId], references: [id])
+  userId    Int      @map("user_id")
+  amount    Decimal  @db.Decimal(10, 2)
+  bidTime   DateTime @default(now()) @map("bid_time")
 
-    @@map("bids")
+  @@map("bids")
 }
 
 enum TransactionStatus {
-    PENDING
-    COMPLETED
-    REFUNDED
+  PENDING
+  COMPLETED
+  REFUNDED
 }
 
 model Transaction {
-    id               Int               @id @default(autoincrement())
-    auction          Auction           @relation(fields: [auctionId], references: [id])
-    auctionId        Int               @map("auction_id")
-    userId           Int               @map("user_id")
-    buyer            User              @relation(fields: [userId], references: [id])
-    finalPrice       Decimal           @map("final_price") @db.Decimal(10, 2)
-    transactionStart DateTime?         @map("transcation_start")
-    transcationEnd   DateTime?         @map("transcation_end")
-    status           TransactionStatus @default(PENDING)
+  id               Int               @id @default(autoincrement())
+  auction          Auction           @relation(fields: [auctionId], references: [id])
+  auctionId        Int               @map("auction_id")
+  userId           Int               @map("user_id")
+  buyer            User              @relation(fields: [userId], references: [id])
+  finalPrice       Decimal           @map("final_price") @db.Decimal(10, 2)
+  transactionStart DateTime?         @map("transcation_start")
+  transcationEnd   DateTime?         @map("transcation_end")
+  status           TransactionStatus @default(PENDING)
 
-    @@map("transcations")
+  @@map("transcations")
 }

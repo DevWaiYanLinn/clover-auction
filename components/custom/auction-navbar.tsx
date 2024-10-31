@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 export default function AuctionNav() {
     return (
         <div className="flex justify-between border-b pb-3">
-            <h1 className="flex space-x-2 text-2xl font-semibold">
+            <h1 className="flex items-center space-x-2 text-2xl font-semibold">
                 <Image src={Logo} width={50} height={50} alt="log" />
                 <span>Clover Auction</span>
             </h1>

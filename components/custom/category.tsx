@@ -1,16 +1,18 @@
-import { getAllCategories } from "@/app/auction/actions";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { CategoryOnSubCategories } from "@/types";
 
-const Category = async () => {
-    const categories = await getAllCategories();
-
+const Category = async ({
+    categories,
+}: {
+    categories: CategoryOnSubCategories[];
+}) => {
     return (
-        <div className="space-y-3 overflow-y-scroll">
+        <div className="space-y-3 h-full overflow-y-scroll">
             <Accordion type="single" collapsible className="w-full p-2">
                 {categories.map((category) => {
                     return (

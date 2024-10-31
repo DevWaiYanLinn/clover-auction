@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import AuctionTable from "@/components/custom/auction-table";
 import AuctionBidBar from "@/components/custom/auction-bid-bar";
 import AuctionNav from "@/components/custom/auction-navbar";
+import { getAllCategories } from "@/app/auction/actions";
 
 export default async function Auction() {
+    const categories = await getAllCategories();
     return (
         <div className=" h-screen bg-white flex justify-center p-3">
             <div className="rounded-md flex flex-col h-full w-full border p-5">
@@ -16,7 +18,7 @@ export default async function Auction() {
                         <div className="text-center py-2">
                             <Button size={"sm"}>Reset</Button>
                         </div>
-                        <Category />
+                        <Category categories={categories} />
                     </div>
                     <div className="flex-1 border rounded-md overflow-y-scroll">
                         <AuctionTable />

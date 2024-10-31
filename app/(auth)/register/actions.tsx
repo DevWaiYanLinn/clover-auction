@@ -3,6 +3,7 @@ import { hash } from "@/lib/bcrypt";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import Mailer from "@/services/mail-services/mailer";
 
 const schema = z.object({
     email: z
@@ -22,9 +23,9 @@ export async function signUp(
     },
     formData: FormData,
 ) {
-    const name = formData.get("name")?.toString();
-    const email = formData.get("email")?.toString();
-    const password = formData.get("password")?.toString();
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const password = formData.get("password");
 
     const validatedFields = schema.safeParse({
         name,
@@ -59,20 +60,40 @@ export async function signUp(
             where: { name: "buyer/seller" },
         });
 
-        await prisma.user.create({
-            data: {
-                ...data,
-                emailVerifiedAt:
-                    process.env.NODE_ENV === "production" ? null : new Date(),
-                reputation: 3,
-                balance: 0,
-                roles: {
-                    create: [{ roleId: userRole!.id }],
+        await prisma.$transaction([
+            prisma.user.create({
+                data: {
+                    ...data,
+                    emailVerifiedAt:
+                        process.env.NODE_ENV === "production"
+                            ? null
+                            : new Date(),
+                    reputation: 3,
+                    balance: 0,
+                    roles: {
+                        create: [{ roleId: userRole!.id }],
+                    },
                 },
-            },
+            }),
+        ]);
+
+        const mailer = new Mailer({ to: data.email, subject: "Confirm Email" });
+
+        const emailVerifiedToken = await hash(data.email);
+
+        await mailer.buildTemplate({
+            type: "CONFIRM_EMAIL",
+            token: emailVerifiedToken,
+            email: data.email,
         });
+
+        await mailer.send();
     } catch (error) {
-        console.log(error);
+        return {
+            errors: {
+                email: ["User creating failed"],
+            },
+        };
     }
 
     redirect("/login");

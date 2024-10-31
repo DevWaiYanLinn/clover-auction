@@ -23,6 +23,7 @@ model User {
   emailVerifiedAt DateTime?     @map("email_verified_at")
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
+  deleted         Boolean       @default(false)
   roles           UserRole[]
   items           Item[]
   bids            Bid[]
@@ -86,7 +87,9 @@ model Category {
   name          String        @db.VarChar(100)
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
+  deleted       Boolean       @default(false)
   subcategories SubCategory[]
+  Item          Item[]
 
   @@map("categories")
 }
@@ -98,6 +101,7 @@ model SubCategory {
   categoryId Int      @map("category_id")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
+  deleted    Boolean  @default(false)
   Item       Item[]
 
   @@map("subcategories")
@@ -107,6 +111,8 @@ model Item {
   id            Int         @id @default(autoincrement())
   seller        User        @relation(fields: [userId], references: [id])
   userId        Int         @map("user_id")
+  category      Category    @relation(fields: [categoryId], references: [id])
+  categoryId    Int         @map("category_id")
   subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
   subCategoryId Int         @map("subcategory_id")
   name          String      @db.VarChar(100)
@@ -114,6 +120,7 @@ model Item {
   imageUrl      String      @map("image_url") @db.VarChar(255)
   createdAt     DateTime    @default(now()) @map("created_at")
   updatedAt     DateTime    @updatedAt @map("updated_at")
+  deleted       Boolean     @default(false)
   auctions      Auction[]
 
   @@map("items")
@@ -137,6 +144,7 @@ model Auction {
   status        AuctionStatus @default(CLOSED)
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
+  deleted       Boolean       @default(false)
   bids          Bid[]
   transcations  Transaction[]
 
@@ -151,6 +159,7 @@ model Bid {
   userId    Int      @map("user_id")
   amount    Decimal  @db.Decimal(10, 2)
   bidTime   DateTime @default(now()) @map("bid_time")
+  deleted   Boolean  @default(false)
 
   @@map("bids")
 }
@@ -171,6 +180,9 @@ model Transaction {
   transactionStart DateTime?         @map("transcation_start")
   transcationEnd   DateTime?         @map("transcation_end")
   status           TransactionStatus @default(PENDING)
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  deleted          Boolean           @default(false)
 
   @@map("transcations")
 }

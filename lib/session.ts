@@ -19,11 +19,10 @@ export const encrypt = (data: User) => {
         key,
         encryptionIV,
     );
-    const encrypted = Buffer.from(
+    return Buffer.from(
         cipher.update(JSON.stringify(data), "utf8", "hex") +
             cipher.final("hex"),
-    ).toString("base64"); //
-    return encrypted;
+    ).toString("base64");
 };
 
 export const decrypt = (data: string) => {
@@ -40,9 +39,12 @@ export const decrypt = (data: string) => {
 };
 
 export const getServerSession = async () => {
-    const cookie = (await cookies()).get(
-        process.env.SESSION_COOKIE_NAME!,
-    )!.value;
-    const session = decrypt(cookie);
-    return session;
+    try {
+        const cookie = (await cookies()).get(
+            process.env.SESSION_COOKIE_NAME!,
+        )!.value;
+        return { user: decrypt(cookie) };
+    } catch {
+        return null;
+    }
 };

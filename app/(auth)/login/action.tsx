@@ -11,22 +11,22 @@ const schema = z.object({
     password: z.string({ invalid_type_error: "Invalid name." }),
 });
 
-export default async function singIn(
+export async function singIn(
     prevState: {
         errors: {
-            email?: string[];
-            password?: string[];
-            message?: string[];
+            email?: string[] | undefined;
+            password?: string[] | undefined;
+            message?: string[] | undefined;
         };
     },
     formData: FormData,
 ) {
-    const name = formData.get("name");
     const email = formData.get("email");
+    const password = formData.get("password");
 
     const validatedFields = schema.safeParse({
-        name,
         email,
+        password,
     });
 
     if (!validatedFields.success) {
@@ -51,10 +51,10 @@ export default async function singIn(
         reputation: user.reputation,
     });
 
-    cookieStore.set("clover-auction-house", encryptedString, {
+    cookieStore.set(process.env.SESSION_COOKIE_NAME!, encryptedString, {
         path: "/",
-        httpOnly: true, // Set to true if you want to prevent client-side access
-        maxAge: 60 * 60 * 24 * 365, // Cookie expiration time in seconds (1 day)
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 365,
         secure: process.env.NODE_ENV === "production",
     });
 

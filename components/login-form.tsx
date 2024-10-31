@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -12,14 +11,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActionState } from "react";
-import singIn from "@/app/(auth)/login/action";
+import { singIn } from "@/app/(auth)/login/action";
 
 const initialState = {
     errors: { password: [""], email: [""], message: [""] },
 };
 
 export function LoginForm() {
-    const [state, formAction, pending] = useActionState(singIn, initialState);
+    const [state, formAction] = useActionState(singIn, initialState);
     return (
         <Card className="mx-auto max-w-sm">
             <CardHeader>
@@ -35,6 +34,7 @@ export function LoginForm() {
                         <Input
                             id="email"
                             type="email"
+                            name="email"
                             placeholder="m@example.com"
                         />
                     </div>
@@ -48,7 +48,7 @@ export function LoginForm() {
                                 Forgot your password?
                             </Link>
                         </div>
-                        <Input id="password" type="password" />
+                        <Input id="password" type="password" name="password" />
                     </div>
                     <Button type="submit" className="w-full">
                         Login

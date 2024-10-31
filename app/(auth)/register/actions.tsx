@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import Mailer from "@/services/mail-services/mailer";
+import { ConfirmMail } from "@/types";
 
 const schema = z.object({
     email: z
@@ -81,7 +82,7 @@ export async function signUp(
 
         const emailVerifiedToken = await hash(data.email);
 
-        await mailer.buildTemplate({
+        await mailer.buildTemplate<ConfirmMail>({
             type: "CONFIRM_EMAIL",
             token: emailVerifiedToken,
             email: data.email,

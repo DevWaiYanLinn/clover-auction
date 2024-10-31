@@ -8,5 +8,6 @@ export default async function AuthProvider({
 }) {
     "use server";
     const session = await getServerSession();
-    return <SessionProvider session={session}>{children}</SessionProvider>;
+    console.log(session);
+    return <SessionProvider authSession={session}>{children}</SessionProvider>;
 }

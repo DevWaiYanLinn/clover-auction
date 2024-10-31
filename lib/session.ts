@@ -20,7 +20,7 @@ export const encrypt = (data: User) => {
         encryptionIV,
     );
     return Buffer.from(
-        cipher.update(JSON.stringify(data), "utf8", "hex") +
+        cipher.update(JSON.stringify({ user: data }), "utf8", "hex") +
             cipher.final("hex"),
     ).toString("base64");
 };
@@ -43,7 +43,7 @@ export const getServerSession = async () => {
         const cookie = (await cookies()).get(
             process.env.SESSION_COOKIE_NAME!,
         )!.value;
-        return { user: decrypt(cookie) };
+        return decrypt(cookie);
     } catch {
         return null;
     }

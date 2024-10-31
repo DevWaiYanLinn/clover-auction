@@ -5,6 +5,10 @@ export type User = {
     reputation: number;
 };
 
+export type Session = {
+    user: User;
+};
+
 export type Mail = {
     to: string;
     subject: string;

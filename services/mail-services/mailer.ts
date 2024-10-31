@@ -1,4 +1,4 @@
-import { ConfirmMail, Mail } from "@/types";
+import { Mail, MailBuilder } from "@/types";
 import { mailQueue } from "@/lib/queue";
 import edge from "@/lib/template-engine";
 
@@ -15,7 +15,7 @@ class Mailer {
         this.html = html;
     }
 
-    async buildTemplate(data: ConfirmMail) {
+    async buildTemplate<T extends MailBuilder>(data: T) {
         if (data.type === "CONFIRM_EMAIL") {
             this.html = await edge.render("mail-template/email-confirm", data);
         }

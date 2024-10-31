@@ -1,19 +1,19 @@
 "use client";
 import { useCallback, useState } from "react";
 import { SessionContext } from "@/provider/session-context";
-import { User } from "@/types";
+import { Session } from "@/types";
 
 export function SessionProvider({
     children,
-    session,
+    authSession,
 }: {
-    session: { user: User } | null;
+    authSession: Session | null;
     children: React.ReactNode;
 }) {
     "use client";
-    const [, setSession] = useState<null | { user: User }>(null);
-    const updateSession = useCallback((data: User) => {
-        setSession({ user: data });
+    const [session, setSession] = useState<null | Session>(authSession);
+    const updateSession = useCallback((data: Session) => {
+        setSession(data);
     }, []);
     return (
         <SessionContext.Provider value={{ session, updateSession }}>

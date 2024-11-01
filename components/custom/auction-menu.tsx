@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AuctionMenu = () => {
@@ -40,7 +40,10 @@ const AuctionMenu = () => {
             <div className="flex-1 flex justify-end">
                 <div>
                     <div className="text-center">
-                        <Button>Search</Button>
+                        <Button>
+                            <Search />
+                            Search
+                        </Button>
                     </div>
                 </div>
             </div>

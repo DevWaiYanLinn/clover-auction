@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AuthProvider from "@/provider/auth-session-provider";
+import { Roboto_Mono } from "next/font/google";
+
+const RobotoMono = Roboto_Mono({
+    subsets: ["latin"],
+    display: "swap",
+});
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -14,7 +20,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`antialiased`}>
+            <body className={`antialiased ${RobotoMono.className}`}>
                 <AuthProvider>{children}</AuthProvider>
             </body>
         </html>

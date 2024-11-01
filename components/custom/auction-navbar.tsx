@@ -6,6 +6,7 @@ import Logo from "@/public/React.js.svg";
 import { Button } from "../ui/button";
 import { useContext } from "react";
 import { SessionContext } from "@/provider/session-context";
+import Link from "next/link";
 
 export default function AuctionNav() {
     const { session } = useContext(SessionContext);
@@ -17,14 +18,16 @@ export default function AuctionNav() {
                 <span>Clover Auction</span>
             </h1>
             <div className="flex space-x-2 items-center">
-                <div>{session?.user.name}</div>
-                <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <Button size={"sm"}>
-                    <ChevronLeft /> Home
-                </Button>
+                <Link href="/profile">
+                    <Button>
+                        <ChevronLeft /> Profile
+                    </Button>
+                </Link>
+                {/*<div>{session?.user.name}</div>*/}
+                {/*<Avatar>*/}
+                {/*    <AvatarImage src="https://github.com/shadcn.png" />*/}
+                {/*    <AvatarFallback>CN</AvatarFallback>*/}
+                {/*</Avatar>*/}
             </div>
         </div>
     );

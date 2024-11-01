@@ -9,14 +9,16 @@ import { getAllCategories } from "@/app/auction/actions";
 export default async function Auction() {
     const categories = await getAllCategories();
     return (
-        <div className=" h-screen bg-white flex justify-center p-3">
-            <div className="rounded-md flex flex-col h-full w-full border p-5">
+        <div className=" h-screen  flex justify-center bg-slate-100 p-3">
+            <div className="rounded-md bg-white flex flex-col h-full w-full border p-5">
                 <AuctionNav />
                 <AuctionMenu />
                 <div className="flex flex-1 mt-5 space-x-3 overflow-hidden">
                     <div className="min-w-[250px] flex flex-col border rounded-md px-2">
                         <div className="text-center py-2">
-                            <Button size={"sm"}>Reset</Button>
+                            <Button size={"lg"} variant={"destructive"}>
+                                Reset
+                            </Button>
                         </div>
                         <Category categories={categories} />
                     </div>

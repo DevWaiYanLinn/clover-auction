@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { cookies } from "next/headers";
 import { encrypt } from "@/lib/session";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const schema = z.object({
     email: z.string({ invalid_type_error: "Invalid Email." }),
@@ -44,7 +45,7 @@ export async function singIn(
     }
     const cookieStore = await cookies();
 
-    const encryptedString = encrypt({
+    const encryptedString = await encrypt({
         name: user.name,
         email: user.email,
         balance: user.balance,
@@ -58,5 +59,8 @@ export async function singIn(
         secure: process.env.NODE_ENV === "production",
     });
 
-    redirect("/auction");
+    revalidatePath("/", "layout");
+    revalidateTag("1");
+
+    redirect("/auction?tag=1");
 }

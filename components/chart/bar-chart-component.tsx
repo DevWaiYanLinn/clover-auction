@@ -36,7 +36,7 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export function BarChartComponent() {
+export default function BarChartComponent() {
     return (
         <Card>
             <CardHeader>

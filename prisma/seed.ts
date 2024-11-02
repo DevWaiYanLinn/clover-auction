@@ -104,6 +104,7 @@ async function main() {
             email: "admin@test.com",
             password,
             reputation: 3,
+            gender: true,
             emailVerifiedAt: new Date(),
             balance: 0,
             roles: {
@@ -115,9 +116,10 @@ async function main() {
     await prisma.user.create({
         data: {
             name: "user",
-            email: "(user)@test.com",
+            email: "user@test.com",
             password,
             reputation: 3,
+            gender: true,
             balance: 0,
             roles: {
                 create: [{ roleId: buyerSeller!.id }],

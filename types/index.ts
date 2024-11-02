@@ -5,6 +5,7 @@ export interface CategoryOnSubCategories extends Category {
 }
 
 export type User = {
+    id: number;
     name: string;
     email: string;
     balance: any;

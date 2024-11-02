@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import prisma from "@/database/prisma";
 
 export const getAllCategories = async () => {
     return prisma.category.findMany({

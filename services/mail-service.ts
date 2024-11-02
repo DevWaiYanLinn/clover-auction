@@ -1,6 +1,7 @@
 import { Mail, MailBuilder } from "@/types";
 import { mailQueue } from "@/lib/queue";
 import edge from "@/lib/template-engine";
+import config from "@/config";
 
 class Mailer {
     protected to: string;
@@ -23,7 +24,7 @@ class Mailer {
 
     async send() {
         return mailQueue.add("MAIL_SEND", {
-            from: process.env.MAILER_EMAIL_FROM,
+            from: config.mail.from,
             to: this.to,
             subject: this.subject,
             text: this.text,

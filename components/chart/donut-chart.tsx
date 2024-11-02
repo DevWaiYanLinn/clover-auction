@@ -55,7 +55,7 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export function DonutChart() {
+export default function DonutChart() {
     const totalVisitors = React.useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
     }, []);

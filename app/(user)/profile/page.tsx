@@ -1,20 +1,20 @@
 import { Star, StarHalf } from "lucide-react";
-import Image from "next/image";
-import { DonutChart } from "@/components/chart/donut-chart";
-import { RadarChartComponent } from "@/components/chart/radar-chart-component";
-import { BarChartComponent } from "@/components/chart/bar-chart-component";
+import Image from "next/legacy/image";
 import { Logout } from "@/app/(user)/actions";
 import { Button } from "@/components/ui/button";
+import Logo from "@/public/React.js.svg";
+import DonutChart from "@/components/chart/donut-chart";
+import BarChartComponent from "@/components/chart/bar-chart-component";
 
 export default function Page() {
     return (
         <div className="flex p-5 space-x-5">
-            <div className="max-w-[350px] shadow-md bg-white rounded-lg flex flex-col space-y-5 p-10">
+            <div className="max-w-[400px] shadow-md bg-white rounded-lg flex flex-col space-y-5 p-10">
                 <div className="space-y-3 flex flex-col items-center">
                     <Image
                         width={220}
                         height={220}
-                        src={"https://github.com/shadcn.png"}
+                        src={Logo}
                         alt={"profile"}
                         className=" rounded-md bg-gray-300"
                     />

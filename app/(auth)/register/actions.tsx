@@ -1,9 +1,9 @@
 "use server";
 import { hash } from "@/lib/bcrypt";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/database/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import Mailer from "@/services/mail-services/mailer";
+import Mailer from "@/services/mail-service";
 import { ConfirmMail } from "@/types";
 
 const schema = z.object({

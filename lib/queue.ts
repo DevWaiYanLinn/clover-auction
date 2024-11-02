@@ -1,16 +1,16 @@
 import { Queue } from "bullmq";
 import { Worker } from "bullmq";
-import { nodeMailerTransporter } from "@/services/mail-services/transporter";
-import IORedis from "ioredis";
-const connection = new IORedis({ maxRetriesPerRequest: null });
-export const mailQueue = new Queue("mail", { connection });
+import { transporter } from "@/lib/node-mailer";
+import redis from "@/database/redis";
+
+export const mailQueue = new Queue("mail", { connection: redis });
 
 const worker = new Worker(
     "mail",
     async (job) => {
-        await nodeMailerTransporter.sendMail(job.data);
+        await transporter.sendMail(job.data);
     },
-    { connection },
+    { connection: redis },
 );
 
 worker.on("completed", (job: any) => {

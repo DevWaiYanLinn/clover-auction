@@ -3,7 +3,7 @@ import { hash } from "@/lib/bcrypt";
 import prisma from "@/database/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import Mailer from "@/services/mail-service";
+import MailService from "@/services/mail-service";
 import { ConfirmMail } from "@/types";
 
 const schema = z.object({
@@ -78,17 +78,20 @@ export async function signUp(
             }),
         ]);
 
-        const mailer = new Mailer({ to: data.email, subject: "Confirm Email" });
+        const verifyToken = await hash(data.email);
 
-        const emailVerifiedToken = await hash(data.email);
+        const mailService = new MailService({
+            to: data.email,
+            subject: "Confirm Email",
+        });
 
-        await mailer.buildTemplate<ConfirmMail>({
+        await mailService.buildTemplate<ConfirmMail>({
             type: "CONFIRM_EMAIL",
-            token: emailVerifiedToken,
+            token: verifyToken,
             email: data.email,
         });
 
-        await mailer.send();
+        await mailService.send();
     } catch (error) {
         return {
             errors: {

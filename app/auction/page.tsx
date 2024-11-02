@@ -14,7 +14,7 @@ export default async function Auction() {
                 <AuctionNav />
                 <AuctionMenu />
                 <div className="flex flex-1 mt-5 space-x-3 overflow-hidden">
-                    <div className="min-w-[250px] flex flex-col border rounded-md px-2">
+                    <div className="min-w-[300px] flex flex-col border rounded-md px-2">
                         <div className="text-center py-2">
                             <Button size={"lg"} variant={"destructive"}>
                                 Reset

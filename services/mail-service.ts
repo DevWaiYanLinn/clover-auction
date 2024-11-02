@@ -3,7 +3,7 @@ import { mailQueue } from "@/lib/queue";
 import edge from "@/lib/template-engine";
 import config from "@/config";
 
-class Mailer {
+class MailService {
     protected to: string;
     protected subject: string;
     protected text: string;
@@ -33,4 +33,4 @@ class Mailer {
     }
 }
 
-export default Mailer;
+export default MailService;

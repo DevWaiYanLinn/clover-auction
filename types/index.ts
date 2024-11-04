@@ -23,11 +23,11 @@ export type Mail = {
     html?: string;
 };
 
-export interface MailBuilder {
+export interface MailTemplateBuilder {
     type: string;
 }
 
-export interface ConfirmMail extends MailBuilder {
+export interface ConfirmMail extends MailTemplateBuilder {
     email: string;
     token: string;
 }

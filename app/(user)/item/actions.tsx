@@ -4,7 +4,7 @@ import prisma from "@/database/prisma";
 import { getServerSession } from "@/lib/session";
 import ImageService from "@/services/image-service";
 import { revalidatePath } from "next/cache";
-import { permanentRedirect, redirect } from "next/navigation";
+import { headers } from "next/headers";
 
 import { z } from "zod";
 
@@ -24,8 +24,24 @@ const schema = z.object({
 });
 
 export const getAllItem = async () => {
+    const heads = await headers();
+    const requestUrl = await heads.get("referer")!;
+    const url = new URL(requestUrl);
+
+    const where: { name?: string; subcategory?: number } = {};
+
+    if (url.searchParams.has("name")) {
+        where["name"] = url.searchParams.get("name")!;
+    }
+
+    if (url.searchParams.has("subcategory")) {
+        where["subcategory"] = Number(url.searchParams.get("subcategory")!);
+    }
+
     const items = await prisma.item.findMany({
+        where: {},
         include: {
+            auction: true,
             category: {
                 select: {
                     name: true,

@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -121,10 +122,13 @@ model Item {
     name          String      @db.VarChar(100)
     description   String      @db.Text()
     imageUrl      String      @map("image_url") @db.VarChar(255)
+    condition     String      @default("good") @db.VarChar(50)
+    location      String?     @db.VarChar(100)
+    quantity      Int         @default(1)
     createdAt     DateTime    @default(now()) @map("created_at")
     updatedAt     DateTime    @updatedAt @map("updated_at")
     deleted       Boolean     @default(false)
-    auctions      Auction[]
+    auction       Auction?    @relation()
 
     @@map("items")
 }
@@ -149,8 +153,9 @@ model Auction {
     updatedAt     DateTime      @updatedAt @map("updated_at")
     deleted       Boolean       @default(false)
     bids          Bid[]
-    transcations  Transaction[]
+    transcation   Transaction?  @relation()
 
+    @@unique([itemId])
     @@map("auctions")
 }
 
@@ -176,7 +181,7 @@ enum TransactionStatus {
 model Transaction {
     id               Int               @id @default(autoincrement())
     auction          Auction           @relation(fields: [auctionId], references: [id])
-    auctionId        Int               @map("auction_id")
+    auctionId        Int               @unique @map("auction_id")
     userId           Int               @map("user_id")
     buyer            User              @relation(fields: [userId], references: [id])
     finalPrice       Decimal           @map("final_price") @db.Decimal(10, 2)

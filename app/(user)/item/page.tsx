@@ -13,11 +13,12 @@ import {
 import { CirclePlus, Coins, RefreshCcw } from "lucide-react";
 import { getAllItem } from "./actions";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 export default async function Page() {
     const items = await getAllItem();
     return (
-        <div className="p-3 space-x-3 flex-1">
+        <div className="p-5 space-x-3 flex-1">
             <div className="h-full bg-white rounded-md shadow-md p-5">
                 <div className="flex justify-end items-center space-x-2 mb-2">
                     <Button size={"sm"} variant={"destructive"}>
@@ -42,6 +43,7 @@ export default async function Page() {
                             <TableHead>Category</TableHead>
                             <TableHead>SubCategory</TableHead>
                             <TableHead>Date</TableHead>
+                            <TableHead>Auction</TableHead>
                             <TableHead className="text-right">
                                 Auction
                             </TableHead>
@@ -58,6 +60,17 @@ export default async function Page() {
                                 <TableCell>{item.subCategory.name}</TableCell>
                                 <TableCell>
                                     {item.createdAt.toDateString()}
+                                </TableCell>
+                                <TableCell>
+                                    <Badge
+                                        variant={
+                                            item.auction
+                                                ? "secondary"
+                                                : "destructive"
+                                        }
+                                    >
+                                        {item.auction ? "true" : "false"}
+                                    </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button size={"sm"}>

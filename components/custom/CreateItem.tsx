@@ -23,6 +23,7 @@ const initialState = {
         subcategory: [],
         description: [],
         message: [],
+        photo: [],
     },
     success: undefined,
 };
@@ -81,6 +82,9 @@ export default function CreateItem({
                     <div className="flex-1">
                         <Label htmlFor="photo">Picture</Label>
                         <Input id="photo" type="file" name="photo" />
+                        <span className="text-red-500 text-xs font-bold">
+                            {state.errors.photo}
+                        </span>
                     </div>
                 </div>
                 <div className="flex space-x-3">
@@ -116,6 +120,7 @@ export default function CreateItem({
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select Subcategory" />
                             </SelectTrigger>
+
                             <SelectContent className="z-[999]">
                                 {subcategories.map((c) => (
                                     <SelectItem key={c.id} value={`${c.id}`}>

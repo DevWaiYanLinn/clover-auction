@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import * as jose from "jose";
 import { decrypt } from "@/lib/session";
 import appConfig from "@/config";
 
-const publicRoutes = ["/login", "/register", "/"];
+const publicRoutes = ["/"];
 const protectedRoutes = ["/auction"];
 const authRoutes = ["/login", "/register"];
 
 export default async function middleware(req: NextRequest, res: NextResponse) {
     const path = req.nextUrl.pathname;
+
     const isPublicRoute = publicRoutes.includes(path);
+
     const cookie = (await cookies()).get(appConfig.session.cookieName)?.value;
 
     const session = cookie && (await decrypt(cookie));
@@ -26,5 +27,7 @@ export default async function middleware(req: NextRequest, res: NextResponse) {
     return NextResponse.next();
 }
 export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+    matcher: [
+        "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    ],
 };

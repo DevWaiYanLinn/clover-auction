@@ -1,33 +1,42 @@
 "use server";
 
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/constants";
 import prisma from "@/database/prisma";
 import { getServerSession } from "@/lib/session";
 import ImageService from "@/services/image-service";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-
 import { z } from "zod";
 
 const schema = z.object({
     name: z
         .string({
             invalid_type_error: "Invalid name.",
-            required_error: "Name is required",
         })
-        .min(1, "name is required"),
+        .min(1, "Name is required."),
     subcategory: z
         .string({ invalid_type_error: "Invalid subcategory." })
-        .min(1, "subcategory is required"),
+        .min(1, "Subcategory is required."),
     description: z
         .string({ invalid_type_error: "Invalid subcategory." })
-        .min(1, "description is required"),
+        .min(1, "Description is required."),
+    photo: z
+        .any()
+        .refine((file: File) => file?.name !== "undefined", "File is required.")
+        .refine(
+            (file: File) => file?.size <= MAX_FILE_SIZE,
+            "File size must be greater than or equal 5MB.",
+        )
+        .refine(
+            (file: File) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+            "Only .jpg, .jpeg, .png, .webp.",
+        ),
 });
 
 export const getAllItem = async () => {
     const heads = await headers();
-    const requestUrl = await heads.get("referer")!;
+    const requestUrl = (await heads.get("referer")) || "";
     const url = new URL(requestUrl);
-
     const where: { name?: string; subcategory?: number } = {};
 
     if (url.searchParams.has("name")) {
@@ -39,7 +48,7 @@ export const getAllItem = async () => {
     }
 
     const items = await prisma.item.findMany({
-        where: {},
+        where,
         include: {
             auction: true,
             category: {
@@ -65,6 +74,7 @@ export const createItem = async (
             name?: string[];
             description?: string[];
             message?: string[];
+            photo?: string[];
         };
         success?: boolean;
     },
@@ -74,11 +84,11 @@ export const createItem = async (
     const name = formData.get("name");
     const subcategory = formData.get("subcategory");
     const description = formData.get("description");
-
     const validatedFields = schema.safeParse({
         name,
         subcategory,
         description,
+        photo: file,
     });
 
     if (!validatedFields.success) {
@@ -125,6 +135,7 @@ export const createItem = async (
                     name: [],
                     subcategory: [],
                     description: [],
+                    photo: [],
                     message: ["Item Creating Failed"],
                 },
             };

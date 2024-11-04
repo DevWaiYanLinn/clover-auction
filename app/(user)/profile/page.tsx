@@ -8,8 +8,8 @@ import BarChartComponent from "@/components/chart/bar-chart-component";
 
 export default function Page() {
     return (
-        <div className="flex p-5 space-x-5">
-            <div className="max-w-[400px] shadow-md bg-white rounded-lg flex flex-col space-y-5 p-10">
+        <div className="flex space-x-5">
+            <div className="max-w-[400px] shadow-md bg-white rounded-lg flex flex-col space-y-5 p-5">
                 <div className="space-y-3 flex flex-col items-center">
                     <Image
                         width={220}

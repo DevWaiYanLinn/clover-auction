@@ -1,9 +1,8 @@
 import config from "@/config";
 import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 
-cloudinary.config(config.cloudinary);
-
 class ImageService {
+    protected cloudinary = cloudinary.config(config.cloudinary);
     async nextUploadStream(
         name: string,
         publicId: string,
@@ -11,7 +10,6 @@ class ImageService {
     ): Promise<UploadApiResponse | undefined> {
         const arrayBuffer = await file.arrayBuffer();
         const buffer = await new Uint8Array(arrayBuffer);
-
         return new Promise((resolve, reject) => {
             cloudinary.uploader
                 .upload_stream(

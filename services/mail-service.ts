@@ -24,8 +24,8 @@ class MailService {
         }
     }
 
-    async send() {
-        return mailQueue.add(MAIL_SEND, {
+    async send(): Promise<void> {
+        await mailQueue.add(MAIL_SEND, {
             from: config.mail.from,
             to: this.to,
             subject: this.subject,

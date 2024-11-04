@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import MailService from "@/services/mail-service";
 import { ConfirmMail } from "@/types";
+import { CONFIRM_EMAIL } from "@/constants";
 
 const schema = z.object({
     email: z
@@ -86,7 +87,7 @@ export async function signUp(
         });
 
         await mailService.buildTemplate<ConfirmMail>({
-            type: "CONFIRM_EMAIL",
+            type: CONFIRM_EMAIL,
             token: verifyToken,
             email: data.email,
         });

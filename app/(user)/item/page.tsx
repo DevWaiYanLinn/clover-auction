@@ -18,9 +18,9 @@ import { Badge } from "@/components/ui/badge";
 export default async function Page() {
     const items = await getAllItem();
     return (
-        <div className="p-5 space-x-3 flex-1">
-            <div className="h-full bg-white rounded-md shadow-md p-5">
-                <div className="flex justify-end items-center space-x-2 mb-2">
+        <div className="space-x-3 flex-1">
+            <div className="h-full bg-white rounded-md shadow-md px-5">
+                <div className="flex justify-end items-center space-x-2 mb-2 p-3 py-5">
                     <Button size={"sm"} variant={"destructive"}>
                         <CirclePlus className="mr-2" />
                         Refresh

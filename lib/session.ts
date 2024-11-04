@@ -4,19 +4,22 @@ import * as jose from "jose";
 import config from "@/config";
 import prisma from "../database/prisma";
 
-let key: { privateKey: jose.KeyLike; publicKey: jose.KeyLike };
+let keyPromise: Promise<{
+    privateKey: jose.KeyLike;
+    publicKey: jose.KeyLike;
+}> | null = null;
 
 const loadKey = async () => {
-    if (key) return key;
+    if (keyPromise) return await keyPromise;
+    keyPromise = (async () => {
+        const spki = config.session.jwePublicKey;
+        const pkcs8 = config.session.jwePrivateKey;
+        const privateKey = await jose.importPKCS8(pkcs8, "RSA-OAEP-256");
+        const publicKey = await jose.importSPKI(spki, "RSA-OAEP-256");
+        return { privateKey, publicKey };
+    })();
 
-    const spki = config.session.jwePublicKey;
-    const pkcs8 = config.session.jwePrivateKey;
-    const privateKey = await jose.importPKCS8(pkcs8, "RSA-OAEP-256");
-    const publicKey = await jose.importSPKI(spki, "RSA-OAEP-256");
-
-    key = { privateKey, publicKey };
-
-    return key;
+    return await keyPromise;
 };
 
 export const encrypt = async (user: User) => {

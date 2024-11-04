@@ -3,7 +3,6 @@ import "./globals.css";
 import AuthProvider from "@/provider/auth-session-provider";
 import { Roboto_Mono } from "next/font/google";
 import React from "react";
-import Link from "next/link";
 
 const RobotoMono = Roboto_Mono({
     subsets: ["latin"],

@@ -9,8 +9,8 @@ import { RefreshCcw } from "lucide-react";
 export default async function Auction() {
     const categories = await getAllCategories();
     return (
-        <div className="flex-1 flex justify-center bg-slate-100 p-5 overflow-hidden">
-            <div className="rounded-md bg-white flex flex-col h-full w-full border p-5">
+        <div className="flex-1 flex justify-center bg-slate-10 overflow-hidden">
+            <div className="rounded-md bg-white flex flex-col h-full w-full p-5">
                 <AuctionMenu />
                 <div className="flex flex-1 mt-5 space-x-3 overflow-hidden">
                     <div className="min-w-[300px] flex flex-col border rounded-md px-2">

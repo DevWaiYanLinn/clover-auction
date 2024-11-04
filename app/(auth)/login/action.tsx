@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { cookies } from "next/headers";
 import { encrypt } from "@/lib/session";
-import { revalidatePath, revalidateTag } from "next/cache";
 import config from "@/config";
 
 const schema = z.object({
@@ -41,8 +40,6 @@ export async function singIn(
 
     const user = await prisma.user.findFirst({ where: { email: data.email } });
 
-    console.log(user);
-
     if (!user?.id || !(await compare(data.password, user.password))) {
         return { errors: { message: ["The name or email wrong!"] } };
     }
@@ -63,8 +60,5 @@ export async function singIn(
         secure: process.env.NODE_ENV === "production",
     });
 
-    revalidatePath("/", "layout");
-    revalidateTag("1");
-
-    redirect("/auction?tag=1");
+    redirect("/auction");
 }

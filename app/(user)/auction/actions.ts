@@ -1,3 +1,4 @@
+"use server";
 import prisma from "@/database/prisma";
 
 export const getAllCategories = async () => {

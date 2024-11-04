@@ -3,22 +3,27 @@
 import prisma from "@/database/prisma";
 import { getServerSession } from "@/lib/session";
 import ImageService from "@/services/image-service";
+import { revalidatePath } from "next/cache";
+import { permanentRedirect, redirect } from "next/navigation";
 
 import { z } from "zod";
 
 const schema = z.object({
-    name: z.string({ invalid_type_error: "Invalid name." }),
-    subcategory: z.string({ invalid_type_error: "Invalid subcategory." }),
-    description: z.string({ invalid_type_error: "Invalid subcategory." }),
+    name: z
+        .string({
+            invalid_type_error: "Invalid name.",
+            required_error: "Name is required",
+        })
+        .min(1, "name is required"),
+    subcategory: z
+        .string({ invalid_type_error: "Invalid subcategory." })
+        .min(1, "subcategory is required"),
+    description: z
+        .string({ invalid_type_error: "Invalid subcategory." })
+        .min(1, "description is required"),
 });
 
-export const getItemPageData = async () => {
-    const categories = await prisma.category.findMany({
-        include: {
-            subcategories: true,
-        },
-    });
-
+export const getAllItem = async () => {
     const items = await prisma.item.findMany({
         include: {
             category: {
@@ -34,17 +39,18 @@ export const getItemPageData = async () => {
         },
     });
 
-    return { categories, items };
+    return items;
 };
 
 export const createItem = async (
     prevState: {
-        errors: {
+        errors?: {
             subcategory?: string[];
             name?: string[];
             description?: string[];
             message?: string[];
         };
+        success?: boolean;
     },
     formData: FormData,
 ) => {
@@ -100,11 +106,15 @@ export const createItem = async (
         } catch (error) {
             return {
                 errors: {
+                    name: [],
+                    subcategory: [],
+                    description: [],
                     message: ["Item Creating Failed"],
                 },
             };
         }
     }
 
-    return prevState;
+    revalidatePath("/item");
+    return { success: true, errors: {} };
 };

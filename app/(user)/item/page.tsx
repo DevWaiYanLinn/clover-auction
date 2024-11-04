@@ -1,5 +1,3 @@
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -12,28 +10,35 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Coins, RefreshCcw } from "lucide-react";
-import ItemCreateForm from "@/components/custom/item-create-form";
-import { getItemPageData } from "./actions";
+import { CirclePlus, Coins, RefreshCcw } from "lucide-react";
+import { getAllItem } from "./actions";
+import Link from "next/link";
 
 export default async function Page() {
-    const { categories, items } = await getItemPageData();
+    const items = await getAllItem();
     return (
-        <div className="flex p-5 space-x-3">
-            <ItemCreateForm categories={categories} />
-            <div className="flex-1 bg-white rounded-md shadow-md p-5">
-                <div className="flex justify-end mb-2">
-                    <Button size={"sm"}>
-                        <RefreshCcw />
+        <div className="p-3 space-x-3 flex-1">
+            <div className="h-full bg-white rounded-md shadow-md p-5">
+                <div className="flex justify-end items-center space-x-2 mb-2">
+                    <Button size={"sm"} variant={"destructive"}>
+                        <CirclePlus className="mr-2" />
                         Refresh
                     </Button>
+                    <Link href={"/item/create"} className="flex">
+                        <Button size={"sm"}>
+                            <RefreshCcw />
+                            Add
+                        </Button>
+                    </Link>
                 </div>
                 <Table>
                     <TableCaption>A list of your recent items.</TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Id</TableHead>
-                            <TableHead className="w-[100px]">name</TableHead>
+                            <TableHead className="min-w-[100px]">
+                                Name
+                            </TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead>SubCategory</TableHead>
                             <TableHead>Date</TableHead>

@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button";
 import AuctionTable from "@/components/custom/auction-table";
 import AuctionBidBar from "@/components/custom/auction-bid-bar";
 import AuctionNav from "@/components/custom/auction-navbar";
-import { getAllCategories } from "@/app/auction/actions";
+import { getAllCategories } from "@/app/(user)/auction/actions";
 
 export default async function Auction() {
     const categories = await getAllCategories();
     return (
-        <div className=" h-screen  flex justify-center bg-slate-100 p-3">
+        <div className="flex-1 flex justify-center bg-slate-100 p-3 overflow-hidden">
             <div className="rounded-md bg-white flex flex-col h-full w-full border p-5">
-                <AuctionNav />
                 <AuctionMenu />
                 <div className="flex flex-1 mt-5 space-x-3 overflow-hidden">
                     <div className="min-w-[300px] flex flex-col border rounded-md px-2">

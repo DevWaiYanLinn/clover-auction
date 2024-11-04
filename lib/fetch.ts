@@ -1,6 +1,6 @@
 export const fetchAPI = async (url: string, options?: RequestInit) => {
     try {
-        const res = await fetch(url, options);
+        const res = await fetch(url, { ...options, credentials: "include" });
         if (res.ok) {
             return await res.json();
         }

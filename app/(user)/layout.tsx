@@ -5,8 +5,8 @@ import Link from "next/link";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="bg-slate-100 h-screen">
-            <div className="flex p-5 border-b bg-white justify-between items-center">
+        <div className="bg-slate-100 h-screen flex flex-col">
+            <div className="flex p-3 border-b bg-white justify-between items-center">
                 <div>
                     <h1 className="flex items-center space-x-2 text-2xl font-semibold">
                         <Image src={Logo} width={50} height={50} alt="log" />
@@ -14,6 +14,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </h1>
                 </div>
                 <ul className="flex space-x-5 justify-center items-center">
+                    <li>
+                        <Link
+                            prefetch={false}
+                            className="font-medium text-lg"
+                            href={"/profile"}
+                        >
+                            Profile
+                        </Link>
+                    </li>
                     <li>
                         <Link
                             prefetch={false}

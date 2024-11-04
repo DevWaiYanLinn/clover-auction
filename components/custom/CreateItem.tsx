@@ -11,30 +11,36 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "../ui/button";
 import { CategoryOnSubCategories } from "@/types";
-import { useActionState, useCallback, useState } from "react";
+import { useActionState, useCallback, useEffect, useState } from "react";
 import type { SubCategory } from "@prisma/client";
 import { createItem } from "@/app/(user)/item/actions";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const initialState = {
     errors: {
-        name: [""],
-        subcategory: [""],
-        description: [""],
-        message: [""],
+        name: [],
+        subcategory: [],
+        description: [],
+        message: [],
     },
+    success: undefined,
 };
 
-export default function ItemCreateForm({
-    categories,
+export default function CreateItem({
+    categories = [],
 }: {
-    categories: CategoryOnSubCategories[];
+    categories?: CategoryOnSubCategories[];
 }) {
+    const [name, setName] = useState("");
     const [subcategories, setSubCategories] = useState<SubCategory[]>([]);
     const [subCategory, setSubCategory] = useState<string | undefined>(
         undefined,
     );
+    const router = useRouter();
     const [key, setKey] = useState(+new Date());
+
+    const [state, action, pending] = useActionState(createItem, initialState);
 
     const onCategoryChange = useCallback((id: string) => {
         const category = categories.find((c) => c.id === Number(id))!;
@@ -44,7 +50,12 @@ export default function ItemCreateForm({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const [state, action, pending] = useActionState(createItem, initialState);
+    useEffect(() => {
+        if (state.success) {
+            router.back();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [state.success]);
 
     return (
         <div className="min-w-[400px] rounded-md shadow-md bg-white p-5">
@@ -54,12 +65,16 @@ export default function ItemCreateForm({
                     <div className="flex-1">
                         <Label htmlFor="name">Name</Label>
                         <Input
+                            value={name}
+                            onChange={(e) => {
+                                setName(e.currentTarget.value);
+                            }}
                             type="text"
                             name="name"
                             id="name"
                             placeholder="Name"
                         />
-                        <span className="text-red-500">
+                        <span className="text-red-500 text-xs font-bold">
                             {state.errors.name}
                         </span>
                     </div>
@@ -79,7 +94,7 @@ export default function ItemCreateForm({
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select Category" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="z-[999]">
                                 {categories.map((c) => (
                                     <SelectItem key={c.id} value={`${c.id}`}>
                                         {c.name}
@@ -101,14 +116,14 @@ export default function ItemCreateForm({
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select Subcategory" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="z-[999]">
                                 {subcategories.map((c) => (
                                     <SelectItem key={c.id} value={`${c.id}`}>
                                         {c.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
-                            <span className="text-red-500">
+                            <span className="text-red-500 text-xs font-bold">
                                 {state.errors.subcategory}
                             </span>
                         </Select>
@@ -122,14 +137,16 @@ export default function ItemCreateForm({
                         placeholder="Type your message here."
                         id="description"
                     />
-                    {state.errors.description}
+                    <span className="text-red-500 text-xs font-bold">
+                        {state.errors.description}
+                    </span>
                 </div>
                 <div>
                     <Button disabled={pending} size={"lg"}>
                         {pending ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Please wait
+                                Creating ....
                             </>
                         ) : (
                             "Submit"

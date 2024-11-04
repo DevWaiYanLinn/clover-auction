@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AuthProvider from "@/provider/auth-session-provider";
 import { Roboto_Mono } from "next/font/google";
+import React from "react";
+import Link from "next/link";
 
 const RobotoMono = Roboto_Mono({
     subsets: ["latin"],
@@ -21,7 +23,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`antialiased ${RobotoMono.className}`}>
-                <AuthProvider>{children}</AuthProvider>
+                <AuthProvider>
+                    <div id="modal-root"></div>
+                    {children}
+                </AuthProvider>
             </body>
         </html>
     );

@@ -32,13 +32,16 @@ We envision Clover Auction as a comprehensive platform that will grow significan
 -   **Next.js**: Framework for building the full-stack application.
 -   **Crypto**: For session management and secure password hashing.
 -   **Bcrypt**: For hashing passwords securely.
--   **Edge Template Engine**: Similar to Laravel's Blade, used for templating and rendering.
+-   **Edge Template Engine**: Similar to Laravel's Blade, used for mail template rendering.
 -   **Nodemailer**: For sending emails effectively.
 -   **BullMQ**: For job management and background processing, enabling efficient task handling.
 -   **Tailwind CSS**: For styling the user interface with a modern design.
--   **ShadCN**: For enhanced UI components, providing a polished look.
+-   **ShadCN**: Provides enhanced UI components built on top of Tailwind CSS for a more streamlined and customizable design experience..
 -   **Prisma**: For database management and ORM, optimized for seamless performance on ARM architecture.
 -   **Redis**: For caching and session management, improving performance and scalability.
+-   **Zod**: A powerful library for data validation, ensuring correctness and reliability.
+-   **Prisma**:Simplifies database migration, making it easy to use and accelerating development.
+-   **Cloudinary**:: A cloud-based service for storing and managing images, providing easy integration for image uploads and optimization.  
 
 ## Environment Variables
 

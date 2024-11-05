@@ -20,14 +20,10 @@ const AuctionMenu = () => {
                     <Input type="name" id="email" placeholder="Name" />
                 </div>
                 <div>
-                    <Label htmlFor="price">Price</Label>
-                    <Input type="price" id="price" placeholder="price" />
-                </div>
-                <div>
                     <Label htmlFor="order">Status</Label>
                     <Select>
                         <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Theme" />
+                            <SelectValue placeholder="Auction Status" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="light">Light</SelectItem>

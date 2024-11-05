@@ -22,12 +22,12 @@ export default async function Page() {
             <div className="h-full bg-white rounded-md shadow-md px-5">
                 <div className="flex justify-end items-center space-x-2 mb-2 p-3 py-5">
                     <Button size={"sm"} variant={"destructive"}>
-                        <CirclePlus className="mr-2" />
+                        <RefreshCcw />
                         Refresh
                     </Button>
                     <Link href={"/item/create"} className="flex">
                         <Button size={"sm"}>
-                            <RefreshCcw />
+                            <CirclePlus />
                             Add
                         </Button>
                     </Link>

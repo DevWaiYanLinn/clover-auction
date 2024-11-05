@@ -1,5 +1,5 @@
 import { getAllCategories } from "@/app/category/actions";
-import CreateItem from "@/components/custom/CreateItem";
+import CreateItem from "@/components/custom/create-item";
 import Modal from "@/components/custom/modal";
 
 export default async function ItemModal() {

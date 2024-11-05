@@ -4,8 +4,9 @@ import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/constants";
 import prisma from "@/database/prisma";
 import { getServerSession } from "@/lib/session";
 import ImageService from "@/services/image-service";
-import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const schema = z.object({
@@ -25,7 +26,7 @@ const schema = z.object({
         .refine((file: File) => file?.name !== "undefined", "File is required.")
         .refine(
             (file: File) => file?.size <= MAX_FILE_SIZE,
-            "File size must be greater than or equal 5MB.",
+            "File size must be greater than or equal 1MB.",
         )
         .refine(
             (file: File) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
@@ -35,20 +36,25 @@ const schema = z.object({
 
 export const getAllItem = async () => {
     const heads = await headers();
-    const requestUrl = (await heads.get("referer")) || "";
+    const requestUrl = heads.get("referer") || "";
     const url = new URL(requestUrl);
-    const where: { name?: string; subcategory?: number } = {};
+    const where: { name?: string; subCategoryId?: number } = {};
 
     if (url.searchParams.has("name")) {
         where["name"] = url.searchParams.get("name")!;
     }
 
     if (url.searchParams.has("subcategory")) {
-        where["subcategory"] = Number(url.searchParams.get("subcategory")!);
+        where["subCategoryId"] = Number(url.searchParams.get("subCategoryId")!);
     }
 
+    const session = await getServerSession();
+
     const items = await prisma.item.findMany({
-        where,
+        where: { userId: session!.user.id, ...where },
+        orderBy: {
+            id: "desc",
+        },
         include: {
             auction: true,
             category: {
@@ -130,6 +136,7 @@ export const createItem = async (
                 },
             });
         } catch (error) {
+            console.log(error);
             return {
                 errors: {
                     name: [],
@@ -142,6 +149,91 @@ export const createItem = async (
         }
     }
 
-    revalidatePath("/item");
-    return { success: true, errors: {} };
+    return redirect("/item");
+};
+
+const itemAuctionSchema = z.object({
+    startTime: z
+        .string({ required_error: "Start Date is required." })
+        .pipe(z.coerce.date())
+        .transform((date) => new Date(date)),
+    endTime: z
+        .string({ required_error: "Start Date is required." })
+        .pipe(z.coerce.date())
+        .transform((date) => new Date(date)),
+    startingPrice: z
+        .number({ required_error: "Starting Price is required." })
+        .int()
+        .gt(0)
+        .transform((price) => new Prisma.Decimal(price)),
+    buyoutPrice: z
+        .number({ required_error: "Buyout Price is required." })
+        .int()
+        .gt(0)
+        .transform((price) => new Prisma.Decimal(price)),
+    description: z.string().nullable(),
+});
+
+export const itemAuction = async (
+    id: number,
+    backUrl: string,
+    prevState: {
+        errors?: {
+            startingPrice?: string[];
+            buyoutPrice?: string[];
+            description?: string[];
+            startTime?: string[];
+            endTime?: string[];
+            message?: string[];
+        };
+        success?: boolean;
+    },
+    formData: FormData,
+) => {
+    const startingPrice = Number(formData.get("startingPrice"));
+    const buyoutPrice = Number(formData.get("buyoutPrice"));
+    const startTime = formData.get("startTime");
+    const endTime = formData.get("endTime");
+    const description = formData.get("description");
+
+    const validatedFields = itemAuctionSchema.safeParse({
+        startingPrice,
+        buyoutPrice,
+        startTime,
+        endTime,
+        description,
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    const data = validatedFields.data;
+
+    const session = await getServerSession();
+
+    try {
+        const item = await prisma.item.findFirst({
+            where: {
+                id,
+                userId: session!.user.id,
+            },
+        });
+        if (item) {
+            await prisma.auction.create({
+                data: { itemId: item.id, ...data },
+            });
+        }
+    } catch (error) {
+        return {
+            errors: {
+                ...prevState.errors,
+                message: ["Auction Creating Failed"],
+            },
+        };
+    }
+
+    return redirect(backUrl);
 };

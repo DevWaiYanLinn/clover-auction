@@ -12,7 +12,7 @@ export default function NavBar() {
                 className={`py-2 border-b-[5px] ${pathname === "/profile" ? "border-primary" : "border-transparent"}`}
             >
                 <Link
-                    prefetch={false}
+                    prefetch
                     className="font-medium text-lg"
                     href={"/profile"}
                 >
@@ -23,7 +23,7 @@ export default function NavBar() {
                 className={`py-2 border-b-[5px] ${pathname === "/bid" ? "border-primary" : "border-transparent"}`}
             >
                 <Link
-                    prefetch={false}
+                    prefetch
                     className="font-medium text-lg"
                     href={"/auction"}
                 >
@@ -34,7 +34,7 @@ export default function NavBar() {
                 className={`py-2 border-b-[5px] ${pathname === "/auction" ? "border-primary" : "border-transparent"}`}
             >
                 <Link
-                    prefetch={false}
+                    prefetch
                     className="font-medium text-lg"
                     href={"/auction"}
                 >
@@ -44,11 +44,7 @@ export default function NavBar() {
             <li
                 className={`py-2 border-b-[5px] ${pathname === "/item" ? "border-primary" : "border-transparent"}`}
             >
-                <Link
-                    prefetch={false}
-                    className="text-lg font-medium "
-                    href={"/item"}
-                >
+                <Link prefetch className="text-lg font-medium " href={"/item"}>
                     Item
                 </Link>
             </li>

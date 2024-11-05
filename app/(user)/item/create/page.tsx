@@ -1,5 +1,5 @@
 import { getAllCategories } from "@/app/category/actions";
-import CreateItem from "@/components/custom/CreateItem";
+import CreateItem from "@/components/custom/create-item";
 
 export default async function Page() {
     const categories = await getAllCategories();

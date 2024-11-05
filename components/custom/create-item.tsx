@@ -15,7 +15,6 @@ import { useActionState, useCallback, useEffect, useState } from "react";
 import type { SubCategory } from "@prisma/client";
 import { createItem } from "@/app/(user)/item/actions";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const initialState = {
     errors: {
@@ -34,13 +33,12 @@ export default function CreateItem({
     categories?: CategoryOnSubCategories[];
 }) {
     const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
     const [subcategories, setSubCategories] = useState<SubCategory[]>([]);
     const [subCategory, setSubCategory] = useState<string | undefined>(
         undefined,
     );
-    const router = useRouter();
     const [key, setKey] = useState(+new Date());
-
     const [state, action, pending] = useActionState(createItem, initialState);
 
     const onCategoryChange = useCallback((id: string) => {
@@ -50,13 +48,6 @@ export default function CreateItem({
         setKey(+new Date());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    useEffect(() => {
-        if (state.success) {
-            router.back();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [state.success]);
 
     return (
         <div className="min-w-[400px] rounded-md shadow-md bg-white p-5">
@@ -137,6 +128,8 @@ export default function CreateItem({
                 <div>
                     <Label htmlFor="description">Your message</Label>
                     <Textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                         rows={8}
                         name="description"
                         placeholder="Type your message here."

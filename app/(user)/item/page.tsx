@@ -73,10 +73,19 @@ export default async function Page() {
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Button size={"sm"}>
-                                        <Coins />
-                                        Auction
-                                    </Button>
+                                    {!item.auction ? (
+                                        <Link href={`/item/${item.id}/auction`}>
+                                            <Button size={"sm"}>
+                                                <Coins />
+                                                Auction
+                                            </Button>
+                                        </Link>
+                                    ) : (
+                                        <Button disabled size={"sm"}>
+                                            <Coins />
+                                            Auction
+                                        </Button>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}

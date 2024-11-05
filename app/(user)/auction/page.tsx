@@ -3,11 +3,13 @@ import AuctionMenu from "@/components/custom/auction-menu";
 import { Button } from "@/components/ui/button";
 import AuctionTable from "@/components/custom/auction-table";
 import AuctionBidBar from "@/components/custom/auction-bid-bar";
-import { getAllCategories } from "@/app/(user)/auction/actions";
+import { getAllAuctions } from "@/app/(user)/auction/actions";
 import { RefreshCcw } from "lucide-react";
+import { getAllCategories } from "@/app/category/actions";
 
 export default async function Auction() {
     const categories = await getAllCategories();
+    const auctions = await getAllAuctions();
     return (
         <div className="flex-1 flex justify-center bg-slate-10 overflow-hidden">
             <div className="rounded-md bg-white flex flex-col h-full w-full p-5">

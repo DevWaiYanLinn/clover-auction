@@ -1,10 +1,15 @@
 "use server";
 import prisma from "@/database/prisma";
 
-export const getAllCategories = async () => {
-    return prisma.category.findMany({
+export const getAllAuctions = async () => {
+    return prisma.auction.findMany({
+        // where:{
+        //     item:{
+        //         categoryId:1
+        //     }
+        // },
         include: {
-            subcategories: true,
+            item: true,
         },
     });
 };

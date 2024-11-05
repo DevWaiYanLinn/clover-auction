@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronRight, ChevronLeft, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AuctionMenu = () => {
@@ -24,7 +24,7 @@ const AuctionMenu = () => {
                     <Input type="price" id="price" placeholder="price" />
                 </div>
                 <div>
-                    <Label htmlFor="order">Order</Label>
+                    <Label htmlFor="order">Status</Label>
                     <Select>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Theme" />

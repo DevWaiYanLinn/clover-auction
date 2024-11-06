@@ -235,5 +235,5 @@ export const itemAuction = async (
         };
     }
 
-    return redirect(backUrl);
+    return redirect("/item");
 };

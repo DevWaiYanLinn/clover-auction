@@ -8,8 +8,9 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search } from "lucide-react";
+import { LogOut, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const AuctionMenu = () => {
     return (
@@ -35,7 +36,13 @@ const AuctionMenu = () => {
             </div>
             <div className="flex-1 flex justify-end">
                 <div>
-                    <div className="text-center">
+                    <div className="text-center space-x-3">
+                        <Link href={"/profile"}>
+                            <Button variant={"destructive"}>
+                                <LogOut />
+                                Exit
+                            </Button>
+                        </Link>
                         <Button>
                             <Search />
                             Search

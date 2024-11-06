@@ -78,7 +78,7 @@ export default function AuctionItemCreate() {
                         value={form.startingPrice}
                         type="number"
                         name="startingPrice"
-                        placeholder="starting price"
+                        placeholder="100.00"
                         onChange={onHandleInput}
                     />
                     <span className="text-xs font-bold text-red-500">
@@ -92,7 +92,7 @@ export default function AuctionItemCreate() {
                         value={form.buyoutPrice}
                         type="number"
                         name="buyoutPrice"
-                        placeholder="buyout price"
+                        placeholder="1000.00"
                         onChange={onHandleInput}
                     />
                     <span className="text-xs font-bold text-red-500">
@@ -118,6 +118,7 @@ export default function AuctionItemCreate() {
                 <div className="flex-1">
                     <Label htmlFor="entTime">End Date</Label>
                     <Input
+                        disabled={pending}
                         value={form.endTime}
                         type="date"
                         name="endTime"

@@ -1,24 +1,14 @@
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ChevronRight, ChevronLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { Auction, Item, User } from "@prisma/client";
+import { ExcludeAllExcept } from "@/types";
 const dummyAuction = [
     {
         id: 1,
@@ -67,7 +57,15 @@ const dummyAuction = [
     },
 ];
 
-const AuctionTable = () => {
+const AuctionTable = ({
+    auctions,
+}: {
+    auctions: Array<
+        Auction & {
+            item: Item & { seller: ExcludeAllExcept<User, "name" | "id"> };
+        }
+    >;
+}) => {
     return (
         <Table>
             <TableHeader>
@@ -81,23 +79,27 @@ const AuctionTable = () => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {dummyAuction.map((d) => {
+                {auctions.map((a) => {
                     return (
-                        <TableRow key={d.id}>
+                        <TableRow key={a.id}>
                             <TableCell className="font-medium">
-                                {d.item}
+                                {a.item.name}
                             </TableCell>
                             <TableCell>
                                 <Avatar>
-                                    <AvatarImage src="https://github.com/shadcn.png" />
+                                    <AvatarImage src={a.item.imageUrl} />
                                     <AvatarFallback>CN</AvatarFallback>
                                 </Avatar>
                             </TableCell>
-                            <TableCell>{d.seller}</TableCell>
-                            <TableCell>{d.startingPrice}</TableCell>
-                            <TableCell>{d.buyoutPrice}</TableCell>
+                            <TableCell>{a.item.seller.name}</TableCell>
+                            <TableCell>
+                                ${Number(a.startingPrice).toFixed(2)}
+                            </TableCell>
+                            <TableCell>
+                                ${Number(a.buyoutPrice).toFixed(2)}
+                            </TableCell>
                             <TableCell className="text-right">
-                                $250.00
+                                ${Number(a.currentBid).toFixed(2)}
                             </TableCell>
                         </TableRow>
                     );

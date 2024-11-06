@@ -32,3 +32,5 @@ export interface ConfirmMail extends MailTemplateBuilder {
     email: string;
     token: string;
 }
+
+export type ExcludeAllExcept<T, K extends keyof T> = Pick<T, K>;

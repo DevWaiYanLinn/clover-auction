@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import * as jose from "jose";
 import config from "@/config";
 import prisma from "../database/prisma";
+import { cache } from "react";
 
 let keyPromise: Promise<{
     privateKey: jose.KeyLike;
@@ -22,12 +23,15 @@ const loadKey = async () => {
     return await keyPromise;
 };
 
-export const encrypt = async (user: User) => {
+export const encrypt = async (user: User, device?: string) => {
     const { publicKey } = await loadKey();
     return new jose.CompactEncrypt(
-        new TextEncoder().encode(JSON.stringify({ user })),
+        new TextEncoder().encode(JSON.stringify({ user, device })),
     )
-        .setProtectedHeader({ alg: "RSA-OAEP-256", enc: "A256GCM" })
+        .setProtectedHeader({
+            alg: config.session.alg,
+            enc: config.session.enc,
+        })
         .encrypt(publicKey);
 };
 
@@ -41,27 +45,27 @@ export const decrypt = async (jwe: string): Promise<Session | null> => {
     }
 };
 
-export const getServerSession = async (): Promise<Session | null> => {
+export const getServerSession = cache(async (): Promise<Session | null> => {
     const cookie = (await cookies()).get(config.session.cookieName)?.value;
-
     const session = cookie && (await decrypt(cookie));
 
-    const user =
-        session &&
-        (await prisma.user.findUnique({
-            where: { email: session.user.email },
-        }));
+    if (session) {
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email, deleted: false },
+        });
 
-    if (user) {
-        return {
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                balance: Number(user.balance),
-                reputation: user.reputation,
-            },
-        };
+        if (user) {
+            return {
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    balance: Number(user.balance),
+                    reputation: user.reputation,
+                },
+            };
+        }
     }
+
     return null;
-};
+});

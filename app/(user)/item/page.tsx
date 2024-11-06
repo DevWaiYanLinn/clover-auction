@@ -15,16 +15,23 @@ import { getAllItem } from "./actions";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
-export default async function Page() {
-    const items = await getAllItem();
+export default async function Page({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+    const filters = await searchParams;
+    const items = await getAllItem(filters);
     return (
         <div className="space-x-3 flex-1">
             <div className="h-full bg-white rounded-md shadow-md px-5">
                 <div className="flex justify-end items-center space-x-2 mb-2 p-3 py-5">
-                    <Button size={"sm"} variant={"destructive"}>
-                        <RefreshCcw />
-                        Refresh
-                    </Button>
+                    <Link href={"/item"}>
+                        <Button size={"sm"} variant={"destructive"}>
+                            <RefreshCcw />
+                            Reset
+                        </Button>
+                    </Link>
                     <Link href={"/item/create"} className="flex">
                         <Button size={"sm"}>
                             <CirclePlus />

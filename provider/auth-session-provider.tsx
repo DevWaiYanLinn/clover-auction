@@ -6,7 +6,7 @@ export default async function AuthProvider({
 }: {
     children: React.ReactNode;
 }) {
-    "use server";
     const session = await getServerSession();
+
     return <SessionProvider authSession={session}>{children}</SessionProvider>;
 }

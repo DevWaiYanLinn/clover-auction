@@ -3,6 +3,8 @@ const config = {
         jwePublicKey: process.env.JWE_PUBLIC_KEY!,
         jwePrivateKey: process.env.JWE_PRIVATE_KEY!,
         cookieName: process.env.SESSION_COOKIE_NAME!,
+        alg: process.env.JWE_ALG!,
+        enc: process.env.JWE_ENC!,
     },
     mail: {
         service: process.env.MAIL_SERVICE!,

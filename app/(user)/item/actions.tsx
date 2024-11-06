@@ -7,6 +7,7 @@ import ImageService from "@/services/image-service";
 import { Prisma } from "@prisma/client";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { z } from "zod";
 
 const schema = z.object({
@@ -34,44 +35,43 @@ const schema = z.object({
         ),
 });
 
-export const getAllItem = async () => {
-    const heads = await headers();
-    const requestUrl = heads.get("referer") || "";
-    const url = new URL(requestUrl);
-    const where: { name?: string; subCategoryId?: number } = {};
+export const getAllItem = cache(
+    async (filters: { [key: string]: string | string[] | undefined }) => {
+        const where: { name?: string; subCategoryId?: number } = {};
 
-    if (url.searchParams.has("name")) {
-        where["name"] = url.searchParams.get("name")!;
-    }
+        const session = await getServerSession();
 
-    if (url.searchParams.has("subcategory")) {
-        where["subCategoryId"] = Number(url.searchParams.get("subCategoryId")!);
-    }
+        if (filters["name"]) {
+            where["name"] = filters["name"] as string;
+        }
 
-    const session = await getServerSession();
+        if (filters["subCategoryId"]) {
+            where["subCategoryId"] = Number(filters["subCategoryId"]);
+        }
 
-    const items = await prisma.item.findMany({
-        where: { userId: session!.user.id, ...where },
-        orderBy: {
-            id: "desc",
-        },
-        include: {
-            auction: true,
-            category: {
-                select: {
-                    name: true,
+        const items = await prisma.item.findMany({
+            where: { userId: session!.user.id, ...where },
+            orderBy: {
+                id: "desc",
+            },
+            include: {
+                auction: true,
+                category: {
+                    select: {
+                        name: true,
+                    },
+                },
+                subCategory: {
+                    select: {
+                        name: true,
+                    },
                 },
             },
-            subCategory: {
-                select: {
-                    name: true,
-                },
-            },
-        },
-    });
+        });
 
-    return items;
-};
+        return items;
+    },
+);
 
 export const createItem = async (
     prevState: {

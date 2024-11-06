@@ -14,6 +14,7 @@ export type User = {
 
 export type Session = {
     user: User;
+    device?: string;
 };
 
 export type Mail = {

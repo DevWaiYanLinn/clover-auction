@@ -2,7 +2,6 @@ import { Settings, Star, StarHalf } from "lucide-react";
 import Image from "next/legacy/image";
 import { Logout } from "@/app/(auth)/logout/actions";
 import { Button } from "@/components/ui/button";
-import Logo from "@/public/React.js.svg";
 import DonutChart from "@/components/chart/donut-chart";
 import BarChartComponent from "@/components/chart/bar-chart-component";
 import Link from "next/link";

@@ -143,14 +143,7 @@ export default function AuctionItemCreate() {
                 />
             </div>
             <Button disabled={pending} size={"lg"}>
-                {pending ? (
-                    <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating ....
-                    </>
-                ) : (
-                    "Submit"
-                )}
+                Submit
             </Button>
         </form>
     );

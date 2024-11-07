@@ -13,7 +13,7 @@ export default function Page() {
                 <div className="space-y-3 flex flex-col items-center">
                     <div className="relative">
                         <Link
-                            href={""}
+                            href={"/"}
                             className="size-8 hover:bg-slate-400 flex justify-center items-center z-50 absolute bg-slate-50 rounded-full bottom-3 right-2"
                         >
                             <Settings size={20} />
@@ -33,7 +33,7 @@ export default function Page() {
                         Marry{" "}
                         <span className="text-slate-500 text-sm">
                             (Buyer/Seller)
-                        </span>{" "}
+                        </span>
                     </h2>
                 </div>
                 <div>

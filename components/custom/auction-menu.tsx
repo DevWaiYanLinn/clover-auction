@@ -37,7 +37,7 @@ const AuctionMenu = () => {
             <div className="flex-1 flex justify-end">
                 <div>
                     <div className="text-center space-x-3">
-                        <Link href={"/profile"}>
+                        <Link href={"/profile"} prefetch={false}>
                             <Button variant={"destructive"}>
                                 <LogOut />
                                 Exit

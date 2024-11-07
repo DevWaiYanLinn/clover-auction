@@ -15,8 +15,8 @@ const loadKey = async () => {
     keyPromise = (async () => {
         const spki = config.session.jwePublicKey;
         const pkcs8 = config.session.jwePrivateKey;
-        const privateKey = await jose.importPKCS8(pkcs8, "RSA-OAEP-256");
-        const publicKey = await jose.importSPKI(spki, "RSA-OAEP-256");
+        const privateKey = await jose.importPKCS8(pkcs8, config.session.alg);
+        const publicKey = await jose.importSPKI(spki, config.session.alg);
         return { privateKey, publicKey };
     })();
 
@@ -35,7 +35,7 @@ export const encrypt = async (user: User, device?: string) => {
         .encrypt(publicKey);
 };
 
-export const decrypt = async (jwe: string): Promise<Session | null> => {
+export const decrypt = cache(async (jwe: string): Promise<Session | null> => {
     try {
         const { privateKey } = await loadKey();
         const { plaintext } = await jose.compactDecrypt(jwe, privateKey);
@@ -43,7 +43,7 @@ export const decrypt = async (jwe: string): Promise<Session | null> => {
     } catch {
         return null;
     }
-};
+});
 
 export const getServerSession = cache(async (): Promise<Session | null> => {
     const cookie = (await cookies()).get(config.session.cookieName)?.value;
@@ -52,6 +52,13 @@ export const getServerSession = cache(async (): Promise<Session | null> => {
     if (session) {
         const user = await prisma.user.findUnique({
             where: { email: session.user.email, deleted: false },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                reputation: true,
+                balance: true,
+            },
         });
 
         if (user) {

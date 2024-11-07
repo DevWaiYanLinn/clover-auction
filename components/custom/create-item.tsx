@@ -65,6 +65,7 @@ export default function CreateItem({
                             name="name"
                             id="name"
                             placeholder="Name"
+                            disabled={pending}
                         />
                         <span className="text-red-500 text-xs font-bold">
                             {state.errors.name}
@@ -72,7 +73,12 @@ export default function CreateItem({
                     </div>
                     <div className="flex-1">
                         <Label htmlFor="photo">Picture</Label>
-                        <Input id="photo" type="file" name="photo" />
+                        <Input
+                            id="photo"
+                            type="file"
+                            name="photo"
+                            disabled={pending}
+                        />
                         <span className="text-red-500 text-xs font-bold">
                             {state.errors.photo}
                         </span>
@@ -82,6 +88,7 @@ export default function CreateItem({
                     <div className="flex-1">
                         <Label htmlFor="order">Category</Label>
                         <Select
+                            disabled={pending}
                             value={undefined}
                             name="category"
                             onValueChange={onCategoryChange}
@@ -101,6 +108,7 @@ export default function CreateItem({
                     <div className="flex-1">
                         <Label htmlFor="subcategory">SubCategory</Label>
                         <Select
+                            disabled={pending}
                             onValueChange={(value) => {
                                 setSubCategory(value);
                             }}
@@ -128,6 +136,7 @@ export default function CreateItem({
                 <div>
                     <Label htmlFor="description">Your message</Label>
                     <Textarea
+                        disabled={pending}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         rows={8}
@@ -141,14 +150,7 @@ export default function CreateItem({
                 </div>
                 <div>
                     <Button disabled={pending} size={"lg"}>
-                        {pending ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Creating ....
-                            </>
-                        ) : (
-                            "Submit"
-                        )}
+                        Submit
                     </Button>
                 </div>
             </form>

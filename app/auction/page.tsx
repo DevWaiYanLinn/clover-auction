@@ -1,11 +1,10 @@
 import Category from "@/components/custom/category";
 import AuctionMenu from "@/components/custom/auction-menu";
-import { Button } from "@/components/ui/button";
 import AuctionTable from "@/components/custom/auction-table";
 import AuctionBidBar from "@/components/custom/auction-bid-bar";
 import { getAllAuctions } from "@/app/auction/actions";
-import { RefreshCcw } from "lucide-react";
 import { getAllCategories } from "@/app/category/actions";
+
 
 export default async function Auction() {
     const categories = await getAllCategories();
@@ -15,11 +14,12 @@ export default async function Auction() {
             <AuctionMenu />
             <div className="flex flex-1 mt-5 space-x-3 overflow-hidden">
                 <div className="max-w-[300px] w-full flex flex-col border rounded-md px-2">
-                    <div className="text-center py-2">
-                        <Button size={"sm"} variant={"destructive"}>
+                    <div className="flex justify-center items-center py-2">
+                        <h2 className="font-medium text-xl">Filter</h2>
+                        {/* <Button size={"sm"} variant={"destructive"}>
                             <RefreshCcw />
                             Reset
-                        </Button>
+                        </Button> */}
                     </div>
                     <Category categories={categories} />
                 </div>

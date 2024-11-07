@@ -1,5 +1,4 @@
-import { Queue } from "bullmq";
-import { Worker } from "bullmq";
+import { Queue, Worker } from "bullmq";
 import { transporter } from "@/lib/node-mailer";
 import redis from "@/database/redis";
 

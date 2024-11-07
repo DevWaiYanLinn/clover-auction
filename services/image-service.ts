@@ -14,7 +14,7 @@ class ImageService {
             cloudinary.uploader
                 .upload_stream(
                     {
-                        tags: [`next-js-server-actions-upload-${name}`],
+                        tags: [`next-js-server-actions-upload`],
                         public_id: publicId,
                         folder: name,
                     },

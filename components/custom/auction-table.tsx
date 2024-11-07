@@ -62,7 +62,7 @@ const AuctionTable = ({
 }: {
     auctions: Array<
         Auction & {
-            item: Item & { seller: ExcludeAllExcept<User, "name" | "id"> };
+            item: Item & { seller: Pick<User, "name" | "id"> };
         }
     >;
 }) => {

@@ -10,10 +10,11 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { CirclePlus, Coins, RefreshCcw } from "lucide-react";
+import { Check, CirclePlus, Coins, RefreshCcw, X } from "lucide-react";
 import { getAllItem } from "./actions";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function Page({
     searchParams,
@@ -47,6 +48,7 @@ export default async function Page({
                             <TableHead className="min-w-[100px]">
                                 Name
                             </TableHead>
+                            <TableHead>Image</TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead>SubCategory</TableHead>
                             <TableHead>Date</TableHead>
@@ -63,21 +65,23 @@ export default async function Page({
                                     {item.id}
                                 </TableCell>
                                 <TableCell>{item.name}</TableCell>
+                                <TableCell>
+                                    <Avatar>
+                                        <AvatarImage src={item.imageUrl} />
+                                        <AvatarFallback>IMG</AvatarFallback>
+                                    </Avatar>
+                                </TableCell>
                                 <TableCell>{item.category.name}</TableCell>
                                 <TableCell>{item.subCategory.name}</TableCell>
                                 <TableCell>
                                     {item.createdAt.toDateString()}
                                 </TableCell>
                                 <TableCell>
-                                    <Badge
-                                        variant={
-                                            item.auction
-                                                ? "secondary"
-                                                : "destructive"
-                                        }
-                                    >
-                                        {item.auction ? "true" : "false"}
-                                    </Badge>
+                                    {item.auction ? (
+                                        <Check className="text-green-500" />
+                                    ) : (
+                                        <X className="text-red-500" />
+                                    )}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     {!item.auction ? (

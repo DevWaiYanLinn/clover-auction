@@ -3,9 +3,11 @@ import { Label } from "@/components/ui/label";
 import { Button } from "../ui/button";
 export default function AuctionBidBar() {
     return (
-        <div className="flex justify-between items-center mt-5">
+        <div className="flex justify-between items-center mt-5 border rounded-md p-2">
             <div>
-                <p className="italic text-md ">Copy Right©Clover Auction</p>
+                <p className="italic text-md font-bold">
+                    Copy Right©Clover Auction
+                </p>
             </div>
             <div className="space-x-2 flex">
                 <div className="flex items-center space-x-2">

@@ -5,7 +5,6 @@ import prisma from "@/database/prisma";
 import { getServerSession } from "@/lib/session";
 import ImageService from "@/services/image-service";
 import { Prisma } from "@prisma/client";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { z } from "zod";

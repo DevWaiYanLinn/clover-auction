@@ -1,8 +1,9 @@
 // redis.js
+import config from "@/config";
 import Redis from "ioredis";
 
 const redisClientSingleton = () => {
-    return new Redis();
+    return new Redis(config.redis.url, { maxRetriesPerRequest: null });
 };
 
 declare const globalThis: {
@@ -10,6 +11,10 @@ declare const globalThis: {
 } & typeof global;
 
 const redis = globalThis.redisGlobal ?? redisClientSingleton();
+
+(async () => {
+    await redis.set("foo", "baaaaaaar");
+})();
 
 export default redis;
 

@@ -82,8 +82,11 @@ export async function signUp(
         const verifyToken = await hash(data.email);
 
         const mailService = new MailService({
-            to: data.email,
-            subject: "Confirm Email",
+            to:
+                process.env.NODE_ENV === "production"
+                    ? data.email
+                    : process.env.TEST_MAIL!,
+            subject: "Confirm Mail",
         });
 
         await mailService.buildTemplate<ConfirmMail>({

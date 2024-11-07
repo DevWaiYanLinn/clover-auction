@@ -1,4 +1,4 @@
-import type { Category, SubCategory } from "@prisma/client";
+import type { Auction, Category, Item, SubCategory } from "@prisma/client";
 
 export interface CategoryOnSubCategories extends Category {
     subcategories: SubCategory[];
@@ -34,3 +34,7 @@ export interface ConfirmMail extends MailTemplateBuilder {
 }
 
 export type ExcludeAllExcept<T, K extends keyof T> = Pick<T, K>;
+
+export type AuctionTableType = Auction & {
+    item: Item & { seller: Pick<User, "name" | "id"> };
+};

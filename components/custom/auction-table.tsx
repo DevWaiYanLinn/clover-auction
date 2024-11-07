@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
 import {
     Table,
     TableBody,
@@ -7,117 +9,102 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { Auction, Item, User } from "@prisma/client";
-import { ExcludeAllExcept } from "@/types";
-const dummyAuction = [
-    {
-        id: 1,
-        item: "Vintage Bicycle",
-        image: "https://example.com/images/vintage_bicycle.jpg",
-        seller: "John Doe",
-        startingPrice: 100,
-        buyoutPrice: 250,
-        currentBid: 150,
-    },
-    {
-        id: 2,
-        item: "Antique Desk",
-        image: "https://example.com/images/antique_desk.jpg",
-        seller: "Jane Smith",
-        startingPrice: 200,
-        buyoutPrice: 400,
-        currentBid: 300,
-    },
-    {
-        id: 3,
-        item: "Classic Vinyl Records",
-        image: "https://example.com/images/vinyl_records.jpg",
-        seller: "Alice Johnson",
-        startingPrice: 50,
-        buyoutPrice: 120,
-        currentBid: 75,
-    },
-    {
-        id: 4,
-        item: "Handmade Quilt",
-        image: "https://example.com/images/handmade_quilt.jpg",
-        seller: "Bob Brown",
-        startingPrice: 80,
-        buyoutPrice: 200,
-        currentBid: 100,
-    },
-    {
-        id: 5,
-        item: "Retro Game Console",
-        image: "https://example.com/images/retro_console.jpg",
-        seller: "Charlie White",
-        startingPrice: 150,
-        buyoutPrice: 300,
-        currentBid: 175,
-    },
-];
+import { useEffect } from "react";
+import auctionStore from "@/store/auction-store";
+import { Lock, LockOpen } from "lucide-react";
+import useSWR from "swr";
+import { getAllAuctions } from "@/app/auction/actions";
+import { AuctionTableType } from "@/types";
 
-const AuctionTable = ({
-    auctions,
-}: {
-    auctions: Array<
-        Auction & {
-            item: Item & { seller: Pick<User, "name" | "id"> };
-        }
-    >;
-}) => {
+const AuctionTable = function () {
+    const { id, pick } = auctionStore();
+
+    useEffect(() => {
+        const removePick = () => {
+            if (id) {
+                pick(undefined);
+            }
+        };
+        window.addEventListener("click", removePick);
+        return () => {
+            window.removeEventListener("click", removePick);
+        };
+    }, [id]);
+
+    const { data } = useSWR<AuctionTableType[]>(
+        "auction-item",
+        () => {
+            return getAllAuctions({});
+        },
+        {
+            revalidateOnFocus: false,
+            revalidateOnMount: false,
+            revalidateOnReconnect: true,
+            revalidateIfStale: true,
+        },
+    );
+
     return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead className="min-w-[100px]">Item</TableHead>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Seller</TableHead>
-                    <TableHead>Starting Price</TableHead>
-                    <TableHead>Buyout Price</TableHead>
-                    <TableHead className="text-right">Current Bid</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {auctions.map((a) => {
-                    return (
-                        <TableRow key={a.id}>
-                            <TableCell className="font-medium">
-                                {a.item.name}
-                            </TableCell>
-                            <TableCell>
-                                <Avatar>
-                                    <AvatarImage src={a.item.imageUrl} />
-                                    <AvatarFallback>CN</AvatarFallback>
-                                </Avatar>
-                            </TableCell>
-                            <TableCell>{a.item.seller.name}</TableCell>
-                            <TableCell>
-                                ${Number(a.startingPrice).toFixed(2)}
-                            </TableCell>
-                            <TableCell>
-                                ${Number(a.buyoutPrice).toFixed(2)}
-                            </TableCell>
-                            <TableCell className="text-right">
-                                ${Number(a.currentBid).toFixed(2)}
-                            </TableCell>
-                        </TableRow>
-                    );
-                })}
-                {/* <TableRow>
-                    <TableCell className="font-medium">INV001</TableCell>
-                    <TableCell>Paid</TableCell>
-                    <TableCell>Credit Card</TableCell>
-                    <TableCell className="text-right">$250.00</TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell className="font-medium">INV001</TableCell>
-                    <TableCell>Paid</TableCell>
-                    <TableCell>Credit Card</TableCell>
-                    <TableCell className="text-right">$250.00</TableCell>
-                </TableRow> */}
-            </TableBody>
-        </Table>
+        <div className="flex-1 border rounded-md overflow-y-scroll">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="min-w-[100px]">Item</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Image</TableHead>
+                        <TableHead>Seller</TableHead>
+                        <TableHead>Starting Price</TableHead>
+                        <TableHead>Buyout Price</TableHead>
+                        <TableHead className="text-right">
+                            Current Bid
+                        </TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {data?.map((a) => {
+                        return (
+                            <TableRow
+                                data-id={a.id}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    pick(a.id);
+                                }}
+                                key={a.id}
+                                className={`cursor-pointer ${id === a.id ? "!bg-primary/90 !text-white" : null} ${a.status !== "OPEN" ? "!pointer-events-none" : "pointer-events-auto"}`}
+                            >
+                                <TableCell className="font-medium">
+                                    {a.item.name}
+                                </TableCell>
+                                <TableCell>
+                                    {a.status === "OPEN" ? (
+                                        <LockOpen className="text-green-400" />
+                                    ) : (
+                                        <Lock className="text-red-400" />
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    <Avatar>
+                                        <AvatarImage src={a.item.imageUrl} />
+                                        <AvatarFallback>CN</AvatarFallback>
+                                    </Avatar>
+                                </TableCell>
+                                <TableCell>{a.item.seller.name}</TableCell>
+
+                                <TableCell>
+                                    ${Number(a.startingPrice).toFixed(2)}
+                                </TableCell>
+                                <TableCell>
+                                    ${Number(a.buyoutPrice).toFixed(2)}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    ${Number(a.currentBid).toFixed(2)}
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
+        </div>
     );
 };
 

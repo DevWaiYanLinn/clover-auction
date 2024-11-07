@@ -12,7 +12,7 @@ const config = {
         port: Number(process.env.MAIL_PORT!),
         auth: {
             user: process.env.MAIL_USER!,
-            password: process.env.MAIL_PASSWORD!,
+            pass: process.env.MAIL_PASSWORD!,
         },
         from: process.env.MAIL_FROM,
     },
@@ -20,6 +20,12 @@ const config = {
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
         api_key: process.env.CLOUDINARY_API_KEY!,
         api_secret: process.env.CLOUDINARY_API_SECRET!,
+    },
+    redis: {
+        port: Number(process.env.REDIS_PORT!),
+        host: process.env.REDIS_HOST!,
+        password: process.env.REDIS_PASSWORD!,
+        url: process.env.REDIS_URL!,
     },
 };
 

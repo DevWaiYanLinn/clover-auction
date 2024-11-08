@@ -2,7 +2,6 @@ import { Session, User } from "@/types";
 import { cookies } from "next/headers";
 import * as jose from "jose";
 import config from "@/config";
-import prisma from "../database/prisma";
 import { cache } from "react";
 
 let keyPromise: Promise<{
@@ -35,7 +34,7 @@ export const encrypt = async (user: User, device?: string) => {
         .encrypt(publicKey);
 };
 
-export const decrypt = cache(async (jwe: string): Promise<Session | null> => {
+export const decrypt = async (jwe: string): Promise<Session | null> => {
     try {
         const { privateKey } = await loadKey();
         const { plaintext } = await jose.compactDecrypt(jwe, privateKey);
@@ -43,35 +42,13 @@ export const decrypt = cache(async (jwe: string): Promise<Session | null> => {
     } catch {
         return null;
     }
-});
+};
 
 export const getServerSession = cache(async (): Promise<Session | null> => {
     const cookie = (await cookies()).get(config.session.cookieName)?.value;
     const session = cookie && (await decrypt(cookie));
-
     if (session) {
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email, deleted: false },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                reputation: true,
-                balance: true,
-            },
-        });
-
-        if (user) {
-            return {
-                user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    balance: Number(user.balance),
-                    reputation: user.reputation,
-                },
-            };
-        }
+        return session;
     }
 
     return null;

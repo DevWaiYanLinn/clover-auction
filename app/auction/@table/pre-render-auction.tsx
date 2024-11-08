@@ -1,18 +1,17 @@
 "use client";
+import { AuctionTableType } from "@/types";
 import { SWRConfig } from "swr";
 
-const PreAuction = ({
+export default function PreRenderAuction({
     children,
     auctions,
 }: {
     children: React.ReactNode;
-    auctions: any;
-}) => {
+    auctions: AuctionTableType;
+}) {
     return (
         <SWRConfig value={{ fallback: { "auction-item": auctions } }}>
             {children}
         </SWRConfig>
     );
-};
-
-export default PreAuction;
+}

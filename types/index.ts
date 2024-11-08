@@ -38,3 +38,7 @@ export type ExcludeAllExcept<T, K extends keyof T> = Pick<T, K>;
 export type AuctionTableType = Auction & {
     item: Item & { seller: Pick<User, "name" | "id"> };
 };
+
+export interface CategoryWithSubCategories extends Category {
+    subcategories: SubCategory[];
+}

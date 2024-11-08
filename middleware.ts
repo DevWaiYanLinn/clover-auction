@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { decrypt } from "@/lib/session";
+import { decrypt, getServerSession } from "@/lib/session";
 import appConfig from "@/config";
 
 const publicRoutes = ["/"];
@@ -10,8 +10,8 @@ export default async function middleware(req: NextRequest, res: NextResponse) {
     const path = req.nextUrl.pathname;
     const isPublicRoute = publicRoutes.includes(path);
 
-    const cookie = (await cookies()).get(appConfig.session.cookieName)?.value;
-    const session = cookie && (await decrypt(cookie));
+    // const cookie = (await cookies()).get(appConfig.session.cookieName)?.value;
+    const session = await getServerSession();
     const device = req.headers.get("User-Agent");
     const authenticated = session && session.device === device;
 

@@ -70,3 +70,9 @@ body {
         @apply bg-background text-foreground;
     }
 }
+
+.Toastify__toast-container {
+    max-width: 1200px !important;
+    min-width: 300px ;
+    width: unset;
+}

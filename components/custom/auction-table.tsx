@@ -9,40 +9,23 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useEffect } from "react";
 import auctionStore from "@/store/auction-store";
 import { Lock, LockOpen } from "lucide-react";
 import useSWR from "swr";
 import { getAllAuctions } from "@/app/auction/actions";
 import { AuctionTableType } from "@/types";
+import { useSearchParams } from "next/navigation";
 
 const AuctionTable = function () {
-    const { id, pick } = auctionStore();
-
-    useEffect(() => {
-        const removePick = () => {
-            if (id) {
-                pick(undefined);
-            }
-        };
-        window.addEventListener("click", removePick);
-        return () => {
-            window.removeEventListener("click", removePick);
-        };
-    }, [id]);
-
+    const searchParams = useSearchParams();
     const { data } = useSWR<AuctionTableType[]>(
-        "auction-item",
-        () => {
-            return getAllAuctions({});
-        },
-        {
-            revalidateOnFocus: false,
-            revalidateOnMount: false,
-            revalidateOnReconnect: true,
-            revalidateIfStale: true,
+        ["auction-item", Object.fromEntries(searchParams.entries())],
+        ([_, params]) => {
+            return getAllAuctions(params as { [key: string]: string });
         },
     );
+
+    const { id, pick } = auctionStore();
 
     return (
         <div className="flex-1 border rounded-md overflow-y-scroll">
@@ -64,13 +47,14 @@ const AuctionTable = function () {
                     {data?.map((a) => {
                         return (
                             <TableRow
-                                data-id={a.id}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    pick(a.id);
+                                onClick={() => {
+                                    if (a.status === "OPEN") {
+                                        pick(a.id);
+                                    }
                                 }}
+                                data-id={a.id}
                                 key={a.id}
-                                className={`cursor-pointer ${id === a.id ? "!bg-primary/90 !text-white" : null} ${a.status !== "OPEN" ? "!pointer-events-none" : "pointer-events-auto"}`}
+                                className={`${id === a.id ? "!bg-primary/90 !text-white" : null} ${a.status === "OPEN" ? "cursor-pointer" : "cursor-default"}`}
                             >
                                 <TableCell className="font-medium">
                                     {a.item.name}

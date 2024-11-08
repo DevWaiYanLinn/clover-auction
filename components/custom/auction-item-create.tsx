@@ -4,13 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
 import { useParams, usePathname } from "next/navigation";
 import {
     ChangeEvent,
     useActionState,
-    useCallback,
-    useMemo,
     useState,
 } from "react";
 
@@ -53,14 +50,8 @@ export default function AuctionItemCreate() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     };
 
-    const auctionCreateWithItemId = useMemo(
-        () => itemAuction.bind(null, Number(param.id), pathName),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
-
     const [state, action, pending] = useActionState(
-        auctionCreateWithItemId,
+        itemAuction.bind(null, Number(param.id), pathName),
         initialState,
     );
 

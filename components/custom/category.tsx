@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+import { getAllAuctions } from "@/app/auction/actions";
 import { getAllCategories } from "@/app/category/actions";
 import {
     Accordion,
@@ -7,10 +8,10 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { CategoryOnSubCategories, CategoryWithSubCategories } from "@/types";
+import { CategoryWithSubCategories } from "@/types";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
-import useSWR from "swr";
+import { useCallback } from "react";
+import useSWR, { useSWRConfig } from "swr";
 
 const Category = function () {
     const router = useRouter();
@@ -23,7 +24,7 @@ const Category = function () {
         "auction-category",
         () => getAllCategories(),
         {
-            revalidateOnMount: false,
+            revalidateOnMount: true,
             revalidateOnReconnect: false,
             revalidateOnFocus: false,
             revalidateIfStale: true,

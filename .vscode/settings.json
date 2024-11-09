@@ -5,6 +5,7 @@
         "clsx",
         "lucide",
         "toastify",
-        "webp"
+        "webp",
+        "zustand"
     ]
 }

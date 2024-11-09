@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
 import { Lock, LockOpen } from "lucide-react";
 import useSWR, { mutate } from "swr";
-import { AuctionTable } from "@/types";
+import { AuctionTableData } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
 import { useEffect } from "react";
@@ -21,7 +21,7 @@ import { fetchAPI } from "@/lib/fetch";
 const AuctionTable = function () {
     const searchParams = useSearchParams();
     const { id, pick } = auctionStore();
-    const { data } = useSWR<AuctionTable[]>(
+    const { data } = useSWR<AuctionTableData[]>(
         [
             "/auction/actions",
             new URLSearchParams(
@@ -47,7 +47,7 @@ const AuctionTable = function () {
                         Object.fromEntries(searchParams.entries()),
                     ).toString(),
                 ],
-                (data: AuctionTable[] | undefined) => {
+                (data: AuctionTableData[] | undefined) => {
                     if (!data) {
                         return data;
                     }

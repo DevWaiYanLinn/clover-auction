@@ -7,7 +7,7 @@ import { bidAuction } from "@/app/auction/actions";
 import { useActionState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSWRConfig } from "swr";
-import { AuctionTable } from "@/types";
+import { AuctionTableData } from "@/types";
 import { Bounce, toast } from "react-toastify";
 const initialState = {
     data: null,

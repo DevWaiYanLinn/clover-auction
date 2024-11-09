@@ -29,7 +29,7 @@ export interface ConfirmMail extends MailTemplateBuilder {
     token: string;
 }
 
-export type AuctionTable = Auction & {
+export type AuctionTableData = Auction & {
     item: Item & { seller: Pick<User, "name" | "id"> };
 };
 

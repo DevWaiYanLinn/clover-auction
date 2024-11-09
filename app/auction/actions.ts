@@ -1,12 +1,11 @@
 "use server";
 import prisma from "@/database/prisma";
 import { getServerSession } from "@/lib/session";
-import type { Auction } from "@prisma/client";
+import { getAuctionStatus } from "@/lib/utils";
+import { AuctionStatus, type Auction } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { cache } from "react";
 import z from "zod";
-
-type Status = "OPEN" | "CLOSED" | "FINISHED";
 
 export const getAllAuctions = cache(
     async ({
@@ -18,7 +17,7 @@ export const getAllAuctions = cache(
     } = {}) => {
         const filter: {
             item: { subCategoryId?: number; name?: string };
-            status?: Status;
+            status?: AuctionStatus;
         } = {
             item: {},
         };
@@ -31,12 +30,8 @@ export const getAllAuctions = cache(
             filter.item["name"] = name;
         }
 
-        if (
-            status &&
-            typeof status === "string" &&
-            ["OPEN", "CLOSED", "FINISHED"].includes(status)
-        ) {
-            filter["status"] = status as Status;
+        if (Object.values(AuctionStatus).some((s) => s === status)) {
+            filter["status"] = status as AuctionStatus;
         }
 
         const data = await prisma.auction.findMany({
@@ -102,6 +97,8 @@ export const bidAuction = async (
         select: {
             id: true,
             status: true,
+            startTime: true,
+            endTime: true,
             currentBid: true,
             updatedAt: true,
         },
@@ -119,7 +116,7 @@ export const bidAuction = async (
 
     const session = await getServerSession();
 
-    if (found?.status !== "OPEN") {
+    if (found.status !== AuctionStatus.OPEN) {
         return {
             data: null,
             success: false,
@@ -136,8 +133,7 @@ export const bidAuction = async (
             data: null,
             success: false,
             errors: {
-                message:
-                    "Current bid must be greater than previous bid plus or 5 % of previous bid.",
+                message: `Current bid must be greater than previous bid(${data.bid}) plus or 5 % of previous bid.`,
             },
         };
     }

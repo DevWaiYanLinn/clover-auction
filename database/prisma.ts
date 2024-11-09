@@ -1,7 +1,22 @@
+import { getAuctionStatus } from "@/lib/utils";
 import { PrismaClient } from "@prisma/client";
 
 const prismaClientSingleton = () => {
-    return new PrismaClient();
+    return new PrismaClient().$extends({
+        result: {
+            auction: {
+                status: {
+                    needs: { startTime: true, endTime: true },
+                    compute(auction) {
+                        return getAuctionStatus(
+                            auction.startTime,
+                            auction.endTime,
+                        );
+                    },
+                },
+            },
+        },
+    });
 };
 
 declare const globalThis: {

@@ -1,3 +1,4 @@
+"use server";
 import { getServerSession } from "@/lib/session";
 import { SessionProvider } from "@/provider/session-provider";
 

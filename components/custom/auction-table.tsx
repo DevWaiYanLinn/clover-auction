@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import {
     Table,
@@ -11,13 +10,17 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
 import { Lock, LockOpen } from "lucide-react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { getAllAuctions } from "@/app/auction/actions";
 import { AuctionTableType } from "@/types";
 import { useSearchParams } from "next/navigation";
+import { AuctionStatus } from "@prisma/client";
+import { useEffect, useState } from "react";
+import { getAuctionStatus } from "@/lib/utils";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
+    const { id, pick } = auctionStore();
     const { data } = useSWR<AuctionTableType[]>(
         ["auction-item", Object.fromEntries(searchParams.entries())],
         ([_, params]) => {
@@ -25,7 +28,33 @@ const AuctionTable = function () {
         },
     );
 
-    const { id, pick } = auctionStore();
+    useEffect(() => {
+        let timeInterval;
+        timeInterval = setInterval(() => {
+            mutate(
+                ["auction-item", Object.fromEntries(searchParams.entries())],
+                (data: AuctionTableType[] | undefined) => {
+                    if (!data) {
+                        return data;
+                    }
+
+                    return data.map((a) => {
+                        const status = getAuctionStatus(a.startTime, a.endTime);
+                        if (status !== a.status) {
+                            return {
+                                ...a,
+                                status,
+                            };
+                        }
+                        return a;
+                    });
+                },
+            );
+        }, 1000 * 60);
+        return () => {
+            clearInterval(timeInterval);
+        };
+    }, [searchParams]);
 
     return (
         <div className="flex-1 border rounded-md overflow-y-scroll">
@@ -60,7 +89,7 @@ const AuctionTable = function () {
                                     {a.item.name}
                                 </TableCell>
                                 <TableCell>
-                                    {a.status === "OPEN" ? (
+                                    {a.status === AuctionStatus.OPEN ? (
                                         <LockOpen className="text-green-400" />
                                     ) : (
                                         <Lock className="text-red-400" />

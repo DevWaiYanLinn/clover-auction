@@ -10,7 +10,6 @@ export function SessionProvider({
     authSession: Session | null;
     children: React.ReactNode;
 }) {
-    "use client";
     const [session, setSession] = useState<null | Session>(authSession);
     const updateSession = useCallback((data: Session) => {
         setSession(data);

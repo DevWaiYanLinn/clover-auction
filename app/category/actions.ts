@@ -1,3 +1,4 @@
+"use server";
 import prisma from "@/database/prisma";
 import { cache } from "react";
 

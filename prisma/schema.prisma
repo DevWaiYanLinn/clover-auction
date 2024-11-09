@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -14,35 +15,55 @@ datasource db {
 }
 
 model User {
-    id          Int           @id @default(autoincrement())
-    name        String        @db.VarChar(50)
-    email       String        @unique @db.VarChar(100)
-    password    String        @db.VarChar(255)
-    balance     Decimal       @db.Decimal(10, 2)
-    reputation  Int
-    createdAt   DateTime      @default(now()) @map("created_at")
-    updatedAt   DateTime      @updatedAt @map("updated_at")
-    UserOnRoles UserRole[]
-    Item        Item[]
-    Bid         Bid[]
-    Transaction Transaction[]
+    id              Int           @id @default(autoincrement())
+    name            String        @db.VarChar(50)
+    email           String        @unique @db.VarChar(100)
+    password        String        @db.VarChar(255)
+    balance         Decimal       @default(0) @db.Decimal(10, 2)
+    reputation      Int           @default(3)
+    phoneNumber     String?       @db.VarChar(50)
+    gender          Boolean?
+    address         String?       @db.VarChar(255)
+    emailVerifiedAt DateTime?     @map("email_verified_at")
+    createdAt       DateTime      @default(now()) @map("created_at")
+    updatedAt       DateTime      @updatedAt @map("updated_at")
+    deleted         Boolean       @default(false)
+    roles           UserRole[]
+    items           Item[]
+    bids            Bid[]
+    transcations    Transaction[]
+    Token           Token[]
 
     @@map("users")
 }
 
+model Token {
+    id           Int      @id @default(autoincrement())
+    refreshToken String   @unique @db.VarChar(255)
+    user         User     @relation(fields: [userId], references: [id])
+    expiresAt    DateTime @map("expires_at")
+    createdAt    DateTime @default(now()) @map("created_at")
+    updatedAt    DateTime @updatedAt @map("updated_at")
+    userId       Int      @map("user_id")
+
+    @@map("tokens")
+}
+
 model Role {
-    id                Int               @id @default(autoincrement())
-    name              String            @unique @db.VarChar(100)
-    RoleOnPermissions RolePermissions[]
-    UserOnRoles       UserRole[]
+    id          Int               @id @default(autoincrement())
+    name        String            @unique @db.VarChar(100)
+    permissions RolePermissions[]
+    roles       UserRole[]
 
     @@map("roles")
 }
 
 model Permission {
-    id                Int               @id @default(autoincrement())
-    name              String            @unique @db.VarChar(100)
-    RoleOnPermissions RolePermissions[]
+    id    Int               @id @default(autoincrement())
+    name  String            @unique @db.VarChar(100)
+    roles RolePermissions[]
+
+    @@map("permissions")
 }
 
 model RolePermissions {
@@ -66,27 +87,48 @@ model UserRole {
 }
 
 model Category {
-    id        Int      @id @default(autoincrement())
-    name      String   @db.VarChar(100)
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
-    Item      Item[]
+    id            Int           @id @default(autoincrement())
+    name          String        @db.VarChar(100)
+    createdAt     DateTime      @default(now()) @map("created_at")
+    updatedAt     DateTime      @updatedAt @map("updated_at")
+    deleted       Boolean       @default(false)
+    subcategories SubCategory[]
+    Item          Item[]
 
     @@map("categories")
 }
 
+model SubCategory {
+    id         Int      @id @default(autoincrement())
+    name       String   @db.VarChar(100)
+    category   Category @relation(fields: [categoryId], references: [id])
+    categoryId Int      @map("category_id")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+    deleted    Boolean  @default(false)
+    Item       Item[]
+
+    @@map("subcategories")
+}
+
 model Item {
-    id          Int       @id @default(autoincrement())
-    seller      User      @relation(fields: [userId], references: [id])
-    userId      Int       @map("user_id")
-    category    Category  @relation(fields: [categoryId], references: [id])
-    categoryId  Int       @map("category_id")
-    name        String    @db.VarChar(100)
-    description String    @db.Text()
-    image_url   String    @db.VarChar(255)
-    createdAt   DateTime  @default(now()) @map("created_at")
-    updatedAt   DateTime  @updatedAt @map("updated_at")
-    Auction     Auction[]
+    id            Int         @id @default(autoincrement())
+    seller        User        @relation(fields: [userId], references: [id])
+    userId        Int         @map("user_id")
+    category      Category    @relation(fields: [categoryId], references: [id])
+    categoryId    Int         @map("category_id")
+    subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
+    subCategoryId Int         @map("subcategory_id")
+    name          String      @db.VarChar(100)
+    description   String?     @db.MediumText()
+    imageUrl      String      @map("image_url") @db.VarChar(255)
+    condition     String      @default("good") @db.VarChar(50)
+    location      String?     @db.VarChar(100)
+    quantity      Int         @default(1)
+    createdAt     DateTime    @default(now()) @map("created_at")
+    updatedAt     DateTime    @updatedAt @map("updated_at")
+    deleted       Boolean     @default(false)
+    auction       Auction?    @relation()
 
     @@map("items")
 }
@@ -102,16 +144,19 @@ model Auction {
     item          Item          @relation(fields: [itemId], references: [id])
     itemId        Int           @map("item_id")
     startingPrice Decimal       @map("starting_price") @db.Decimal(10, 2)
-    currentBid    Decimal       @map("current_bid") @db.Decimal(10, 2)
+    currentBid    Decimal?      @default(0) @map("current_bid") @db.Decimal(10, 2)
     buyoutPrice   Decimal       @map("buyout_price") @db.Decimal(10, 2)
-    starTime      DateTime      @map("start_time") @db.Timestamp()
-    endTime       DateTime      @map("end_Time") @db.Timestamp()
+    startTime     DateTime      @map("start_time")
+    endTime       DateTime      @map("end_Time")
+    description   String?       @db.MediumText()
     status        AuctionStatus @default(CLOSED)
     createdAt     DateTime      @default(now()) @map("created_at")
     updatedAt     DateTime      @updatedAt @map("updated_at")
-    Bid           Bid[]
-    Transaction   Transaction[]
+    deleted       Boolean       @default(false)
+    bids          Bid[]
+    transcation   Transaction?  @relation()
 
+    @@unique([itemId])
     @@map("auctions")
 }
 
@@ -122,7 +167,8 @@ model Bid {
     bidder    User     @relation(fields: [userId], references: [id])
     userId    Int      @map("user_id")
     amount    Decimal  @db.Decimal(10, 2)
-    bitTime   DateTime @default(now()) @map("bit_time") @db.Timestamp()
+    bidTime   DateTime @default(now()) @map("bid_time")
+    deleted   Boolean  @default(false)
 
     @@map("bids")
 }
@@ -136,13 +182,16 @@ enum TransactionStatus {
 model Transaction {
     id               Int               @id @default(autoincrement())
     auction          Auction           @relation(fields: [auctionId], references: [id])
-    auctionId        Int               @map("auction_id")
+    auctionId        Int               @unique @map("auction_id")
     userId           Int               @map("user_id")
     buyer            User              @relation(fields: [userId], references: [id])
     finalPrice       Decimal           @map("final_price") @db.Decimal(10, 2)
     transactionStart DateTime?         @map("transcation_start")
     transcationEnd   DateTime?         @map("transcation_end")
     status           TransactionStatus @default(PENDING)
+    createdAt        DateTime          @default(now()) @map("created_at")
+    updatedAt        DateTime          @updatedAt @map("updated_at")
+    deleted          Boolean           @default(false)
 
     @@map("transcations")
 }

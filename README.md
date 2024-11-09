@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Overview: Building a Full-Stack Application with Next.js
 
-## Getting Started
+This project aims to build a full-stack application using Next.js and other useful libraries. It incorporates various tools commonly used in real-world applications, ensuring scalability and performance.
 
-First, run the development server:
+![image](https://github.com/user-attachments/assets/0a06d0d3-4712-404a-a9d4-af4d4e4777af)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+## Concept: Creating an Auction App Inspired by WoW
+
+The user interface of auction for my auction app draws inspiration from the game World of Warcraft (WoW), aiming for an engaging and immersive user experience.
+
+# Current Features Implemented
+
+As of now, the auction app includes several essential functionalities to enhance user experience:
+
+- **Authentication**: Users can securely register and log in to their accounts, ensuring a safe environment for all transactions.
+- **Item Creation**: Sellers can create and manage their listings with ease, allowing them to showcase their items effectively.
+- **Email Confirmation**: A confirmation email system is in place to verify user accounts, adding an extra layer of security and trust.
+- **Static Pages**: Key information about the auction process, terms of service, and user guidelines are accessible through static pages, providing users with necessary context and support.
+- **Auction Creation**: Sellers can create auction listings with detailed item descriptions, starting bids, and auction end times.
+- **Bidding**: Users can place bids on auctions, and the system updates the highest bid in real time.
+
+---
+
+# Upcoming Features to Add
+
+- **Real-Time Bidding Updates**
+- **Payment Processing for Winning Bids**
+
+## Technologies Used in the Auction App
+
+-   **Next.js**: Framework for building the full-stack application.
+-   **Crypto**: For session management and secure password hashing.
+-   **Bcrypt**: For hashing passwords securely.
+-   **Edge Template Engine**: Similar to Laravel's Blade, used for mail template rendering.
+-   **Nodemailer**: For sending emails effectively.
+-   **BullMQ**: For job management and background processing, enabling efficient task handling.
+-   **Tailwind CSS**: For styling the user interface with a modern design.
+-   **ShadCN**: Provides enhanced UI components built on top of Tailwind CSS for a more streamlined and customizable design experience..
+-   **Prisma**: For database management and ORM
+-   **Redis**: For caching and session management, improving performance and scalability.
+-   **Zod**: A powerful library for data validation, ensuring correctness and reliability.
+-   **Prisma**:Simplifies database migration, making it easy to use and accelerating development.
+-   **Cloudinary**:: A cloud-based service for storing and managing images, providing easy integration for image uploads and optimization.  
+
+## Environment Variables
+
+To ensure the application runs smoothly, you need to set up the following environment variables in your `.env` file:
+
+```plaintext
+# Database prisma
+DATABASE_URL=
+
+# Session
+JWE_PUBLIC_KEY=
+JWE_PRIVATE_KEY=
+SESSION_COOKIE_NAME=
+
+# Mail
+MAIL_SERVICE=
+MAIL_HOST=
+MAIL_USER=
+MAIL_PASSWORD=
+
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+CLOUDINARY_CLOUD_NAME=
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Conclusion
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project was an important milestone in my journey as a full-stack developer, built before my move to Japan. It allowed me to refine my skills in both backend and frontend technologies, while also deepening my understanding of web development practices. 
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## Acknowledgments
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+I would like to express my heartfelt gratitude to all my teachers for their invaluable support and guidance throughout this journey. Their knowledge and encouragement have been instrumental in helping me build this project.

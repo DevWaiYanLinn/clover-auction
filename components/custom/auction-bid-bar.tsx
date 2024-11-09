@@ -7,7 +7,7 @@ import { bidAuction } from "@/app/auction/actions";
 import { useActionState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSWRConfig } from "swr";
-import { AuctionTableType } from "@/types";
+import { AuctionTable } from "@/types";
 import { Bounce, toast } from "react-toastify";
 const initialState = {
     data: null,
@@ -41,7 +41,7 @@ export default function AuctionBidBar() {
                         Object.fromEntries(searchParams.entries()),
                     ).toString(),
                 ],
-                (data: AuctionTableType[] | undefined) => {
+                (data: AuctionTable[] | undefined) => {
                     const auctions = data?.map((a) => {
                         if (a.id === state.data.id) {
                             return {

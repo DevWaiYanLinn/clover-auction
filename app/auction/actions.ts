@@ -76,7 +76,7 @@ export const bidAuction = async (
 
     const currentBid = Number(found.currentBid);
 
-    if (data.bid < (5 / 100) * currentBid) {
+    if (data.bid < currentBid + (5 / 100) * currentBid) {
         return {
             data: null,
             success: false,

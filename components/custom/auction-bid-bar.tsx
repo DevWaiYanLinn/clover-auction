@@ -29,7 +29,7 @@ export default function AuctionBidBar() {
                 hideProgressBar: true,
                 transition: Bounce,
                 theme: "colored",
-                autoClose: 1500,
+                autoClose: 3000,
             });
             return;
         }

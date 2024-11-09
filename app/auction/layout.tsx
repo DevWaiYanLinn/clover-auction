@@ -14,9 +14,8 @@ export default async function Layout({
     sidebar: React.ReactNode;
 }>) {
     const categories = await getAllCategories();
-    const auctions = await getAllAuctions();
     return (
-        <PreRender categories={categories} auctions={auctions}>
+        <PreRender categories={categories}>
             <div className="p-5 bg-slate-50 h-screen flex flex-col">
                 <div className="rounded-md bg-white flex-1 flex flex-col w-full h-full overflow-hidden border shadow-md p-5">
                     <AuctionMenu />

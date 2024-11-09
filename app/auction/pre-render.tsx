@@ -1,16 +1,15 @@
 "use client";
 
-import { AuctionTableType, CategoryWithSubCategories } from "@/types";
+import { CategoryWithSubCategories } from "@/types";
 import React from "react";
 import { SWRConfig } from "swr";
 
 type props = {
     children: React.ReactNode;
     categories: CategoryWithSubCategories[];
-    auctions: AuctionTableType[];
 };
 
-export default function PreRender({ children, categories, auctions }: props) {
+export default function PreRender({ children, categories }: props) {
     return (
         <SWRConfig
             value={{

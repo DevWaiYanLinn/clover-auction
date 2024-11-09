@@ -1,34 +1,27 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { getAllAuctions } from "@/app/auction/actions";
-import { getAllCategories } from "@/app/category/actions";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { fetchAPI } from "@/lib/fetch";
 import { CategoryWithSubCategories } from "@/types";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import useSWR, { useSWRConfig } from "swr";
+import useSWR from "swr";
 
 const Category = function () {
     const router = useRouter();
 
     const onPick = useCallback((id: number) => {
         router.push(`/auction?subcategory=${id}`, {});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const { data } = useSWR<CategoryWithSubCategories[]>(
-        "auction-category",
-        () => getAllCategories(),
-        {
-            revalidateOnMount: true,
-            revalidateOnReconnect: false,
-            revalidateOnFocus: false,
-            revalidateIfStale: true,
-        },
+        "/category/actions",
+        (url: string) => fetchAPI(url),
     );
 
     return (

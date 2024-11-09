@@ -1,8 +1,7 @@
 import AuctionBidBar from "@/components/custom/auction-bid-bar";
 import AuctionMenu from "@/components/custom/auction-menu";
 import PreRender from "./pre-render";
-import { getAllCategories } from "../category/actions";
-import { getAllAuctions } from "./actions";
+import { getAllCategories } from "@/services/category-service";
 
 export default async function Layout({
     children,

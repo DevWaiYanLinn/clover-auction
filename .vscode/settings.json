@@ -4,6 +4,7 @@
         "cloudinary",
         "clsx",
         "lucide",
+        "toastify",
         "webp"
     ]
 }

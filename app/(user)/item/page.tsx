@@ -11,10 +11,9 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Check, CirclePlus, Coins, RefreshCcw, X } from "lucide-react";
-import { getAllItem } from "./actions";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getAllItem } from "@/services/item-service";
 
 export default async function Page({
     searchParams,

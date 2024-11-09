@@ -1,61 +1,9 @@
 "use server";
 import prisma from "@/database/prisma";
 import { getServerSession } from "@/lib/session";
-import { getAuctionStatus } from "@/lib/utils";
 import { AuctionStatus, type Auction } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
-import { cache } from "react";
 import z from "zod";
-
-export const getAllAuctions = cache(
-    async ({
-        subcategory,
-        name,
-        status,
-    }: {
-        [key: string]: string | string[] | undefined;
-    } = {}) => {
-        const filter: {
-            item: { subCategoryId?: number; name?: string };
-            status?: AuctionStatus;
-        } = {
-            item: {},
-        };
-
-        if (subcategory && typeof subcategory === "string") {
-            filter.item["subCategoryId"] = Number(subcategory);
-        }
-
-        if (name && typeof name === "string") {
-            filter.item["name"] = name;
-        }
-
-        if (Object.values(AuctionStatus).some((s) => s === status)) {
-            filter["status"] = status as AuctionStatus;
-        }
-
-        const data = await prisma.auction.findMany({
-            include: {
-                item: {
-                    include: {
-                        seller: {
-                            select: {
-                                name: true,
-                                id: true,
-                            },
-                        },
-                    },
-                },
-            },
-            where: filter,
-            orderBy: {
-                id: "desc",
-            },
-        });
-
-        return JSON.parse(JSON.stringify(data));
-    },
-);
 
 const bidSchema = z.object({
     bid: z

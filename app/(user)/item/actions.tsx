@@ -34,44 +34,6 @@ const schema = z.object({
         ),
 });
 
-export const getAllItem = cache(
-    async (filters: { [key: string]: string | string[] | undefined }) => {
-        const where: { name?: string; subCategoryId?: number } = {};
-
-        const session = await getServerSession();
-
-        if (filters["name"]) {
-            where["name"] = filters["name"] as string;
-        }
-
-        if (filters["subCategoryId"]) {
-            where["subCategoryId"] = Number(filters["subCategoryId"]);
-        }
-
-        const items = await prisma.item.findMany({
-            where: { userId: session!.user.id, ...where },
-            orderBy: {
-                id: "desc",
-            },
-            include: {
-                auction: true,
-                category: {
-                    select: {
-                        name: true,
-                    },
-                },
-                subCategory: {
-                    select: {
-                        name: true,
-                    },
-                },
-            },
-        });
-
-        return items;
-    },
-);
-
 export const createItem = async (
     prevState: {
         errors?: {

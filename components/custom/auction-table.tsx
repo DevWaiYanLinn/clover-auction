@@ -11,20 +11,28 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
 import { Lock, LockOpen } from "lucide-react";
 import useSWR, { mutate } from "swr";
-import { getAllAuctions } from "@/app/auction/actions";
 import { AuctionTableType } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getAuctionStatus } from "@/lib/utils";
+import { fetchAPI } from "@/lib/fetch";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
     const { id, pick } = auctionStore();
     const { data } = useSWR<AuctionTableType[]>(
-        ["auction-item", Object.fromEntries(searchParams.entries())],
-        ([_, params]) => {
-            return getAllAuctions(params as { [key: string]: string });
+        [
+            "/auction/actions",
+            new URLSearchParams(
+                Object.fromEntries(searchParams.entries()),
+            ).toString(),
+        ],
+        ([url, paramsString]) => {
+            return fetchAPI(`${url}?${paramsString}`);
+        },
+        {
+            refreshInterval: 1000 * 60,
         },
     );
 
@@ -32,7 +40,13 @@ const AuctionTable = function () {
         let timeInterval;
         timeInterval = setInterval(() => {
             mutate(
-                ["auction-item", Object.fromEntries(searchParams.entries())],
+                [
+                    "/auction/actions",
+                    ,
+                    new URLSearchParams(
+                        Object.fromEntries(searchParams.entries()),
+                    ).toString(),
+                ],
                 (data: AuctionTableType[] | undefined) => {
                     if (!data) {
                         return data;
@@ -49,6 +63,7 @@ const AuctionTable = function () {
                         return a;
                     });
                 },
+                { revalidate: false },
             );
         }, 1000 * 60);
         return () => {

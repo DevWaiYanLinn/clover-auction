@@ -35,7 +35,12 @@ export default function AuctionBidBar() {
         }
         if (state.success) {
             mutate(
-                ["auction-item", Object.fromEntries(searchParams.entries())],
+                [
+                    "/auction/actions",
+                    new URLSearchParams(
+                        Object.fromEntries(searchParams.entries()),
+                    ).toString(),
+                ],
                 (data: AuctionTableType[] | undefined) => {
                     const auctions = data?.map((a) => {
                         if (a.id === state.data.id) {

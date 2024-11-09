@@ -4,7 +4,7 @@ This project aims to build a full-stack application using Next.js and other usef
 
 ## Concept: Creating an Auction App Inspired by WoW
 
-The user interface(wire frame) for my auction app draws inspiration from the game World of Warcraft (WoW), aiming for an engaging and immersive user experience.
+The user interface of auction for my auction app draws inspiration from the game World of Warcraft (WoW), aiming for an engaging and immersive user experience.
 
 # Current Features Implemented
 
@@ -22,32 +22,7 @@ As of now, the auction app includes several essential functionalities to enhance
 # Upcoming Features to Add
 
 ## 1. **Real-Time Bidding Updates**
-- **Real-time Updates**: When a bid is placed, all participants will see the updated bid amount and bidder information instantly.
-- **WebSockets** or **Server-Sent Events (SSE)** will be used to broadcast bid updates to all connected clients in real-time, ensuring all users are seeing the same auction status without refreshing the page.
-  
-### Key Points:
-- Show the current bid, last bidder, and any changes in real-time.
-- Display notifications when a user is **outbid**.
-- Allow real-time updates for **multiple auctions** being viewed by the user.
-
-## 2. **Auction Countdown Timer (Remain Time)**
-- Add a **countdown timer** to display how much time is left until the auction ends.
-- When the timer reaches 0, the auction should automatically close, and the **final bid** will be determined as the winning bid.
-  
-### Key Points:
-- **Live timer** updates in real-time so users know exactly how much time remains.
-- Extend the auction time if a new bid is placed within the last 2 minutes (if desired).
-- When time expires, automatically **close the auction** and notify the winner.
-
-## 3. **Payment Processing for Winning Bids**
-- Once an auction ends and the winning bid is determined, the **winning bidder** will be prompted to make the payment.
-- Payment will be processed through **Stripe**, **PayPal**, or another integrated payment gateway.
-  
-### Key Points:
-- After the auction closes, the system will display a **payment page** for the winning bidder.
-- **Payment confirmation**: Once the payment is processed, the seller will receive a notification to ship the item.
-- Allow the winning bidder to **view their payment history** and track shipping details.
-
+## 2. **Payment Processing for Winning Bids**
 
 ## Technologies Used in the Auction App
 
@@ -88,6 +63,11 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 CLOUDINARY_CLOUD_NAME=
 ```
+
+## Conclusion
+
+This project was an important milestone in my journey as a full-stack developer, built before my move to Japan. It allowed me to refine my skills in both backend and frontend technologies, while also deepening my understanding of web development practices. 
+
 
 ## Acknowledgments
 

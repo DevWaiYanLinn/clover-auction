@@ -27,7 +27,7 @@ export const getAllAuctions = async ({
         filter["status"] = status as AuctionStatus;
     }
 
-    return await prisma.auction.findMany({
+    return prisma.auction.findMany({
         include: {
             item: {
                 include: {

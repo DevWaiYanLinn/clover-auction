@@ -173,7 +173,7 @@ export const itemAuction = async (
         const session = await getServerSession();
 
         if (!session) {
-            return redirect("/login");
+            throw new Error("Session Expired!");
         }
 
         const item = await prisma.item.findFirstOrThrow({

@@ -6,7 +6,6 @@ import { getServerSession } from "@/lib/session";
 import ImageService from "@/services/image-service";
 import { Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
-import { cache } from "react";
 import { z } from "zod";
 
 const schema = z.object({
@@ -122,15 +121,13 @@ const itemAuctionSchema = z.object({
         .pipe(z.coerce.date())
         .transform((date) => new Date(date)),
     startingPrice: z
-        .number({ required_error: "Starting Price is required." })
-        .int()
-        .gt(0)
-        .transform((price) => new Prisma.Decimal(price)),
+        .string({ required_error: "Invalid Input" })
+        .regex(/^\d+(\.\d+)?$/, "Invalid Input")
+        .transform(Number),
     buyoutPrice: z
-        .number({ required_error: "Buyout Price is required." })
-        .int()
-        .gt(0)
-        .transform((price) => new Prisma.Decimal(price)),
+        .string({ required_error: "Invalid Input" })
+        .regex(/^\d+(\.\d+)?$/, "Invalid Input")
+        .transform(Number),
     description: z.string().nullable(),
 });
 
@@ -150,8 +147,8 @@ export const itemAuction = async (
     },
     formData: FormData,
 ) => {
-    const startingPrice = Number(formData.get("startingPrice"));
-    const buyoutPrice = Number(formData.get("buyoutPrice"));
+    const startingPrice = formData.get("startingPrice");
+    const buyoutPrice = formData.get("buyoutPrice");
     const startTime = formData.get("startTime");
     const endTime = formData.get("endTime");
     const description = formData.get("description");
@@ -172,25 +169,31 @@ export const itemAuction = async (
 
     const data = validatedFields.data;
 
-    const session = await getServerSession();
-
     try {
-        const item = await prisma.item.findFirst({
+        const session = await getServerSession();
+
+        if (!session) {
+            return redirect("/login");
+        }
+
+        const item = await prisma.item.findFirstOrThrow({
             where: {
                 id,
-                userId: session!.user.id,
+                userId: session.user.id,
             },
         });
-        if (item) {
-            await prisma.auction.create({
-                data: { itemId: item.id, ...data },
-            });
-        }
-    } catch (error) {
+
+        await prisma.auction.create({
+            data: { itemId: item.id, ...data },
+        });
+    } catch (error: unknown) {
         return {
             errors: {
-                ...prevState.errors,
-                message: ["Auction Creating Failed"],
+                success: false,
+                message:
+                    error instanceof Error
+                        ? [error.message]
+                        : ["Auction Creating Failed"],
             },
         };
     }

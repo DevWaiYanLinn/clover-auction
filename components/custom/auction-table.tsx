@@ -103,12 +103,10 @@ const AuctionTable = function () {
                                 <TableCell className="font-medium">
                                     {a.item.name}
                                 </TableCell>
-                                <TableCell>
-                                    {a.status === AuctionStatus.OPEN ? (
-                                        <LockOpen className="text-green-400" />
-                                    ) : (
-                                        <Lock className="text-red-400" />
-                                    )}
+                                <TableCell
+                                    className={`${a.status === AuctionStatus.OPEN ? "text-green-400" : "text-red-500"} font-medium capitalize`}
+                                >
+                                    {a.status.toLowerCase()}
                                 </TableCell>
                                 <TableCell>
                                     <Avatar>

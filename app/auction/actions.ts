@@ -17,7 +17,7 @@ export const bidAuction = async (
     prev: {
         data: Auction | null;
         errors: {
-            message?: string;
+            message: string;
         };
         success: boolean;
     },
@@ -27,67 +27,56 @@ export const bidAuction = async (
 
     const validatedFields = bidSchema.safeParse({ bid });
 
-    if (!validatedFields.success) {
-        return {
-            data: null,
-            success: false,
-            errors: {
-                message: validatedFields.error.flatten().fieldErrors.bid![0],
+    try {
+        if (!validatedFields.success) {
+            throw new Error(
+                validatedFields.error.flatten().fieldErrors.bid![0],
+            );
+        }
+
+        const data = validatedFields.data;
+
+        const found = await prisma.auction.findUnique({
+            where: {
+                itemId,
             },
-        };
-    }
-    const data = validatedFields.data;
-
-    const found = await prisma.auction.findUnique({
-        where: {
-            itemId,
-        },
-        select: {
-            id: true,
-            status: true,
-            startTime: true,
-            endTime: true,
-            currentBid: true,
-            updatedAt: true,
-        },
-    });
-
-    if (!found) {
-        return {
-            data: null,
-            success: false,
-            errors: {
-                message: "Auction Not found",
+            select: {
+                id: true,
+                status: true,
+                startTime: true,
+                endTime: true,
+                currentBid: true,
+                updatedAt: true,
             },
-        };
-    }
+        });
 
-    const session = await getServerSession();
+        if (!found) {
+            throw new Error("Auction Not found");
+        }
 
-    if (found.status !== AuctionStatus.OPEN) {
-        return {
-            data: null,
-            success: false,
-            errors: {
-                message: "Auction is not opening.",
-            },
-        };
-    }
+        if (found.status !== AuctionStatus.OPEN) {
+            throw new Error("Auction is not opening.");
+        }
 
-    const currentBid = Number(found.currentBid);
+        const currentBid = Number(found.currentBid);
 
-    if (data.bid < currentBid + (5 / 100) * currentBid) {
-        return {
-            data: null,
-            success: false,
-            errors: {
-                message: `Current bid must be greater than previous bid(${data.bid}) plus or 5 % of previous bid.`,
-            },
-        };
-    }
+        const session = await getServerSession();
 
-    const updated = await prisma.$transaction(async () => {
-        try {
+        if (!session) {
+            throw new Error(`Session Expired`);
+        }
+
+        if (data.bid < currentBid + (5 / 100) * currentBid) {
+            return {
+                data: null,
+                success: false,
+                errors: {
+                    message: `Current bid must be greater than previous bid(${data.bid}) plus or 5 % of previous bid.`,
+                },
+            };
+        }
+
+        const result = await prisma.$transaction(async () => {
             const auction = await prisma.auction.update({
                 where: {
                     id: found.id,
@@ -102,10 +91,6 @@ export const bidAuction = async (
                 throw new Error(`Auction Bid failed`);
             }
 
-            if (!session) {
-                throw new Error(`Session Expired`);
-            }
-
             await prisma.bid.create({
                 data: {
                     userId: session.user.id,
@@ -117,20 +102,20 @@ export const bidAuction = async (
             return {
                 data: JSON.parse(JSON.stringify(auction)),
                 success: true,
-                errors: {},
-            };
-        } catch (error: unknown) {
-            return {
-                data: null,
-                success: false,
                 errors: {
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : "unknown Error",
+                    message: "",
                 },
             };
-        }
-    });
-    return updated;
+        });
+        return result;
+    } catch (error: unknown) {
+        return {
+            data: null,
+            success: false,
+            errors: {
+                message:
+                    error instanceof Error ? error.message : "unknown Error",
+            },
+        };
+    }
 };

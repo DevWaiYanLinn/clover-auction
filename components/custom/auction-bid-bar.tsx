@@ -7,12 +7,14 @@ import { bidAuction } from "@/app/auction/actions";
 import { useActionState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSWRConfig } from "swr";
-import { AuctionTableData } from "@/types";
 import { Bounce, toast } from "react-toastify";
+import { AuctionTableData } from "@/types";
 const initialState = {
     data: null,
     success: false,
-    errors: { message: "" },
+    errors: {
+        message: "",
+    },
 };
 export default function AuctionBidBar() {
     const { id } = auctionStore();
@@ -41,7 +43,7 @@ export default function AuctionBidBar() {
                         Object.fromEntries(searchParams.entries()),
                     ).toString(),
                 ],
-                (data: AuctionTable[] | undefined) => {
+                (data: AuctionTableData[] | undefined) => {
                     const auctions = data?.map((a) => {
                         if (a.id === state.data.id) {
                             return {
@@ -55,8 +57,15 @@ export default function AuctionBidBar() {
                 },
                 { revalidate: false },
             );
-        }
 
+            toast.success("Your Bid Success", {
+                position: "top-center",
+                hideProgressBar: true,
+                transition: Bounce,
+                theme: "colored",
+                autoClose: 3000,
+            });
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [state]);
 

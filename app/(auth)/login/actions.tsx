@@ -38,7 +38,7 @@ export async function singIn(
 
     const data = validatedFields.data;
 
-    const user = await prisma.user.findFirst({ where: { email: data.email } });
+    const user = await prisma.user.findUnique({ where: { email: data.email } });
 
     if (!user?.id || !(await compare(data.password, user.password))) {
         return { errors: { message: ["The name or email wrong!"] } };

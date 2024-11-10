@@ -24,8 +24,8 @@ As of now, the auction app includes several essential functionalities to enhance
 
 # Upcoming Features to Add
 
-## 1. **Real-Time Bidding Updates**
-## 2. **Payment Processing for Winning Bids**
+- **Real-Time Bidding Updates**
+- **Payment Processing for Winning Bids**
 
 ## Technologies Used in the Auction App
 

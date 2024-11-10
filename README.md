@@ -9,7 +9,7 @@ This project aims to build a full-stack application using Next.js and other usef
 
 The user interface of auction for my auction app draws inspiration from the game World of Warcraft (WoW), aiming for an engaging and immersive user experience.
 
-# Current Features Implemented
+## Current Features Implemented
 
 As of now, the auction app includes several essential functionalities to enhance user experience:
 
@@ -22,7 +22,7 @@ As of now, the auction app includes several essential functionalities to enhance
 
 ---
 
-# Upcoming Features to Add
+## Upcoming Features to Add
 
 - **Real-Time Bidding Updates**
 - **Payment Processing for Winning Bids**

@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActionState } from "react";
-import { singIn } from "@/app/(auth)/login/actions";
+import { singIn } from "@/app/(public)/login/actions";
 
 const initialState = {
     errors: { password: [""], email: [""], message: [""] },

@@ -28,7 +28,7 @@ export default async function Page({ params }: { params: ParamsPromise }) {
     WHERE b.auction_id = ?
     ORDER BY b.bid_time;
 `;
-    query.values = [3];
+    query.values = [id];
 
     const bids = await prisma.$queryRaw<BidRecord[]>(query);
 

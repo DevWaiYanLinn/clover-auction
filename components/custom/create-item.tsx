@@ -13,7 +13,7 @@ import { Button } from "../ui/button";
 import { CategoryOnSubCategories } from "@/types";
 import { useActionState, useCallback, useEffect, useState } from "react";
 import type { SubCategory } from "@prisma/client";
-import { createItem } from "@/app/(user)/item/actions";
+import { createItem } from "@/app/(protected)/(user)/item/actions";
 import { Loader2 } from "lucide-react";
 
 const initialState = {

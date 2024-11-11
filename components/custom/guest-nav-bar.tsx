@@ -2,11 +2,8 @@
 import { Clover, House, KeyRound } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { useContext } from "react";
-import { SessionContext } from "@/provider/session-context";
 
 export default function GuestNavBar() {
-    const { session } = useContext(SessionContext);
     return (
         <div className="flex  shadow-sm py-4 px-5 rounded-md border-b justify-between items-center">
             <div className="container flex justify-between items-center">
@@ -17,7 +14,7 @@ export default function GuestNavBar() {
                     </h1>
                 </Link>
                 <div>
-                    {session ? (
+                    {false ? (
                         <Link href={"/profile"} prefetch={true}>
                             <Button size={"lg"}>
                                 <House />

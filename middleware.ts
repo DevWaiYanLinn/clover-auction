@@ -9,6 +9,7 @@ export default async function middleware(req: NextRequest, res: NextResponse) {
     const isPublicRoute = publicRoutes.includes(path);
 
     const session = await getSession();
+
     const device = req.headers.get("User-Agent");
     const authenticated = session && session.device === device;
 

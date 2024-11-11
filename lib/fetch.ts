@@ -5,6 +5,7 @@ export const fetchAPI = async (url: string, options?: RequestInit) => {
         if (!res.ok) {
             throw { ...response, status: res.status };
         }
+
         return response;
     } catch (error) {
         throw error;

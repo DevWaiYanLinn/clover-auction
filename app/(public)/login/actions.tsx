@@ -3,7 +3,7 @@ import { compare } from "@/lib/bcrypt";
 import prisma from "@/database/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { encrypt } from "@/lib/session";
 import config from "@/config";
 
@@ -44,14 +44,18 @@ export async function singIn(
         return { errors: { message: ["The name or email wrong!"] } };
     }
     const cookieStore = await cookies();
+    const heads = await headers();
 
-    const encryptedString = await encrypt({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        balance: user.balance,
-        reputation: user.reputation,
-    });
+    const encryptedString = await encrypt(
+        {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            balance: user.balance,
+            reputation: user.reputation,
+        },
+        heads.get("User-Agent")!,
+    );
 
     cookieStore.set(config.session.cookieName, encryptedString, {
         path: "/",

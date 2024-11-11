@@ -1,4 +1,10 @@
-import type { Auction, Category, Item, SubCategory } from "@prisma/client";
+import type {
+    Auction,
+    Category,
+    Item,
+    SubCategory,
+    User as PrismaUser,
+} from "@prisma/client";
 
 export type User = {
     id: number;
@@ -51,3 +57,8 @@ export type BidRecord = {
     userId: number;
     username: string;
 };
+
+export type AuthUser = Omit<
+    PrismaUser,
+    "password" | "createdAt" | "updatedAt" | "balance"
+>;

@@ -50,6 +50,5 @@ export const getSession = cache(async (): Promise<Session | null> => {
     if (session) {
         return session;
     }
-
     return null;
 });

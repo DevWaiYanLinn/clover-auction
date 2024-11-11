@@ -52,7 +52,8 @@ export async function POST(
             throw new HttpError({ status: 401 });
         }
 
-        const currentBid = Number(found.currentBid);
+        const currentBid =
+            Number(found.currentBid) || Number(found.startingPrice);
 
         if (data.bidAmount < currentBid + (5 / 100) * currentBid) {
             throw new HttpError({

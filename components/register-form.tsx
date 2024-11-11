@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUp } from "@/app/(auth)/register/actions";
+import { signUp } from "@/app/(public)/register/actions";
 import { ChangeEvent, useActionState, useCallback, useState } from "react";
 
 const initialState = {

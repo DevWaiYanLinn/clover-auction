@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import AuthProvider from "@/provider/auth-session-provider";
 import { Roboto_Mono } from "next/font/google";
 import React from "react";
 import { Bounce, ToastContainer } from "react-toastify";
@@ -30,10 +29,8 @@ export default function RootLayout({
                     theme="colored"
                     autoClose={3000}
                 />
-                <AuthProvider>
-                    <div id="modal-root"></div>
-                    {children}
-                </AuthProvider>
+                <div id="modal-root"></div>
+                {children}
             </body>
         </html>
     );

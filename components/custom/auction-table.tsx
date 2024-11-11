@@ -10,19 +10,27 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
 import useSWR, { mutate } from "swr";
-import { AuctionTableData } from "@/types";
+import { AuctionTableData, AuthUser } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
 import { useEffect } from "react";
 import { getAuctionStatus } from "@/lib/utils";
 import { fetchAPI } from "@/lib/fetch";
 import { Button } from "../ui/button";
-import { List } from "lucide-react";
+import { List, UsersRound } from "lucide-react";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
     const { auction, pick } = auctionStore();
+
+    const { data: user } = useSWR<AuthUser>(
+        "/api/auth/users",
+        (url: string) => fetchAPI(url),
+        { revalidateOnMount: false },
+    );
+
     const { data } = useSWR<AuctionTableData[]>(
         [
             "/api/auctions",
@@ -30,13 +38,22 @@ const AuctionTable = function () {
                 Object.fromEntries(searchParams.entries()),
             ).toString(),
         ],
-        ([url, paramsString]) => {
-            return fetchAPI(`${url}?${paramsString}`);
-        },
+        ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
         {
             refreshInterval: 1000 * 60 * 3,
         },
     );
+
+    const onPick = (auction: AuctionTableData) => {
+        if (
+            auction.item.seller.id === user?.id ||
+            auction.status !== AuctionStatus.OPEN
+        ) {
+            return;
+        }
+
+        pick(auction);
+    };
 
     useEffect(() => {
         let timeInterval;
@@ -91,12 +108,7 @@ const AuctionTable = function () {
                     {data?.map((a) => {
                         return (
                             <TableRow
-                                onClick={() => {
-                                    if (a.status === "OPEN") {
-                                        pick(a);
-                                    }
-                                }}
-                                data-id={a.id}
+                                onClick={() => onPick(a)}
                                 key={a.id}
                                 className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : null} ${a.status === "OPEN" ? "cursor-pointer" : "cursor-default"}`}
                             >
@@ -104,7 +116,7 @@ const AuctionTable = function () {
                                     {a.item.name}
                                 </TableCell>
                                 <TableCell
-                                    className={`${a.status === AuctionStatus.OPEN ? "text-green-400" : "text-red-500"} font-medium capitalize`}
+                                    className={`${a.status === AuctionStatus.OPEN ? "text-green-400" : "text-red-500"} font-bold capitalize`}
                                 >
                                     {a.status.toLowerCase()}
                                 </TableCell>
@@ -114,7 +126,15 @@ const AuctionTable = function () {
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                 </TableCell>
-                                <TableCell>{a.item.seller.name}</TableCell>
+                                <TableCell
+                                    className={`${
+                                        a.item.seller.id === user?.id
+                                            ? "text-green-500 font-bold"
+                                            : null
+                                    }`}
+                                >
+                                    {a.item.seller.name}
+                                </TableCell>
 
                                 <TableCell>
                                     ${Number(a.startingPrice).toFixed(2)}
@@ -134,8 +154,7 @@ const AuctionTable = function () {
                                         prefetch={false}
                                     >
                                         <Button>
-                                            <List />
-                                            View
+                                            <UsersRound />
                                         </Button>
                                     </Link>
                                 </TableCell>

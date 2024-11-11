@@ -16,6 +16,9 @@ import { AuctionStatus } from "@prisma/client";
 import { useEffect } from "react";
 import { getAuctionStatus } from "@/lib/utils";
 import { fetchAPI } from "@/lib/fetch";
+import { Button } from "../ui/button";
+import { List } from "lucide-react";
+import Link from "next/link";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
@@ -80,9 +83,8 @@ const AuctionTable = function () {
                         <TableHead>Seller</TableHead>
                         <TableHead>Starting Price</TableHead>
                         <TableHead>Buyout Price</TableHead>
-                        <TableHead className="text-right">
-                            Current Bid
-                        </TableHead>
+                        <TableHead>Current Bid</TableHead>
+                        <TableHead className="text-right">Bidder</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -96,7 +98,7 @@ const AuctionTable = function () {
                                 }}
                                 data-id={a.id}
                                 key={a.id}
-                                className={`${auction?.id === a.id ? "!bg-primary/90 !text-white" : null} ${a.status === "OPEN" ? "cursor-pointer" : "cursor-default"}`}
+                                className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : null} ${a.status === "OPEN" ? "cursor-pointer" : "cursor-default"}`}
                             >
                                 <TableCell className="font-medium">
                                     {a.item.name}
@@ -120,8 +122,22 @@ const AuctionTable = function () {
                                 <TableCell>
                                     ${Number(a.buyoutPrice).toFixed(2)}
                                 </TableCell>
-                                <TableCell className="text-right">
+                                <TableCell>
                                     ${Number(a.currentBid).toFixed(2)}
+                                </TableCell>
+                                <TableCell className="text-right text-black bg-white">
+                                    <Link
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                        }}
+                                        href={`/auction/${a.id}/bid`}
+                                        prefetch={false}
+                                    >
+                                        <Button>
+                                            <List />
+                                            View
+                                        </Button>
+                                    </Link>
                                 </TableCell>
                             </TableRow>
                         );

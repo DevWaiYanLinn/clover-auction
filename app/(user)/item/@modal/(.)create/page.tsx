@@ -1,6 +1,6 @@
-import { getAllCategories } from "@/app/category/actions";
 import CreateItem from "@/components/custom/create-item";
 import Modal from "@/components/custom/modal";
+import { getAllCategories } from "@/services/category-service";
 
 export default async function ItemModal() {
     const categories = await getAllCategories();

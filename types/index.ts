@@ -36,3 +36,15 @@ export type AuctionTableData = Auction & {
 export interface CategoryWithSubCategories extends Category {
     subcategories: SubCategory[];
 }
+
+export type ParamsPromise = Promise<{ [key: string]: string }>;
+
+export type BidRecord = {
+    id:number
+    bidTime: Date;
+    amount: number;
+    previousAmount: number;
+    difference: number;
+    userId: number;
+    username: string;
+};

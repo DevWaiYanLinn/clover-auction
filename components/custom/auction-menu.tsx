@@ -14,28 +14,27 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { AuctionStatus } from "@prisma/client";
 
 const AuctionMenu = () => {
-    const params = useSearchParams();
+    const searchParams = useSearchParams();
     const router = useRouter();
     const [search, setSearch] = useState(() => ({
-        name: params.get("name") ?? "",
-        status: params.get("status") ?? "",
+        name: searchParams.get("name") ?? "",
+        status: searchParams.get("status") ?? "",
     }));
-    const onClickSearch = () => {
-        const paramObj = Object.fromEntries(params.entries());
+    const onSearch = () => {
+        const paramsObj = Object.fromEntries(searchParams.entries());
+        paramsObj.name = search.name;
+        paramsObj.status = search.status;
 
-        if (search.name) {
-            paramObj["name"] = search.name;
+        for (let key in paramsObj) {
+            if (!paramsObj[key] || paramsObj[key] === "0") {
+                delete paramsObj[key];
+            }
         }
 
-        if (search.status) {
-            paramObj["status"] = search.status;
-        }
-
-        router.push(
-            "/auction/item?" + new URLSearchParams(paramObj).toString(),
-        );
+        router.push("/auction/?" + new URLSearchParams(paramsObj).toString());
     };
     return (
         <div className="flex mt-3 items-end">
@@ -45,6 +44,7 @@ const AuctionMenu = () => {
                     <Input
                         type="name"
                         id="email"
+                        value={search.name}
                         placeholder="Name"
                         onChange={(e) =>
                             setSearch({
@@ -54,9 +54,11 @@ const AuctionMenu = () => {
                         }
                     />
                 </div>
-                <div>
+                <div title="not stable">
                     <Label htmlFor="order">Status</Label>
                     <Select
+                        disabled
+                        value={search.status}
                         onValueChange={(value) =>
                             setSearch({ ...search, status: value })
                         }
@@ -65,10 +67,16 @@ const AuctionMenu = () => {
                             <SelectValue placeholder="Auction Status" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="0">All</SelectItem>
-                            <SelectItem value="light">Open</SelectItem>
-                            <SelectItem value="dark">Close</SelectItem>
-                            <SelectItem value="system">Finished</SelectItem>
+                            <SelectItem value={"0"}>All</SelectItem>
+                            {Object.values(AuctionStatus).map((v) => (
+                                <SelectItem
+                                    className="capitalize"
+                                    key={v}
+                                    value={v}
+                                >
+                                    {v.toLocaleLowerCase()}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                 </div>
@@ -82,7 +90,7 @@ const AuctionMenu = () => {
                                 Exit
                             </Button>
                         </Link>
-                        <Button onClick={onClickSearch}>
+                        <Button onClick={onSearch}>
                             <Search />
                             Search
                         </Button>

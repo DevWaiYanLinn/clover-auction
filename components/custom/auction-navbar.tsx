@@ -1,15 +1,11 @@
 "use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Logo from "@/public/React.js.svg";
 import { Button } from "../ui/button";
-import { useContext } from "react";
-import { SessionContext } from "@/provider/session-context";
 import Link from "next/link";
 
 export default function AuctionNav() {
-    const { session } = useContext(SessionContext);
 
     return (
         <div className="flex justify-between border-b pb-3">

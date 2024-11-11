@@ -4,7 +4,6 @@ This project aims to build a full-stack application using Next.js and other usef
 
 ![image](https://github.com/user-attachments/assets/0a06d0d3-4712-404a-a9d4-af4d4e4777af)
 
-
 ## Concept: Creating an Auction App Inspired by WoW
 
 The user interface of auction for my auction app draws inspiration from the game World of Warcraft (WoW), aiming for an engaging and immersive user experience.
@@ -13,19 +12,19 @@ The user interface of auction for my auction app draws inspiration from the game
 
 As of now, the auction app includes several essential functionalities to enhance user experience:
 
-- **Authentication**: Users can securely register and log in to their accounts, ensuring a safe environment for all transactions.
-- **Item Creation**: Sellers can create and manage their listings with ease, allowing them to showcase their items effectively.
-- **Email Confirmation**: A confirmation email system is in place to verify user accounts, adding an extra layer of security and trust.
-- **Static Pages**: Key information about the auction process, terms of service, and user guidelines are accessible through static pages, providing users with necessary context and support.
-- **Auction Creation**: Sellers can create auction listings with detailed item descriptions, starting bids, and auction end times.
-- **Bidding**: Users can place bids on auctions, and the system updates the highest bid in real time.
+-   **Authentication**: Users can securely register and log in to their accounts, ensuring a safe environment for all transactions.
+-   **Item Creation**: Sellers can create and manage their listings with ease, allowing them to showcase their items effectively.
+-   **Email Confirmation**: A confirmation email system is in place to verify user accounts, adding an extra layer of security and trust.
+-   **Static Pages**: Key information about the auction process, terms of service, and user guidelines are accessible through static pages, providing users with necessary context and support.
+-   **Auction Creation**: Sellers can create auction listings with detailed item descriptions, starting bids, and auction end times.
+-   **Bidding**: Users can place bids on auctions, and the system updates the highest bid in real time.
 
 ---
 
 ## Upcoming Features to Add
 
-- **Real-Time Bidding Updates**
-- **Payment Processing for Winning Bids**
+-   **Real-Time Bidding Updates**
+-   **Payment Processing for Winning Bids**
 
 ## Technologies Used in the Auction App
 
@@ -40,14 +39,14 @@ As of now, the auction app includes several essential functionalities to enhance
 -   **Prisma**: For database management and ORM
 -   **Redis**: For caching and session management, improving performance and scalability.
 -   **Zod**: A powerful library for data validation, ensuring correctness and reliability.
--   **Prisma**:Simplifies database migration, making it easy to use and accelerating development.
--   **Cloudinary**:: A cloud-based service for storing and managing images, providing easy integration for image uploads and optimization.  
+development.
+-   **Cloudinary**:: A cloud-based service for storing and managing images, providing easy integration for image uploads and optimization.
 
 ## Environment Variables
 
 To ensure the application runs smoothly, you need to set up the following environment variables in your `.env` file:
 
-```plaintext
+```env
 # Database prisma
 DATABASE_URL=
 
@@ -61,16 +60,20 @@ MAIL_SERVICE=
 MAIL_HOST=
 MAIL_USER=
 MAIL_PASSWORD=
+TEST_MAIL=
 
+# Cloudinary
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 CLOUDINARY_CLOUD_NAME=
+
+# IoRedis
+REDIS_URL=
 ```
 
 ## Conclusion
 
-This project was an important milestone in my journey as a full-stack developer, built before my move to Japan. It allowed me to refine my skills in both backend and frontend technologies, while also deepening my understanding of web development practices. 
-
+This project was an important milestone in my journey as a full-stack developer, built before my move to Japan. It allowed me to refine my skills in both backend and frontend technologies, while also deepening my understanding of web development practices.
 
 ## Acknowledgments
 

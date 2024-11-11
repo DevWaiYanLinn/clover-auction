@@ -21,7 +21,7 @@ model User {
     password        String        @db.VarChar(255)
     balance         Decimal       @default(0) @db.Decimal(10, 2)
     reputation      Int           @default(3)
-    phoneNumber     String?       @db.VarChar(50)
+    phoneNumber     String?       @map("phone_number") @db.VarChar(50)
     gender          Boolean?
     address         String?       @db.VarChar(255)
     emailVerifiedAt DateTime?     @map("email_verified_at")
@@ -122,6 +122,7 @@ model Item {
     name          String      @db.VarChar(100)
     description   String?     @db.MediumText()
     imageUrl      String      @map("image_url") @db.VarChar(255)
+    publicImageId String      @map("public_image_id") @db.VarChar(50)
     condition     String      @default("good") @db.VarChar(50)
     location      String?     @db.VarChar(100)
     quantity      Int         @default(1)

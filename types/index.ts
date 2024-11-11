@@ -27,6 +27,7 @@ export interface MailTemplateBuilder {
 export interface ConfirmMail extends MailTemplateBuilder {
     email: string;
     token: string;
+    url: string;
 }
 
 export type AuctionTableData = Auction & {
@@ -39,8 +40,10 @@ export interface CategoryWithSubCategories extends Category {
 
 export type ParamsPromise = Promise<{ [key: string]: string }>;
 
+export type searchParamsPromise = Promise<{ [key: string]: string }>;
+
 export type BidRecord = {
-    id:number
+    id: number;
     bidTime: Date;
     amount: number;
     previousAmount: number;

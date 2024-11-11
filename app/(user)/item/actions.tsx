@@ -4,9 +4,10 @@ import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/constants";
 import prisma from "@/database/prisma";
 import { getSession } from "@/lib/session";
 import ImageService from "@/services/image-service";
-import { Prisma } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { Decimal } from "@prisma/client/runtime/library";
 
 const schema = z.object({
     name: z
@@ -71,7 +72,7 @@ export const createItem = async (
         try {
             const result = await imageService.nextUploadStream(
                 data.name,
-                data.subcategory,
+                uuidv4(),
                 file,
             );
 
@@ -93,6 +94,7 @@ export const createItem = async (
                     imageUrl: result.secure_url,
                     subCategoryId: subcategory!.id,
                     userId: session!.user.id,
+                    publicImageId: result.public_id,
                 },
             });
         } catch (error) {
@@ -123,11 +125,11 @@ const itemAuctionSchema = z.object({
     startingPrice: z
         .string({ required_error: "Invalid Input" })
         .regex(/^\d+(\.\d+)?$/, "Invalid Input")
-        .transform(Number),
+        .transform((price) => new Decimal(price)),
     buyoutPrice: z
         .string({ required_error: "Invalid Input" })
         .regex(/^\d+(\.\d+)?$/, "Invalid Input")
-        .transform(Number),
+        .transform((price) => new Decimal(price)),
     description: z.string().nullable(),
 });
 
@@ -184,7 +186,7 @@ export const itemAuction = async (
         });
 
         await prisma.auction.create({
-            data: { itemId: item.id, ...data },
+            data: { itemId: item.id, ...data, increase: 5 },
         });
     } catch (error: unknown) {
         return {

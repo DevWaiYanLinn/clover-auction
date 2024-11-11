@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 
-const publicRoutes = ["/"];
+const publicRoutes = ["/", "/verify"];
 const authRoutes = ["/login", "/register"];
 
 export default async function middleware(req: NextRequest, res: NextResponse) {

@@ -6,6 +6,7 @@ import { z } from "zod";
 import MailService from "@/services/mail-service";
 import { ConfirmMail } from "@/types";
 import { CONFIRM_EMAIL } from "@/constants";
+import { signJwt } from "@/lib/jwt";
 
 const schema = z.object({
     email: z
@@ -79,7 +80,7 @@ export async function signUp(
             }),
         ]);
 
-        const verifyToken = await hash(data.email);
+        const verifyToken = await signJwt({ email: data.email });
 
         const mailService = new MailService({
             to:
@@ -93,6 +94,7 @@ export async function signUp(
             type: CONFIRM_EMAIL,
             token: verifyToken,
             email: data.email,
+            url: process.env.SERVER_URL || "http://localhost:3000",
         });
 
         await mailService.send();

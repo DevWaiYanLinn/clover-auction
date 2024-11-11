@@ -140,7 +140,7 @@ async function main() {
 
 main()
     .then(async () => {
-        console.log("aa");
+        console.log("seeding success");
         await prisma.$disconnect();
     })
     .catch(async (error) => {

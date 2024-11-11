@@ -3,73 +3,63 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "../ui/button";
 import auctionStore from "@/store/auction-store";
-import { bidAuction } from "@/app/auction/actions";
-import { useActionState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { useSWRConfig } from "swr";
-import { Bounce, toast } from "react-toastify";
+import { toast } from "react-toastify";
+import { fetchAPI } from "@/lib/fetch";
+import { getBidErrorMessage } from "@/lib/utils";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AuctionTableData } from "@/types";
-const initialState = {
-    data: null,
-    success: false,
-    errors: {
-        message: "",
-    },
-};
+
 export default function AuctionBidBar() {
-    const { id } = auctionStore();
-    const searchParams = useSearchParams();
+    const { auction } = auctionStore();
     const { mutate } = useSWRConfig();
-    const [state, action, pending] = useActionState(
-        bidAuction.bind(null, Number(id)),
-        initialState,
-    );
-    useEffect(() => {
-        if (state.errors.message) {
-            toast.error(state.errors.message, {
-                position: "top-center",
-                hideProgressBar: true,
-                transition: Bounce,
-                theme: "colored",
-                autoClose: 3000,
+    const searchParams = useSearchParams();
+
+    const [pending, setPending] = useState(false);
+    const disabled = !auction || pending;
+
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!auction) return;
+        setPending(true);
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        const bidAmount = Number(formData.get("bid"));
+        try {
+            await fetchAPI(`/api/auctions/${auction.id}`, {
+                method: "POST",
+                body: JSON.stringify({
+                    bidAmount,
+                    itemId: auction.itemId,
+                }),
             });
-            return;
-        }
-        if (state.success) {
+
+            toast.success("Your Bid Success");
             mutate(
                 [
-                    "/auction/actions",
+                    "/api/auctions",
                     new URLSearchParams(
                         Object.fromEntries(searchParams.entries()),
                     ).toString(),
                 ],
                 (data: AuctionTableData[] | undefined) => {
-                    const auctions = data?.map((a) => {
-                        if (a.id === state.data.id) {
-                            return {
-                                ...a,
-                                currentBid: state.data.currentBid,
-                            };
+                    return data?.map((a) => {
+                        if (a.id === auction.id) {
+                            return { ...a, currentBid: bidAmount as any };
                         }
                         return a;
                     });
-                    return auctions;
                 },
                 { revalidate: false },
             );
-
-            toast.success("Your Bid Success", {
-                position: "top-center",
-                hideProgressBar: true,
-                transition: Bounce,
-                theme: "colored",
-                autoClose: 3000,
-            });
+        } catch (error: any) {
+            toast.error(getBidErrorMessage(error));
+        } finally {
+            form.reset();
+            setPending(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [state]);
-
-    const disabled = id === undefined || pending;
+    };
 
     return (
         <div className="flex justify-between items-center mt-5 border rounded-md p-2">
@@ -78,7 +68,7 @@ export default function AuctionBidBar() {
                     Copy Right©Clover Auction
                 </p>
             </div>
-            <form action={action} className="space-x-2 flex">
+            <form onSubmit={onSubmit} className="space-x-2 flex" method="POST">
                 <div className="flex items-center space-x-2">
                     <Label>Bid</Label>
                     <Input name="bid" type="text" disabled={disabled} />

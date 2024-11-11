@@ -20,7 +20,7 @@ const Category = function () {
     }, []);
 
     const { data } = useSWR<CategoryWithSubCategories[]>(
-        "/category/actions",
+        "/api/categories",
         (url: string) => fetchAPI(url),
         {
             revalidateOnMount: false,

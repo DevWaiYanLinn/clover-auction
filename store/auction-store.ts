@@ -1,13 +1,14 @@
+import { type Auction } from "@prisma/client";
 import { create } from "zustand";
 
 interface PickAuctionState {
-    id: number | undefined;
-    pick: (id: number | undefined) => void;
+    auction: Auction | null;
+    pick: (auction: Auction) => void;
 }
 
 const auctionStore = create<PickAuctionState>()((set) => ({
-    id: undefined,
-    pick: (id) => set((state) => ({ ...state, id: id })),
+    auction: null,
+    pick: (auction) => set((state) => ({ auction })),
 }));
 
 export default auctionStore;

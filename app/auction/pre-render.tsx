@@ -14,7 +14,7 @@ export default function PreRender({ children, categories }: props) {
         <SWRConfig
             value={{
                 fallback: {
-                    "/category/actions": categories,
+                    "/api/categories": categories,
                 },
                 revalidateOnFocus: false,
                 revalidateOnMount: true,

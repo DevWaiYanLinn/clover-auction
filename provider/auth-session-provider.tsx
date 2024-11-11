@@ -1,5 +1,5 @@
 "use server";
-import { getServerSession } from "@/lib/session";
+import { getSession } from "@/lib/session";
 import { SessionProvider } from "@/provider/session-provider";
 
 export default async function AuthProvider({
@@ -7,7 +7,7 @@ export default async function AuthProvider({
 }: {
     children: React.ReactNode;
 }) {
-    const session = await getServerSession();
+    const session = await getSession();
 
     return <SessionProvider authSession={session}>{children}</SessionProvider>;
 }

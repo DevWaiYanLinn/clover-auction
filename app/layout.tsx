@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import AuthProvider from "@/provider/auth-session-provider";
 import { Roboto_Mono } from "next/font/google";
 import React from "react";
-import { ToastContainer } from "react-toastify";
+import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const RobotoMono = Roboto_Mono({
     subsets: ["latin"],
@@ -23,7 +23,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`antialiased ${RobotoMono.className}`}>
-                <ToastContainer />
+                <ToastContainer
+                    position="top-center"
+                    hideProgressBar={true}
+                    transition={Bounce}
+                    theme="colored"
+                    autoClose={3000}
+                />
                 <AuthProvider>
                     <div id="modal-root"></div>
                     {children}

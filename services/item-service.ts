@@ -1,5 +1,5 @@
 import prisma from "@/database/prisma";
-import { getServerSession } from "@/lib/session";
+import { getSession } from "@/lib/session";
 
 export const getAllItem = async (
     filters: {
@@ -8,7 +8,7 @@ export const getAllItem = async (
 ) => {
     const where: { name?: string; subCategoryId?: number } = {};
 
-    const session = await getServerSession();
+    const session = await getSession();
 
     if (filters["name"]) {
         where["name"] = filters["name"] as string;

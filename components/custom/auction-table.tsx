@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
-import { Lock, LockOpen } from "lucide-react";
 import useSWR, { mutate } from "swr";
 import { AuctionTableData } from "@/types";
 import { useSearchParams } from "next/navigation";
@@ -20,10 +19,10 @@ import { fetchAPI } from "@/lib/fetch";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
-    const { id, pick } = auctionStore();
+    const { auction, pick } = auctionStore();
     const { data } = useSWR<AuctionTableData[]>(
         [
-            "/auction/actions",
+            "/api/auctions",
             new URLSearchParams(
                 Object.fromEntries(searchParams.entries()),
             ).toString(),
@@ -32,7 +31,7 @@ const AuctionTable = function () {
             return fetchAPI(`${url}?${paramsString}`);
         },
         {
-            refreshInterval: 1000 * 60,
+            refreshInterval: 1000 * 60 * 3,
         },
     );
 
@@ -41,8 +40,7 @@ const AuctionTable = function () {
         timeInterval = setInterval(() => {
             mutate(
                 [
-                    "/auction/actions",
-                    ,
+                    "/api/auctions",
                     new URLSearchParams(
                         Object.fromEntries(searchParams.entries()),
                     ).toString(),
@@ -93,12 +91,12 @@ const AuctionTable = function () {
                             <TableRow
                                 onClick={() => {
                                     if (a.status === "OPEN") {
-                                        pick(a.id);
+                                        pick(a);
                                     }
                                 }}
                                 data-id={a.id}
                                 key={a.id}
-                                className={`${id === a.id ? "!bg-primary/90 !text-white" : null} ${a.status === "OPEN" ? "cursor-pointer" : "cursor-default"}`}
+                                className={`${auction?.id === a.id ? "!bg-primary/90 !text-white" : null} ${a.status === "OPEN" ? "cursor-pointer" : "cursor-default"}`}
                             >
                                 <TableCell className="font-medium">
                                     {a.item.name}

@@ -44,7 +44,7 @@ export const decrypt = async (jwe: string): Promise<Session | null> => {
     }
 };
 
-export const getServerSession = cache(async (): Promise<Session | null> => {
+export const getSession = cache(async (): Promise<Session | null> => {
     const cookie = (await cookies()).get(config.session.cookieName)?.value;
     const session = cookie && (await decrypt(cookie));
     if (session) {

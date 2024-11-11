@@ -2,7 +2,7 @@
 
 import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/constants";
 import prisma from "@/database/prisma";
-import { getServerSession } from "@/lib/session";
+import { getSession } from "@/lib/session";
 import ImageService from "@/services/image-service";
 import { Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
@@ -83,7 +83,7 @@ export const createItem = async (
                 where: { id: Number(data.subcategory) },
             });
 
-            const session = await getServerSession();
+            const session = await getSession();
 
             await prisma.item.create({
                 data: {
@@ -170,7 +170,7 @@ export const itemAuction = async (
     const data = validatedFields.data;
 
     try {
-        const session = await getServerSession();
+        const session = await getSession();
 
         if (!session) {
             throw new Error("Session Expired!");

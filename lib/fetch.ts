@@ -1,12 +1,12 @@
 export const fetchAPI = async (url: string, options?: RequestInit) => {
     try {
         const res = await fetch(url, { credentials: "include", ...options });
-        if (res.ok) {
-            return await res.json();
+        const response = await res.json();
+        if (!res.ok) {
+            throw { ...response, status: res.status };
         }
-        throw new Error(`HTTP ERROR with status ${res.status}`);
+        return response;
     } catch (error) {
-        console.error(error);
-        throw Error(`${error}`);
+        throw error;
     }
 };

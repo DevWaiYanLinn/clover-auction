@@ -12,11 +12,12 @@ import { Label } from "@/components/ui/label";
 import { LogOut, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
 
 const AuctionMenu = () => {
+    const tableSegment = useSelectedLayoutSegment("table");
     const searchParams = useSearchParams();
     const router = useRouter();
     const [search, setSearch] = useState(() => ({
@@ -34,7 +35,7 @@ const AuctionMenu = () => {
             }
         }
 
-        router.push("/auction/?" + new URLSearchParams(paramsObj).toString());
+        router.push("/auction?" + new URLSearchParams(paramsObj).toString());
     };
     return (
         <div className="flex mt-3 items-end">
@@ -84,12 +85,24 @@ const AuctionMenu = () => {
             <div className="flex-1 flex justify-end">
                 <div>
                     <div className="text-center space-x-3">
-                        <Link href={"/profile"} prefetch={false}>
-                            <Button variant={"destructive"}>
+                        {tableSegment === "page$" ? (
+                            <Link href={"/profile"} prefetch={false}>
+                                <Button variant={"destructive"}>
+                                    <LogOut />
+                                    Exit
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Button
+                                variant={"destructive"}
+                                onClick={() => {
+                                    router.back();
+                                }}
+                            >
                                 <LogOut />
-                                Exit
+                                Back
                             </Button>
-                        </Link>
+                        )}
                         <Button onClick={onSearch}>
                             <Search />
                             Search

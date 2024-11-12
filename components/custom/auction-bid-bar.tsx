@@ -8,14 +8,14 @@ import { toast } from "react-toastify";
 import { fetchAPI } from "@/lib/fetch";
 import { getBidErrorMessage } from "@/lib/utils";
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
 import { AuctionTableData } from "@/types";
 
 export default function AuctionBidBar() {
     const { auction } = auctionStore();
     const { mutate } = useSWRConfig();
     const searchParams = useSearchParams();
-
+    const tableSegment = useSelectedLayoutSegment("table");
     const [pending, setPending] = useState(false);
     const disabled = !auction || pending;
 
@@ -36,7 +36,7 @@ export default function AuctionBidBar() {
             });
 
             toast.success("Your Bid Success");
-            mutate(
+            await mutate(
                 [
                     "/api/auctions",
                     new URLSearchParams(
@@ -62,13 +62,17 @@ export default function AuctionBidBar() {
     };
 
     return (
-        <div className="flex justify-between items-center mt-5 border rounded-md p-2">
+        <div className="flex justify-between items-center mt-5 border rounded-md p-3">
             <div>
                 <p className="italic text-md font-bold">
                     Copy Right©Clover Auction
                 </p>
             </div>
-            <form onSubmit={onSubmit} className="space-x-2 flex" method="POST">
+            <form
+                onSubmit={onSubmit}
+                className={`space-x-3 flex ${tableSegment === "page$" ? "visible" : " invisible"}`}
+                method="POST"
+            >
                 <div className="flex items-center space-x-2">
                     <Label>Bid</Label>
                     <Input name="bid" type="text" disabled={disabled} />

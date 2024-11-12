@@ -13,7 +13,7 @@ import {
 import { Check, CirclePlus, Coins, RefreshCcw, X } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getAllItem } from "@/services/item-service";
+import { getAllItems } from "@/services/item-service";
 
 export default async function Page({
     searchParams,
@@ -21,7 +21,7 @@ export default async function Page({
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
     const filters = await searchParams;
-    const items = await getAllItem(filters);
+    const items = await getAllItems(filters);
     return (
         <div className="space-x-3 flex-1">
             <div className="h-full bg-white rounded-md shadow-md px-5">

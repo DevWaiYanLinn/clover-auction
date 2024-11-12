@@ -1,8 +1,9 @@
-import { Session, User } from "@/types";
+import { Session } from "@/types";
 import { cookies } from "next/headers";
 import * as jose from "jose";
 import config from "@/config";
 import { cache } from "react";
+import { type NextRequest } from "next/server";
 
 let keyPromise: Promise<{
     privateKey: jose.KeyLike;
@@ -22,7 +23,7 @@ const loadKey = async () => {
     return await keyPromise;
 };
 
-export const encrypt = async (user: { id: number }, device: string = "") => {
+export const encrypt = async (user: { id: number }, device: any = "") => {
     const { publicKey } = await loadKey();
     return new jose.CompactEncrypt(
         new TextEncoder().encode(JSON.stringify({ user, device })),
@@ -44,8 +45,11 @@ export const decrypt = async (jwe: string): Promise<Session | null> => {
     }
 };
 
-export const login = async (user: { id: number }, device: string = "") => {
-    const encryptedString = await encrypt(user, device);
+export const login = async (user: { id: number }, request: NextRequest) => {
+    const encryptedString = await encrypt(
+        user,
+        request.headers.get("User-Agent"),
+    );
     const cookieStore = await cookies();
     cookieStore.set(config.session.cookieName, encryptedString, {
         path: "/",

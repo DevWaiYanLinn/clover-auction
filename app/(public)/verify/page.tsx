@@ -4,6 +4,7 @@ import {
 } from "@/components/custom/alert-destructive";
 import { Button } from "@/components/ui/button";
 import { jwtVerify } from "@/lib/jwt";
+import { verifyUser } from "@/services/user-service";
 import { searchParamsPromise } from "@/types";
 
 const verified = async (token: string) => {
@@ -20,9 +21,10 @@ export default async function Page({
 }: {
     searchParams: searchParamsPromise;
 }) {
-    const { email, token } = await searchParams;
+    const { token } = await searchParams;
+    const { payload, error }: any = await verified(token);
 
-    const { payload, error } = await verified(token);
+    if (payload) await verifyUser(payload.email);
 
     return (
         <div className="h-screen flex justify-center items-center bg-slate-50">

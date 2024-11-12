@@ -15,7 +15,7 @@ export type User = {
 };
 
 export type Session = {
-    id: number;
+    user: { id: number };
     device?: string;
 };
 
@@ -62,3 +62,8 @@ export type AuthUser = Omit<
     PrismaUser,
     "password" | "createdAt" | "updatedAt" | "balance"
 >;
+
+export type findOrCreateUserType = {
+    email: string;
+    data: { name: string; email: string; password: string };
+};

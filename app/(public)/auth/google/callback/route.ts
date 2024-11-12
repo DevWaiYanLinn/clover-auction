@@ -1,9 +1,9 @@
 import { type NextRequest } from "next/server";
 import { google } from "googleapis";
-import prisma from "@/database/prisma";
-import { hash } from "@/lib/bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { login } from "@/lib/session";
+import { findOrCreateUser } from "@/services/user-service";
+import { HttpError } from "@/lib/exception";
 
 export async function GET(request: NextRequest) {
     const query = request.nextUrl.searchParams;
@@ -25,31 +25,20 @@ export async function GET(request: NextRequest) {
         });
 
         if (!res.ok) {
-            throw Error("Login Fail");
+            throw new HttpError({ status: 401 });
         }
 
         const info = await res.json();
 
-        let user = await prisma.user.findUnique({
-            where: {
-                email: info.email,
-            },
+        const user = await findOrCreateUser({
+            email: info.email,
+            data: { name: info.name, email: info.email, password: uuidv4() },
         });
 
-        if (!user) {
-            user = await prisma.user.create({
-                data: {
-                    email: info.email,
-                    name: info.name,
-                    password: await hash(uuidv4()),
-                },
-            });
-        }
+        await login({ id: user.id }, request);
 
-        await login({ id: user.id }, request.headers.get("User-Agent")!);
-
-        return Response.redirect(new URL("/profile"), 200);
+        return Response.redirect(new URL("/profile"), 301);
     } catch (error) {
-        return Response.redirect(new URL("/login"), 200);
+        return Response.redirect(new URL("/login"), 301);
     }
 }

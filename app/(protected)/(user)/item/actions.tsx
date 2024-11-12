@@ -98,6 +98,7 @@ export const createItem = async (
                 },
             });
         } catch (error) {
+            console.log(error);
             return {
                 errors: {
                     name: [],

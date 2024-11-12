@@ -22,7 +22,7 @@ const loadKey = async () => {
     return await keyPromise;
 };
 
-export const encrypt = async (user: User, device?: string) => {
+export const encrypt = async (user: { id: number }, device: string = "") => {
     const { publicKey } = await loadKey();
     return new jose.CompactEncrypt(
         new TextEncoder().encode(JSON.stringify({ user, device })),
@@ -44,11 +44,19 @@ export const decrypt = async (jwe: string): Promise<Session | null> => {
     }
 };
 
+export const login = async (user: { id: number }, device: string = "") => {
+    const encryptedString = await encrypt(user, device);
+    const cookieStore = await cookies();
+    cookieStore.set(config.session.cookieName, encryptedString, {
+        path: "/",
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 365,
+        secure: process.env.NODE_ENV === "production",
+    });
+};
+
 export const getSession = cache(async (): Promise<Session | null> => {
     const cookie = (await cookies()).get(config.session.cookieName)?.value;
     const session = cookie && (await decrypt(cookie));
-    if (session) {
-        return session;
-    }
-    return null;
+    return session ? session : null;
 });

@@ -15,7 +15,7 @@ export type User = {
 };
 
 export type Session = {
-    user: User;
+    id: number;
     device?: string;
 };
 

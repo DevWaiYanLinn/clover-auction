@@ -49,10 +49,6 @@ export async function singIn(
     const encryptedString = await encrypt(
         {
             id: user.id,
-            name: user.name,
-            email: user.email,
-            balance: user.balance,
-            reputation: user.reputation,
         },
         heads.get("User-Agent")!,
     );

@@ -1,6 +1,6 @@
 "use client";
-import { AuthUser } from "@/types";
 import { SWRConfig } from "swr";
+import React from "react";
 
 export default function PreFetch({
     children,

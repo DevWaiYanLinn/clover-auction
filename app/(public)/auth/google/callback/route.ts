@@ -37,8 +37,8 @@ export async function GET(request: NextRequest) {
 
         await login({ id: user.id }, request);
 
-        return Response.redirect(new URL("/profile"), 301);
+        return Response.redirect(new URL("/profile", request.nextUrl));
     } catch (error) {
-        return Response.redirect(new URL("/login"), 301);
+        return Response.redirect(new URL("/login", request.nextUrl));
     }
 }

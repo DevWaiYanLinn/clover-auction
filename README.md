@@ -85,4 +85,4 @@ This project was an important milestone in my journey as a full-stack developer,
 I would like to express my heartfelt gratitude to all my teachers for their invaluable support and guidance throughout this journey. Their knowledge and encouragement have been instrumental in helping me build this project.
 
 ## LICENSE
-This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivs 4.0 International License
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International

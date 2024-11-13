@@ -1,4 +1,5 @@
 import prisma from "@/database/prisma";
+import publisher from "@/database/redis/publisher";
 import { HttpError } from "@/lib/exception";
 import { getSession } from "@/lib/session";
 import { AuctionStatus } from "@prisma/client";
@@ -91,6 +92,17 @@ export async function POST(
 
             return auction;
         });
+        publisher.publish(
+            "bid",
+            JSON.stringify({
+                user: { id: session.user.id },
+                auction: {
+                    id: result.id,
+                    itemId: result.itemId,
+                    currentBid: Number(result.currentBid),
+                },
+            }),
+        );
         return Response.json(result, { status: 200 });
     } catch (error: unknown) {
         if (error instanceof HttpError) {

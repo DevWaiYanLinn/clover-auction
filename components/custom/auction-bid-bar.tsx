@@ -7,9 +7,10 @@ import { useSWRConfig } from "swr";
 import { toast } from "react-toastify";
 import { fetchAPI } from "@/lib/fetch";
 import { getBidErrorMessage } from "@/lib/utils";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
 import { AuctionTableData } from "@/types";
+import { socket } from "@/socket/socket-io";
 
 export default function AuctionBidBar() {
     const { auction } = auctionStore();
@@ -17,7 +18,59 @@ export default function AuctionBidBar() {
     const searchParams = useSearchParams();
     const tableSegment = useSelectedLayoutSegment("table");
     const [pending, setPending] = useState(false);
+    const [isConnected, setIsConnected] = useState(socket.connected);
     const disabled = !auction || pending;
+
+    const onBid = useCallback(
+        (bid: {
+            user: { id: number };
+            auction: { id: number; currentBid: number; itemId: Number };
+        }) => {
+            mutate(
+                [
+                    "/api/auctions",
+                    new URLSearchParams(
+                        Object.fromEntries(searchParams.entries()),
+                    ).toString(),
+                ],
+                (data: AuctionTableData[] | undefined) => {
+                    return data?.map((a) => {
+                        if (a.id === bid.auction.id) {
+                            return {
+                                ...a,
+                                currentBid: bid.auction.currentBid as any,
+                            };
+                        }
+                        return a;
+                    });
+                },
+                { revalidate: false },
+            );
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [searchParams],
+    );
+
+    useEffect(() => {
+        function onConnect() {
+            setIsConnected(true);
+        }
+
+        function onDisconnect() {
+            setIsConnected(false);
+        }
+
+        socket.on("connect", onConnect);
+        socket.on("disconnect", onDisconnect);
+        socket.on("bid", onBid);
+
+        return () => {
+            socket.off("connect", onConnect);
+            socket.off("disconnect", onDisconnect);
+            socket.off("bid", onBid);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -36,23 +89,23 @@ export default function AuctionBidBar() {
             });
 
             toast.success("Your Bid Success");
-            await mutate(
-                [
-                    "/api/auctions",
-                    new URLSearchParams(
-                        Object.fromEntries(searchParams.entries()),
-                    ).toString(),
-                ],
-                (data: AuctionTableData[] | undefined) => {
-                    return data?.map((a) => {
-                        if (a.id === auction.id) {
-                            return { ...a, currentBid: bidAmount as any };
-                        }
-                        return a;
-                    });
-                },
-                { revalidate: false },
-            );
+            // await mutate(
+            //     [
+            //         "/api/auctions",
+            //         new URLSearchParams(
+            //             Object.fromEntries(searchParams.entries()),
+            //         ).toString(),
+            //     ],
+            //     (data: AuctionTableData[] | undefined) => {
+            //         return data?.map((a) => {
+            //             if (a.id === auction.id) {
+            //                 return { ...a, currentBid: bidAmount as any };
+            //             }
+            //             return a;
+            //         });
+            //     },
+            //     { revalidate: false },
+            // );
         } catch (error: any) {
             toast.error(getBidErrorMessage(error));
         } finally {

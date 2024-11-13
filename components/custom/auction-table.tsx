@@ -17,9 +17,8 @@ import { useEffect } from "react";
 import { getAuctionStatus } from "@/lib/utils";
 import { fetchAPI } from "@/lib/fetch";
 import { Button } from "../ui/button";
-import { List, UsersRound } from "lucide-react";
+import { UsersRound } from "lucide-react";
 import Link from "next/link";
-import { toast } from "react-toastify";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();

@@ -3,7 +3,9 @@ import config from "@/config";
 import Redis from "ioredis";
 
 const redisClientSingleton = () => {
-    return new Redis(config.redis.url, { maxRetriesPerRequest: null });
+    return process.env.NODE_ENV !== "production"
+        ? new Redis({ maxRetriesPerRequest: null })
+        : new Redis(config.redis.url, { maxRetriesPerRequest: null });
 };
 
 declare const globalThis: {

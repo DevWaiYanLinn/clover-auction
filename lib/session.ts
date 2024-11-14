@@ -3,7 +3,6 @@ import { cookies, headers } from "next/headers";
 import * as jose from "jose";
 import config from "@/config";
 import { cache } from "react";
-import { type NextRequest, NextResponse } from "next/server";
 
 let keyPromise: Promise<{
     privateKey: jose.KeyLike;

@@ -1,4 +1,4 @@
-import AuctionBidBar from "@/components/custom/auction-bid-bar";
+import AuctionBootomBar from "@/components/custom/auction-bottom-bar";
 import AuctionMenu from "@/components/custom/auction-menu";
 
 export default function Layout({
@@ -20,7 +20,7 @@ export default function Layout({
                     </div>
                     {table}
                 </div>
-                <AuctionBidBar />
+                <AuctionBootomBar />
             </div>
         </div>
     );

@@ -12,7 +12,7 @@ import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
 import { AuctionTableData, SocketBid } from "@/types";
 import { socket } from "@/socket/socket-io";
 
-export default function AuctionBidBar() {
+export default function AuctionBottomBar() {
     const { auction } = auctionStore();
     const { mutate } = useSWRConfig();
     const searchParams = useSearchParams();

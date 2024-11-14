@@ -21,22 +21,21 @@ export class HttpError extends Error {
     public info: HttpErrorInfo;
     public status: HttpStatus;
     public message: string;
-    public detail: string;
 
     constructor({
         info = {},
         status,
-        detail = "",
+        message = "",
     }: {
         info?: HttpErrorInfo;
         status: HttpStatus;
-        detail?: string;
+        message?: string;
     }) {
-        super(getMessage(status));
+        const errorMessage = message || getMessage(status);
+        super(errorMessage);
         this.info = info;
         this.status = status;
-        this.detail = detail;
-        this.message = getMessage(status);
+        this.message = errorMessage;
 
         if (Error.captureStackTrace) {
             Error.captureStackTrace(this, HttpError);

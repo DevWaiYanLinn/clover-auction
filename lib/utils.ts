@@ -23,8 +23,7 @@ export function getAuctionStatus(start: Date, end: Date) {
 
 export const getBidErrorMessage = (error: any): string => {
     const errorMessages: { [key: number]: string | ((info: any) => string) } = {
-        422: (info) =>
-            info.bidAmount || info.itemId || "Validation error occurred.",
+        422: (info) => info.bidAmount || "Validation error occurred.",
         409: "Bid conflict: Someone already bid, try again.",
         403: "Auction has not started.",
         401: "Session has expired.",
@@ -36,7 +35,7 @@ export const getBidErrorMessage = (error: any): string => {
     }
 
     return "Unknown Error";
-}
+};
 
 export const sleep = (time: number): Promise<void> => {
     return new Promise((resolve) => {

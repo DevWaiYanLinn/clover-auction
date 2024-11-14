@@ -9,7 +9,6 @@ import z from "zod";
 
 const bidSchema = z.object({
     bidAmount: z.number({ required_error: "Bib Amount is required" }),
-    itemId: z.number({ required_error: "Item id is required" }),
 });
 
 export async function POST(
@@ -34,7 +33,6 @@ export async function POST(
 
         const found = await prisma.auction.findUnique({
             where: {
-                itemId: data.itemId,
                 id: Number(id),
             },
         });
@@ -56,7 +54,7 @@ export async function POST(
         const currentBid =
             Number(found.currentBid) || Number(found.startingPrice);
 
-        if (data.bidAmount < currentBid + (5 / 100) * currentBid) {
+        if (data.bidAmount < currentBid + (found.increase / 100) * currentBid) {
             throw new HttpError({
                 status: 422,
                 info: {
@@ -73,6 +71,7 @@ export async function POST(
                 },
                 data: {
                     currentBid: new Decimal(data.bidAmount),
+                    userId: session.user.id,
                 },
             });
 

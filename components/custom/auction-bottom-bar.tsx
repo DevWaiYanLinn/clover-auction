@@ -84,11 +84,10 @@ export default function AuctionBottomBar() {
         const formData = new FormData(form);
         const bidAmount = Number(formData.get("bid"));
         try {
-            await fetchAPI(`/api/auctions/${auction.id}`, {
+            await fetchAPI(`/api/auctions/${auction.id}/bids`, {
                 method: "POST",
                 body: JSON.stringify({
                     bidAmount,
-                    itemId: auction.itemId,
                 }),
             });
 

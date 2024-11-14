@@ -33,6 +33,7 @@ model User {
     bids            Bid[]
     transcations    Transaction[]
     Token           Token[]
+    Auction         Auction[]
 
     @@map("users")
 }
@@ -144,7 +145,9 @@ model Auction {
     id            Int           @id @default(autoincrement())
     item          Item          @relation(fields: [itemId], references: [id])
     itemId        Int           @map("item_id")
-    increase      Int           @db.TinyInt
+    bidder        User?         @relation(fields: [userId], references: [id])
+    userId        Int?          @map("user_id")
+    increase      Int           @default(5) @db.TinyInt
     startingPrice Decimal       @map("starting_price") @db.Decimal(10, 2)
     currentBid    Decimal?      @default(0) @map("current_bid") @db.Decimal(10, 2)
     buyoutPrice   Decimal       @map("buyout_price") @db.Decimal(10, 2)

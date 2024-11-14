@@ -29,7 +29,7 @@ export default function AuctionItemCreate() {
                     Accept: "application/json",
                 },
             });
-            router.push("/items");
+            router.push("/item");
         } catch (error: any) {
             if (error.status === 422) {
                 setErrors(error.info);

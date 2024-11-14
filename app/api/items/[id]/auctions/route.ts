@@ -28,8 +28,8 @@ const createSchema = z
         message: "must not be earlier than start time.",
         path: ["endTime"],
     })
-    .refine((data) => data.startingPrice > data.buyoutPrice, {
-        message: "must be greter than starting price.",
+    .refine((data) => data.startingPrice < data.buyoutPrice, {
+        message: "must be greater than starting price.",
         path: ["buyoutPrice"],
     });
 

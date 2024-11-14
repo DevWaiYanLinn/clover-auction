@@ -49,7 +49,7 @@ export default function CreateItem({
                 method: "POST",
                 body: formData,
             });
-            router.push("/items");
+            router.push("/item");
         } catch (error: any) {
             if (error.status === 422) {
                 setErrors(error.info);

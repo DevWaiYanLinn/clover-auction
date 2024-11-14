@@ -63,6 +63,7 @@ export function LoginForm() {
                         onClick={() => (window.location.href = "/auth/google")}
                         variant="outline"
                         className="w-full"
+                        type="button"
                     >
                         Login with Google
                     </Button>

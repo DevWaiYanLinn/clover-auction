@@ -3,7 +3,6 @@ import { compare } from "@/lib/bcrypt";
 import prisma from "@/database/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { cookies, headers } from "next/headers";
 import { login } from "@/lib/session";
 
 const schema = z.object({

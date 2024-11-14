@@ -9,6 +9,7 @@ import {
 import prisma from "@/database/prisma";
 import { BidRecord, ParamsPromise } from "@/types";
 import { Prisma } from "@prisma/client";
+import { Crown } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ export default async function Page({ params }: { params: ParamsPromise }) {
     FROM bids b
     JOIN users u ON b.user_id = u.id
     WHERE b.auction_id = ?
-    ORDER BY b.bid_time;
+    ORDER BY b.amount desc;
 `;
     query.values = [id];
 
@@ -45,10 +46,19 @@ export default async function Page({ params }: { params: ParamsPromise }) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {bids.map((b) => {
+                    {bids.map((b, i) => {
                         return (
                             <TableRow key={b.id}>
-                                <TableCell>{b.username}</TableCell>
+                                <TableCell className="flex items-center">
+                                    {i === 0 ? (
+                                        <Crown
+                                            size={20}
+                                            className="mr-2"
+                                            color="green"
+                                        />
+                                    ) : null}
+                                    {b.username}
+                                </TableCell>
                                 <TableCell>
                                     ${Number(b.amount).toFixed(2)}
                                 </TableCell>

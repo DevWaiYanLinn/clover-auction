@@ -145,8 +145,6 @@ model Auction {
     id            Int           @id @default(autoincrement())
     item          Item          @relation(fields: [itemId], references: [id])
     itemId        Int           @map("item_id")
-    bidder        User?         @relation(fields: [userId], references: [id])
-    userId        Int?          @map("user_id")
     increase      Int           @default(5) @db.TinyInt
     startingPrice Decimal       @map("starting_price") @db.Decimal(10, 2)
     currentBid    Decimal?      @default(0) @map("current_bid") @db.Decimal(10, 2)
@@ -161,6 +159,8 @@ model Auction {
     deleted       Boolean       @default(false)
     bids          Bid[]
     transcation   Transaction?  @relation()
+    User          User?         @relation(fields: [userId], references: [id])
+    userId        Int?
 
     @@unique([itemId])
     @@map("auctions")

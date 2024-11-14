@@ -71,7 +71,6 @@ export async function POST(
                 },
                 data: {
                     currentBid: new Decimal(data.bidAmount),
-                    userId: session.user.id,
                 },
             });
 
@@ -104,6 +103,7 @@ export async function POST(
         );
         return Response.json(result, { status: 200 });
     } catch (error: unknown) {
+        console.log(error);
         if (error instanceof HttpError) {
             return Response.json(
                 { info: error.info, message: error.message },

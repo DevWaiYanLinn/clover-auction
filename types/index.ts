@@ -67,3 +67,8 @@ export type findOrCreateUserType = {
     email: string;
     data: { name: string; email: string; password: string };
 };
+
+export type SocketBid = {
+    user: { id: number };
+    auction: { id: number; currentBid: number; itemId: Number };
+};

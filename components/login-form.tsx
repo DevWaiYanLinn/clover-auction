@@ -14,7 +14,7 @@ import { useActionState } from "react";
 import { singIn } from "@/app/(public)/login/actions";
 
 const initialState = {
-    errors: { password: [""], email: [""], message: [""] },
+    errors: { password: [], email: [] },
 };
 
 export function LoginForm() {
@@ -37,6 +37,9 @@ export function LoginForm() {
                             name="email"
                             placeholder="m@example.com"
                         />
+                        <div className="text-red-500 font-bold text-xs">
+                            {state.errors.email}
+                        </div>
                     </div>
                     <div className="grid gap-2">
                         <div className="flex items-center">
@@ -49,6 +52,9 @@ export function LoginForm() {
                             </Link>
                         </div>
                         <Input id="password" type="password" name="password" />
+                        <div className="text-red-500 font-bold text-xs">
+                            {state.errors.password}
+                        </div>
                     </div>
                     <Button type="submit" className="w-full">
                         Login

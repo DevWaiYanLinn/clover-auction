@@ -6,8 +6,10 @@ import { z } from "zod";
 import { login } from "@/lib/session";
 
 const schema = z.object({
-    email: z.string({ invalid_type_error: "Invalid Email." }),
-    password: z.string({ invalid_type_error: "Invalid name." }),
+    email: z
+        .string({ required_error: "Invalid Input." })
+        .email("Invalid eamil format"),
+    password: z.string({ required_error: "Invalid Input." }).min(1, "required"),
 });
 
 export async function singIn(
@@ -15,7 +17,6 @@ export async function singIn(
         errors: {
             email?: string[] | undefined;
             password?: string[] | undefined;
-            message?: string[] | undefined;
         };
     },
     formData: FormData,
@@ -23,7 +24,7 @@ export async function singIn(
     const email = formData.get("email");
     const password = formData.get("password");
 
-    const validatedFields = schema.safeParse({
+    const validatedFields = await schema.spa({
         email,
         password,
     });
@@ -39,7 +40,7 @@ export async function singIn(
     const user = await prisma.user.findUnique({ where: { email: data.email } });
 
     if (!user?.id || !(await compare(data.password, user.password))) {
-        return { errors: { message: ["The name or email wrong!"] } };
+        return { errors: { email: ["The password or email wrong!"] } };
     }
 
     await login({ id: user.id });

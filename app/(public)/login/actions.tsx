@@ -45,5 +45,5 @@ export async function singIn(
 
     await login({ id: user.id });
 
-    redirect("/auction");
+    redirect("/profile");
 }

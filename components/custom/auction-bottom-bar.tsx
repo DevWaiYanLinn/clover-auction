@@ -9,10 +9,10 @@ import { fetchAPI } from "@/lib/fetch";
 import { getBidErrorMessage } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
-import { AuctionTableData } from "@/types";
+import { AuctionTableData, SocketBid } from "@/types";
 import { socket } from "@/socket/socket-io";
 
-export default function AuctionBidBar() {
+export default function AuctionBottomBar() {
     const { auction } = auctionStore();
     const { mutate } = useSWRConfig();
     const searchParams = useSearchParams();
@@ -21,11 +21,8 @@ export default function AuctionBidBar() {
     const [isConnected, setIsConnected] = useState(socket.connected);
     const disabled = !auction || pending;
 
-    const onBid = useCallback(
-        (bid: {
-            user: { id: number };
-            auction: { id: number; currentBid: number; itemId: Number };
-        }) => {
+    const mutateBid = useCallback(
+        (auction: { id: number; currentBid: Number }) => {
             mutate(
                 [
                     "/api/auctions",
@@ -35,10 +32,10 @@ export default function AuctionBidBar() {
                 ],
                 (data: AuctionTableData[] | undefined) => {
                     return data?.map((a) => {
-                        if (a.id === bid.auction.id) {
+                        if (a.id === auction.id) {
                             return {
                                 ...a,
-                                currentBid: bid.auction.currentBid as any,
+                                currentBid: auction.currentBid as any,
                             };
                         }
                         return a;
@@ -58,6 +55,13 @@ export default function AuctionBidBar() {
 
         function onDisconnect() {
             setIsConnected(false);
+        }
+
+        function onBid(bid: SocketBid) {
+            mutateBid({
+                id: bid.auction.id,
+                currentBid: bid.auction.currentBid,
+            });
         }
 
         socket.on("connect", onConnect);
@@ -89,23 +93,6 @@ export default function AuctionBidBar() {
             });
 
             toast.success("Your Bid Success");
-            // await mutate(
-            //     [
-            //         "/api/auctions",
-            //         new URLSearchParams(
-            //             Object.fromEntries(searchParams.entries()),
-            //         ).toString(),
-            //     ],
-            //     (data: AuctionTableData[] | undefined) => {
-            //         return data?.map((a) => {
-            //             if (a.id === auction.id) {
-            //                 return { ...a, currentBid: bidAmount as any };
-            //             }
-            //             return a;
-            //         });
-            //     },
-            //     { revalidate: false },
-            // );
         } catch (error: any) {
             toast.error(getBidErrorMessage(error));
         } finally {

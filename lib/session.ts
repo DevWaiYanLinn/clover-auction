@@ -1,9 +1,8 @@
 import { Session } from "@/types";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import * as jose from "jose";
 import config from "@/config";
 import { cache } from "react";
-import { type NextRequest } from "next/server";
 
 let keyPromise: Promise<{
     privateKey: jose.KeyLike;
@@ -45,12 +44,10 @@ export const decrypt = async (jwe: string): Promise<Session | null> => {
     }
 };
 
-export const login = async (user: { id: number }, request: NextRequest) => {
-    const encryptedString = await encrypt(
-        user,
-        request.headers.get("User-Agent"),
-    );
+export const login = async (user: { id: number }) => {
+    const heads = await headers();
     const cookieStore = await cookies();
+    const encryptedString = await encrypt(user, heads.get("User-Agent"));
     cookieStore.set(config.session.cookieName, encryptedString, {
         path: "/",
         httpOnly: true,

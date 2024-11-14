@@ -3,9 +3,7 @@ import { compare } from "@/lib/bcrypt";
 import prisma from "@/database/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { cookies, headers } from "next/headers";
-import { encrypt } from "@/lib/session";
-import config from "@/config";
+import { login } from "@/lib/session";
 
 const schema = z.object({
     email: z.string({ invalid_type_error: "Invalid Email." }),
@@ -43,22 +41,8 @@ export async function singIn(
     if (!user?.id || !(await compare(data.password, user.password))) {
         return { errors: { message: ["The name or email wrong!"] } };
     }
-    const cookieStore = await cookies();
-    const heads = await headers();
 
-    const encryptedString = await encrypt(
-        {
-            id: user.id,
-        },
-        heads.get("User-Agent")!,
-    );
+    await login({ id: user.id });
 
-    cookieStore.set(config.session.cookieName, encryptedString, {
-        path: "/",
-        httpOnly: true,
-        maxAge: 60 * 60 * 24 * 365,
-        secure: process.env.NODE_ENV === "production",
-    });
-
-    redirect("/auction");
+    redirect("/profile");
 }

@@ -1,11 +1,11 @@
-import { type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 import { v4 as uuidv4 } from "uuid";
 import { login } from "@/lib/session";
 import { findOrCreateUser } from "@/services/user-service";
 import { HttpError } from "@/lib/exception";
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, response: NextResponse) {
     const query = request.nextUrl.searchParams;
 
     const oauth2Client = new google.auth.OAuth2(
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
             data: { name: info.name, email: info.email, password: uuidv4() },
         });
 
-        await login({ id: user.id }, request);
+        await login({ id: user.id });
 
         return Response.redirect(new URL("/profile", request.nextUrl));
     } catch (error) {

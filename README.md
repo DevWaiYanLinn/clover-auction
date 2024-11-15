@@ -29,10 +29,11 @@ As of now, the auction app includes several essential functionalities to enhance
 -   **Bidding**: Users can place bids on auctions, and the system updates the highest bid in real time.
 
 ---
+## Need to fix
+-   **Remove Server Actions for performance reason**
 
 ## Upcoming Features to Add
-
--   **Real-Time Bidding Updates**
+-   **Admin Dashboard & User Dashboard**
 -   **Payment Processing for Winning Bids**
 
 ## Technologies Used in the Auction App

@@ -32,7 +32,8 @@ model User {
     items           Item[]
     bids            Bid[]
     transcations    Transaction[]
-    Token           Token[]
+    token           Token[]
+    auction         Auction[]
 
     @@map("users")
 }
@@ -93,7 +94,7 @@ model Category {
     updatedAt     DateTime      @updatedAt @map("updated_at")
     deleted       Boolean       @default(false)
     subcategories SubCategory[]
-    Item          Item[]
+    item          Item[]
 
     @@map("categories")
 }
@@ -144,7 +145,9 @@ model Auction {
     id            Int           @id @default(autoincrement())
     item          Item          @relation(fields: [itemId], references: [id])
     itemId        Int           @map("item_id")
-    increase      Int           @db.TinyInt
+    increase      Int           @default(5) @db.TinyInt
+    winner        User?         @relation(fields: [userId], references: [id])
+    userId        Int?          @map("user_id")
     startingPrice Decimal       @map("starting_price") @db.Decimal(10, 2)
     currentBid    Decimal?      @default(0) @map("current_bid") @db.Decimal(10, 2)
     buyoutPrice   Decimal       @map("buyout_price") @db.Decimal(10, 2)

@@ -2,12 +2,16 @@
 
 This project aims to build a full-stack application using Next.js and other useful libraries. It incorporates various tools commonly used in real-world applications, ensuring scalability and performance.
 
-
 ![image](https://github.com/user-attachments/assets/0a06d0d3-4712-404a-a9d4-af4d4e4777af)
 
-## Important Setup
-**Before cloning and setting up this project, you must first set up and run the [Socket Server](https://github.com/DevWaiYanLinn/clover-auction-socket-server)
-.**  
+## Important
+
+-   Currently **Clover Auction** is not stable and keep developing.
+-   You can meet dependencies conflict when "npm install" because of "Shadcn".Don't worry you can fix it using "npm --legacy-peer-deps install".
+-   You have to read prisma documentation to migrate database.
+-   Real time bidding and mail service will not workling if you don't setup redis server
+-   Before cloning and setting up this project, you must first set up and run the [Socket Server](https://github.com/DevWaiYanLinn/clover-auction-socket-server)
+    .
 
 ## Concept: Creating an Auction App Inspired by WoW
 
@@ -44,7 +48,7 @@ As of now, the auction app includes several essential functionalities to enhance
 -   **Prisma**: For database management and ORM
 -   **Redis**: For caching and session management, improving performance and scalability.
 -   **Zod**: A powerful library for data validation, ensuring correctness and reliability.
-development.
+    development.
 -   **Cloudinary**:: A cloud-based service for storing and managing images, providing easy integration for image uploads and optimization.
 
 ## Environment Variables
@@ -72,8 +76,16 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 CLOUDINARY_CLOUD_NAME=
 
-# IoRedis
+# IoRedis (you dont need to set url in dev mode)
 REDIS_URL=
+
+
+# Google Auth
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CALLBACK_URL=
+GOOGLE_USER_INFO_URL=
+GOOGLE_OAUTH_URL=
 ```
 
 ## Conclusion
@@ -85,4 +97,5 @@ This project was an important milestone in my journey as a full-stack developer,
 I would like to express my heartfelt gratitude to all my teachers for their invaluable support and guidance throughout this journey. Their knowledge and encouragement have been instrumental in helping me build this project.
 
 ## LICENSE
+
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International

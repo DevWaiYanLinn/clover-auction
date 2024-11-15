@@ -27,7 +27,8 @@ export default async function Page({ params }: { params: ParamsPromise }) {
     FROM bids b
     JOIN users u ON b.user_id = u.id
     WHERE b.auction_id = ?
-    ORDER BY b.amount desc;
+    ORDER BY b.amount desc
+    LIMIT 10;
 `;
     query.values = [id];
 

@@ -10,15 +10,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { singIn } from "@/app/(public)/login/actions";
 
 const initialState = {
-    errors: { password: [""], email: [""], message: [""] },
+    errors: { password: [], email: [] },
 };
 
 export function LoginForm() {
     const [state, formAction] = useActionState(singIn, initialState);
+    const [name, setName] = useState("");
     return (
         <Card className="mx-auto max-w-sm">
             <CardHeader>
@@ -32,11 +33,16 @@ export function LoginForm() {
                     <div className="grid gap-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             id="email"
                             type="email"
                             name="email"
                             placeholder="m@example.com"
                         />
+                        <div className="text-red-500 font-bold text-xs">
+                            {state.errors.email}
+                        </div>
                     </div>
                     <div className="grid gap-2">
                         <div className="flex items-center">
@@ -49,6 +55,9 @@ export function LoginForm() {
                             </Link>
                         </div>
                         <Input id="password" type="password" name="password" />
+                        <div className="text-red-500 font-bold text-xs">
+                            {state.errors.password}
+                        </div>
                     </div>
                     <Button type="submit" className="w-full">
                         Login
@@ -57,6 +66,7 @@ export function LoginForm() {
                         onClick={() => (window.location.href = "/auth/google")}
                         variant="outline"
                         className="w-full"
+                        type="button"
                     >
                         Login with Google
                     </Button>

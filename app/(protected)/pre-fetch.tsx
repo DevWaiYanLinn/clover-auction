@@ -15,7 +15,7 @@ export default function PreFetch({
                 fallback: prefetch,
                 revalidateOnMount: true,
                 revalidateIfStale: false,
-                revalidateOnReconnect: true,
+                revalidateOnReconnect: false,
                 revalidateOnFocus: false,
             }}
         >

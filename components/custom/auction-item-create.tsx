@@ -1,133 +1,116 @@
 "use client";
-import { itemAuction } from "@/app/(protected)/(user)/item/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useParams, usePathname } from "next/navigation";
-import { ChangeEvent, useActionState, useState } from "react";
-
-const initialState = {
-    errors: {
-        startingPrice: [],
-        buyoutPrice: [],
-        description: [],
-        startTime: [],
-        endTime: [],
-        message: [],
-    },
-    success: undefined,
-};
+import { fetchAPI } from "@/lib/fetch";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function AuctionItemCreate() {
     const param = useParams<{ id: string }>();
-    const pathName = usePathname();
-    const [form, setForm] = useState<{
-        startingPrice: string;
-        buyoutPrice: string;
-        startTime: string;
-        endTime: string;
-        description: string;
-    }>({
-        startingPrice: "",
-        buyoutPrice: "",
-        startTime: "",
-        endTime: "",
-        description: "",
-    });
+    const [errors, setErrors] = useState<any>({});
+    const router = useRouter();
 
-    const onHandleInput = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-        setForm((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
-        }));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+    const [pending, setPending] = useState(false);
+
+    const onAuctionSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
+        setPending(true);
+        e.preventDefault();
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        try {
+            await fetchAPI(`/api/items/${param.id}/auctions`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    Accept: "application/json",
+                },
+            });
+            router.push("/item");
+        } catch (error: any) {
+            if (error.status === 422) {
+                setErrors(error.info);
+                return;
+            }
+            toast.error("Auction creating failed.");
+        } finally {
+            setPending(false);
+        }
     };
-
-    const [state, action, pending] = useActionState(
-        itemAuction.bind(null, Number(param.id), pathName),
-        initialState,
-    );
 
     return (
         <form
-            action={action}
+            onSubmit={onAuctionSumbit}
             className="min-w-[500px] p-5 space-y-5 rounded-md shadow-md bg-white"
         >
             <h2 className="text-2xl font-medium">Create Auction</h2>
-            <div className="flex gap-5">
+            <div className="flex space-x-5">
                 <div className="flex-1">
                     <Label htmlFor="startingPrice">Staring Price</Label>
                     <Input
                         disabled={pending}
-                        value={form.startingPrice}
                         type="number"
                         name="startingPrice"
                         placeholder="100.00"
-                        onChange={onHandleInput}
                     />
-                    <span className="text-xs font-bold text-red-500">
-                        {state.errors.startingPrice}
-                    </span>
+                    <div className="text-xs font-bold text-red-500">
+                        {errors.startingPrice}
+                    </div>
                 </div>
                 <div className="flex-1">
                     <Label htmlFor="endPrice">Buyout Price</Label>
                     <Input
                         disabled={pending}
-                        value={form.buyoutPrice}
                         type="number"
                         name="buyoutPrice"
                         placeholder="1000.00"
-                        onChange={onHandleInput}
                     />
-                    <span className="text-xs font-bold text-red-500">
-                        {state.errors.buyoutPrice}
-                    </span>
+                    <div className="text-xs font-bold text-red-500">
+                        {errors.buyoutPrice}
+                    </div>
                 </div>
             </div>
-            <div className="flex gap-5">
+            <div className="flex space-x-5">
                 <div className="flex-1">
                     <Label htmlFor="Start Time">Staring Date</Label>
                     <Input
                         disabled={pending}
-                        value={form.startTime}
-                        type="date"
+                        type="datetime-local"
                         name="startTime"
                         placeholder="Pick Date"
-                        onChange={onHandleInput}
                     />
-                    <span className="text-xs font-bold text-red-500">
-                        {state.errors.startTime}
-                    </span>
+                    <div className="text-xs font-bold text-red-500">
+                        {errors.startTime}
+                    </div>
                 </div>
                 <div className="flex-1">
-                    <Label htmlFor="entTime">End Date</Label>
+                    <Label htmlFor="endTime">End Date</Label>
                     <Input
                         disabled={pending}
-                        value={form.endTime}
-                        type="date"
+                        type="datetime-local"
                         name="endTime"
                         placeholder="Pick Date"
-                        onChange={onHandleInput}
                     />
-                    <span className="text-xs font-bold text-red-500">
-                        {state.errors.endTime}
-                    </span>
+                    <div className="text-xs font-bold text-red-500">
+                        {errors.endTime}
+                    </div>
                 </div>
             </div>
             <div>
                 <Label htmlFor="description">Your message</Label>
                 <Textarea
-                    value={form.description}
                     rows={8}
                     className="w-full"
                     name="description"
                     placeholder="Type your message here."
                     id="description"
-                    onChange={onHandleInput}
                 />
+                <div className="text-xs font-bold text-red-500">
+                    {errors.description}
+                </div>
             </div>
             <Button disabled={pending} size={"lg"}>
                 Submit

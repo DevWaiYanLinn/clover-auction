@@ -15,8 +15,8 @@ const schema = z.object({
 export async function singIn(
     prevState: {
         errors: {
-            email?: string[] | undefined;
-            password?: string[] | undefined;
+            email?: string[];
+            password?: string[];
         };
     },
     formData: FormData,

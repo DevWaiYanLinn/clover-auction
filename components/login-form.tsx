@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { singIn } from "@/app/(public)/login/actions";
 
 const initialState = {
@@ -19,6 +19,7 @@ const initialState = {
 
 export function LoginForm() {
     const [state, formAction] = useActionState(singIn, initialState);
+    const [name, setName] = useState("");
     return (
         <Card className="mx-auto max-w-sm">
             <CardHeader>
@@ -32,6 +33,8 @@ export function LoginForm() {
                     <div className="grid gap-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             id="email"
                             type="email"
                             name="email"

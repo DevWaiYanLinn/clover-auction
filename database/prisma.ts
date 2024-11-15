@@ -29,11 +29,12 @@ const prismaClientSingleton = () => {
         result: {
             auction: {
                 status: {
-                    needs: { startTime: true, endTime: true },
+                    needs: { startTime: true, endTime: true, userId: true },
                     compute(auction) {
                         return getAuctionStatus(
                             auction.startTime,
                             auction.endTime,
+                            auction.userId,
                         );
                     },
                 },

@@ -13,7 +13,7 @@ import useSWR, { mutate } from "swr";
 import { AuctionTableData, AuthUser } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { getAuctionStatus } from "@/lib/utils";
 import { fetchAPI } from "@/lib/fetch";
 import { Button } from "../ui/button";
@@ -23,6 +23,13 @@ import Link from "next/link";
 const AuctionTable = function () {
     const searchParams = useSearchParams();
     const { auction, pick } = auctionStore();
+    const paramsString = useMemo(
+        () =>
+            new URLSearchParams(
+                Object.fromEntries(searchParams.entries()),
+            ).toString(),
+        [searchParams],
+    );
 
     const { data: user } = useSWR<AuthUser>(
         "/api/auth/users",
@@ -31,19 +38,15 @@ const AuctionTable = function () {
     );
 
     const { data } = useSWR<AuctionTableData[]>(
-        [
-            "/api/auctions",
-            new URLSearchParams(
-                Object.fromEntries(searchParams.entries()),
-            ).toString(),
-        ],
+        ["/api/auctions", paramsString],
         ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
         {
-            refreshInterval: 1000 * 60 * 3,
+            refreshInterval: 1000 * 60 * 5,
+            revalidateOnReconnect: true,
         },
     );
 
-    const onPick = (auction: AuctionTableData) => {
+    const onAutionPick = (auction: AuctionTableData) => {
         if (
             auction.item.seller.id === user?.id ||
             auction.status !== AuctionStatus.OPEN
@@ -58,19 +61,14 @@ const AuctionTable = function () {
         let timeInterval;
         timeInterval = setInterval(() => {
             mutate(
-                [
-                    "/api/auctions",
-                    new URLSearchParams(
-                        Object.fromEntries(searchParams.entries()),
-                    ).toString(),
-                ],
+                ["/api/auctions", paramsString],
                 (data: AuctionTableData[] | undefined) => {
-                    if (!data) {
-                        return data;
-                    }
-
-                    return data.map((a) => {
-                        const status = getAuctionStatus(a.startTime, a.endTime);
+                    return data?.map((a) => {
+                        const status = getAuctionStatus(
+                            a.startTime,
+                            a.endTime,
+                            a.userId,
+                        );
                         if (status !== a.status) {
                             return {
                                 ...a,
@@ -86,7 +84,7 @@ const AuctionTable = function () {
         return () => {
             clearInterval(timeInterval);
         };
-    }, [searchParams]);
+    }, [paramsString]);
 
     return (
         <div className="flex-1 border rounded-md overflow-y-scroll">
@@ -107,7 +105,7 @@ const AuctionTable = function () {
                     {data?.map((a) => {
                         return (
                             <TableRow
-                                onClick={() => onPick(a)}
+                                onClick={() => onAutionPick(a)}
                                 key={a.id}
                                 className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : null} ${a.status === "OPEN" ? "cursor-pointer" : "cursor-default"}`}
                             >

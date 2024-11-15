@@ -6,8 +6,7 @@ import auctionStore from "@/store/auction-store";
 import { useSWRConfig } from "swr";
 import { toast } from "react-toastify";
 import { fetchAPI } from "@/lib/fetch";
-import { getBidErrorMessage } from "@/lib/utils";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
 import { AuctionTableData, SocketBid } from "@/types";
 import { socket } from "@/socket/socket-io";
@@ -20,16 +19,38 @@ export default function AuctionBottomBar() {
     const [pending, setPending] = useState(false);
     const [isConnected, setIsConnected] = useState(socket.connected);
     const disabled = !auction || pending;
+    const paramsString = useMemo(
+        () =>
+            new URLSearchParams(
+                Object.fromEntries(searchParams.entries()),
+            ).toString(),
+        [searchParams],
+    );
+
+    const getBidErrorMessage = useCallback((error: any): string => {
+        const errorMessages: {
+            [key: number]: string | ((info: any) => string);
+        } = {
+            422: (info) => info.bidAmount || "Validation error occurred.",
+            409: "Bid conflict: Someone already bid, try again.",
+            403: "Auction is not opening or may be finished.",
+            401: "Session has expired.",
+        };
+
+        if (errorMessages[error.status]) {
+            const message = errorMessages[error.status];
+            return typeof message === "function"
+                ? message(error.info)
+                : message;
+        }
+
+        return "Unknown Error";
+    }, []);
 
     const mutateBid = useCallback(
         (auction: { id: number; currentBid: Number }) => {
             mutate(
-                [
-                    "/api/auctions",
-                    new URLSearchParams(
-                        Object.fromEntries(searchParams.entries()),
-                    ).toString(),
-                ],
+                ["/api/auctions", paramsString],
                 (data: AuctionTableData[] | undefined) => {
                     return data?.map((a) => {
                         if (a.id === auction.id) {
@@ -45,12 +66,16 @@ export default function AuctionBottomBar() {
             );
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [searchParams],
+        [paramsString],
     );
 
     useEffect(() => {
         function onConnect() {
             setIsConnected(true);
+        }
+
+        function onReconnect() {
+            // mutate(["/api/auctions", paramsString]);
         }
 
         function onDisconnect() {
@@ -65,6 +90,7 @@ export default function AuctionBottomBar() {
         }
 
         socket.on("connect", onConnect);
+        socket.on("reconnect", onReconnect);
         socket.on("disconnect", onDisconnect);
         socket.on("bid", onBid);
 
@@ -72,11 +98,12 @@ export default function AuctionBottomBar() {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
             socket.off("bid", onBid);
+            socket.off("reconnect", onReconnect);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const onBidSumit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!auction) return;
         setPending(true);
@@ -93,6 +120,9 @@ export default function AuctionBottomBar() {
 
             toast.success("Your Bid Success");
         } catch (error: any) {
+            if (error.staus === 403) {
+                mutate(["/api/auctions", paramsString]);
+            }
             toast.error(getBidErrorMessage(error));
         } finally {
             form.reset();
@@ -108,7 +138,7 @@ export default function AuctionBottomBar() {
                 </p>
             </div>
             <form
-                onSubmit={onSubmit}
+                onSubmit={onBidSumit}
                 className={`space-x-3 flex ${tableSegment === "page$" ? "visible" : " invisible"}`}
                 method="POST"
             >

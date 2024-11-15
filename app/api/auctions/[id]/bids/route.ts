@@ -71,7 +71,6 @@ export async function POST(
                 },
                 data: {
                     currentBid: new Decimal(data.bidAmount),
-                    userId: session.user.id,
                 },
             });
 

@@ -1,17 +1,23 @@
 import prisma from "@/database/prisma";
 import { ParamsPromise } from "@/types";
 import Image from "next/legacy/image";
+import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: ParamsPromise }) {
     const id = await (await params).id;
     const auction = await prisma.auction.findUnique({
         where: { id: Number(id) },
         include: {
-            item: true,
+            item: {
+                select: {
+                    name: true,
+                    imageUrl: true,
+                },
+            },
         },
     });
     if (!auction) {
-        return null;
+        return notFound();
     }
     return (
         <div className="justify-center p-5 space-y-3 overflow-hidden overflow-y-auto">

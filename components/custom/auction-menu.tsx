@@ -90,7 +90,7 @@ const AuctionMenu = () => {
                         <Button
                             variant={"destructive"}
                             onClick={() => {
-                                router.push("/Profile");
+                                router.push("/profile");
                             }}
                         >
                             <LogOut />

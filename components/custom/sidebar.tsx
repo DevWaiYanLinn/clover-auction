@@ -8,7 +8,7 @@ import {
 import { fetchAPI } from "@/lib/fetch";
 import { CategoryWithSubCategories } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import useSWR from "swr";
 
 const Sidebar = function () {
@@ -33,7 +33,7 @@ const Sidebar = function () {
     return (
         <>
             <div className="flex justify-center items-center py-2">
-                <h2 className="font-medium text-xl">Filter</h2>
+                <h2 className="font-medium text-xl">Category</h2>
             </div>
             <div className="space-y-3 h-full overflow-y-scroll">
                 <Accordion

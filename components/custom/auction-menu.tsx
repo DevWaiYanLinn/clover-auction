@@ -11,17 +11,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogOut, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
 
 const AuctionMenu = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const [search, setSearch] = useState(() => ({
+    const [search, setSearch] = useState({
         name: searchParams.get("name") ?? "",
         status: searchParams.get("status") ?? "",
-    }));
+    });
     const onSearch = () => {
         const paramsObj = Object.fromEntries(searchParams.entries());
         paramsObj.name = search.name;
@@ -36,7 +36,7 @@ const AuctionMenu = () => {
         router.push("/auction?" + new URLSearchParams(paramsObj).toString());
     };
     return (
-        <div className="flex mt-3 items-end">
+        <div className="flex items-end">
             <div className="flex-1 flex space-x-5 items-end">
                 <div>
                     <Label htmlFor="name">Name</Label>
@@ -83,18 +83,18 @@ const AuctionMenu = () => {
             <div className="flex-1 flex justify-end">
                 <div>
                     <div className="text-center space-x-3">
-                        <Button
-                            variant={"destructive"}
-                            onClick={() => {
-                                router.back();
-                            }}
-                        >
-                            <LogOut />
-                            Back
-                        </Button>
                         <Button onClick={onSearch}>
                             <Search />
                             Search
+                        </Button>
+                        <Button
+                            variant={"destructive"}
+                            onClick={() => {
+                                router.push("/Profile");
+                            }}
+                        >
+                            <LogOut />
+                            Home
                         </Button>
                     </div>
                 </div>

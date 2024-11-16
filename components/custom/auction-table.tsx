@@ -49,7 +49,8 @@ const AuctionTable = function () {
     const onAutionPick = (auction: AuctionTableData) => {
         if (
             auction.item.seller.id === user?.id ||
-            auction.status !== AuctionStatus.OPEN
+            auction.status !== AuctionStatus.OPEN ||
+            auction.userId
         ) {
             return;
         }
@@ -64,11 +65,9 @@ const AuctionTable = function () {
                 ["/api/auctions", paramsString],
                 (data: AuctionTableData[] | undefined) => {
                     return data?.map((a) => {
-                        const status = getAuctionStatus(
-                            a.startTime,
-                            a.endTime,
-                            a.userId,
-                        );
+                        const status = a.userId
+                            ? AuctionStatus.FINISHED
+                            : getAuctionStatus(a.startTime, a.endTime);
                         if (status !== a.status) {
                             return {
                                 ...a,
@@ -95,6 +94,7 @@ const AuctionTable = function () {
                         <TableHead>Status</TableHead>
                         <TableHead>Image</TableHead>
                         <TableHead>Seller</TableHead>
+                        <TableHead>Winner</TableHead>
                         <TableHead>Starting Price</TableHead>
                         <TableHead>Buyout Price</TableHead>
                         <TableHead>Current Bid</TableHead>
@@ -132,7 +132,7 @@ const AuctionTable = function () {
                                 >
                                     {a.item.seller.name}
                                 </TableCell>
-
+                                <TableCell>{a.winner?.name || "-"}</TableCell>
                                 <TableCell>
                                     ${Number(a.startingPrice).toFixed(2)}
                                 </TableCell>

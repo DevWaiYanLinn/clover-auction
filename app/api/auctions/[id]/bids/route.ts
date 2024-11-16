@@ -8,7 +8,7 @@ import { NextRequest } from "next/server";
 import z from "zod";
 
 const bidSchema = z.object({
-    bidAmount: z.number({ required_error: "Bib Amount is required" }),
+    amount: z.number({ required_error: "Bib Amount is required" }),
 });
 
 export async function POST(
@@ -38,27 +38,42 @@ export async function POST(
         });
 
         if (!found) {
-            throw new HttpError({ status: 404 });
+            throw new HttpError({ status: 404, message: "Auction not found." });
         }
 
         if (found.status !== AuctionStatus.OPEN) {
             throw new HttpError({ status: 403 });
         }
 
-        const session = await getSession();
-
-        if (!session) {
-            throw new HttpError({ status: 401 });
+        if (found.userId) {
+            throw new HttpError({
+                status: 403,
+                info: {
+                    message:
+                        "Auction has already concluded, no more bids can be placed.",
+                },
+            });
         }
 
         const currentBid =
             Number(found.currentBid) || Number(found.startingPrice);
 
-        if (data.bidAmount < currentBid + (found.increase / 100) * currentBid) {
+        if (data.amount < currentBid + (found.increase / 100) * currentBid) {
             throw new HttpError({
                 status: 422,
                 info: {
-                    bidAmount: `Current bid must be greater than previous bid(${currentBid}) plus or 5 % of previous bid.`,
+                    message: `Current bid must be greater than previous bid(${currentBid}) plus or 5 % of previous bid.`,
+                },
+            });
+        }
+
+        const session = await getSession();
+
+        if (!session) {
+            throw new HttpError({
+                status: 401,
+                info: {
+                    message: "Autentication is required.",
                 },
             });
         }
@@ -70,19 +85,20 @@ export async function POST(
                     updatedAt: found.updatedAt,
                 },
                 data: {
-                    currentBid: new Decimal(data.bidAmount),
+                    currentBid: new Decimal(data.amount),
                 },
             });
 
             if (!auction) {
                 throw new HttpError({
                     status: 409,
+                    message: "Failed to update the auction bid.",
                 });
             }
 
             await prisma.bid.create({
                 data: {
-                    userId: session.user.id,
+                    userId: session!.user.id,
                     amount: auction.currentBid!,
                     auctionId: auction.id,
                 },
@@ -90,20 +106,18 @@ export async function POST(
 
             return auction;
         });
-        publisher.publish(
+        await publisher.publish(
             "bid",
             JSON.stringify({
-                user: { id: session.user.id },
+                user: { id: session!.user.id },
                 auction: {
                     id: result.id,
-                    itemId: result.itemId,
-                    currentBid: Number(result.currentBid),
+                    amount: Number(result.currentBid),
                 },
             }),
         );
         return Response.json(result, { status: 200 });
     } catch (error: unknown) {
-        console.log(error);
         if (error instanceof HttpError) {
             return Response.json(
                 { info: error.info, message: error.message },
@@ -112,7 +126,12 @@ export async function POST(
         }
 
         return Response.json(
-            { info: {}, message: "unknown Error" },
+            {
+                info: {
+                    message: "Server Error.",
+                },
+                message: "unknown Error.",
+            },
             { status: 500 },
         );
     }

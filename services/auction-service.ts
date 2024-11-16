@@ -29,6 +29,12 @@ export const getAllAuctions = async ({
 
     return prisma.auction.findMany({
         include: {
+            winner: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
             item: {
                 include: {
                     seller: {

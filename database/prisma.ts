@@ -1,7 +1,7 @@
 import { hash } from "@/lib/bcrypt";
 import { getAuctionStatus } from "@/lib/utils";
 import { findOrCreateUserType } from "@/types";
-import { PrismaClient } from "@prisma/client";
+import { AuctionStatus, PrismaClient } from "@prisma/client";
 
 const prismaClientSingleton = () => {
     const prisma = new PrismaClient();
@@ -31,10 +31,12 @@ const prismaClientSingleton = () => {
                 status: {
                     needs: { startTime: true, endTime: true, userId: true },
                     compute(auction) {
+                        if (auction.userId) {
+                            return AuctionStatus.FINISHED;
+                        }
                         return getAuctionStatus(
                             auction.startTime,
                             auction.endTime,
-                            auction.userId,
                         );
                     },
                 },

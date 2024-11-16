@@ -6,18 +6,10 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export function getAuctionStatus(
-    start: Date,
-    end: Date,
-    userId: number | null,
-) {
+export function getAuctionStatus(start: Date, end: Date) {
     const startTime = new Date(start).getTime();
     const endTime = new Date(end).getTime();
     const currentTime = new Date().getTime();
-
-    if (userId) {
-        return AuctionStatus.FINISHED;
-    }
 
     if (startTime <= currentTime && endTime > currentTime) {
         return AuctionStatus.OPEN;

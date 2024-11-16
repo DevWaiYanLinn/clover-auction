@@ -37,7 +37,11 @@ export interface ConfirmMail extends MailTemplateBuilder {
 }
 
 export type AuctionTableData = Auction & {
-    item: Item & { seller: Pick<User, "name" | "id"> };
+    winner: Pick<User, "name" | "id"> | null;
+} & {
+    item: Item & {
+        seller: Pick<User, "name" | "id">;
+    };
 };
 
 export interface CategoryWithSubCategories extends Category {
@@ -70,5 +74,5 @@ export type findOrCreateUserType = {
 
 export type SocketBid = {
     user: { id: number };
-    auction: { id: number; currentBid: number; itemId: Number };
+    auction: { id: number; amount: number };
 };

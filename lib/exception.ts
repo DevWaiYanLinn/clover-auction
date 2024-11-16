@@ -25,17 +25,15 @@ export class HttpError extends Error {
     constructor({
         info = {},
         status,
-        message = "",
     }: {
         info?: HttpErrorInfo;
         status: HttpStatus;
         message?: string;
     }) {
-        const errorMessage = message || getMessage(status);
-        super(errorMessage);
+        super(getMessage(status));
         this.info = info;
         this.status = status;
-        this.message = errorMessage;
+        this.message = getMessage(status);
 
         if (Error.captureStackTrace) {
             Error.captureStackTrace(this, HttpError);

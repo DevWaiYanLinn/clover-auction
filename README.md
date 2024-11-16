@@ -2,7 +2,11 @@
 
 This project aims to build a full-stack application using Next.js and other useful libraries. It incorporates various tools commonly used in real-world applications, ensuring scalability and performance.
 
-![image](https://github.com/user-attachments/assets/38d18375-1761-47a0-98f1-4f7ffd69b565)
+![image](https://github.com/user-attachments/assets/893d03d5-c0de-40b5-b2cf-eb2b058d0389)
+
+![image](https://github.com/user-attachments/assets/c45ee69a-1bb6-45f6-b779-1e9ac2bb0fd6)
+
+
 
 ## Important
 

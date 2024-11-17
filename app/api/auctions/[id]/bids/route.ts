@@ -22,7 +22,10 @@ export async function POST(
     try {
         if (!validatedFields.success) {
             throw new HttpError({
-                info: validatedFields.error.flatten().fieldErrors,
+                info: {
+                    message:
+                        validatedFields.error.flatten().fieldErrors.amount![0],
+                },
                 status: 422,
             });
         }
@@ -118,21 +121,21 @@ export async function POST(
         );
         return Response.json(result, { status: 200 });
     } catch (error: unknown) {
-        if (error instanceof HttpError) {
-            return Response.json(
-                { info: error.info, message: error.message },
-                { status: error.status },
-            );
-        }
-
-        return Response.json(
-            {
-                info: {
-                    message: "Server Error.",
-                },
-                message: "unknown Error.",
-            },
-            { status: 500 },
-        );
+        const [data, init] =
+            error instanceof HttpError
+                ? [
+                      { info: error.info, message: error.message },
+                      { status: error.status },
+                  ]
+                : [
+                      {
+                          info: {
+                              message: "Server Error",
+                          },
+                          message: "unknown error",
+                      },
+                      { status: 500 },
+                  ];
+        return Response.json(data, init);
     }
 }

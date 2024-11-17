@@ -7,19 +7,19 @@ import { useSWRConfig } from "swr";
 import { toast } from "react-toastify";
 import { fetchAPI } from "@/lib/fetch";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { AuctionTableData, SocketBid } from "@/types";
 import { socket } from "@/socket/socket-io";
 import { AuctionStatus } from "@prisma/client";
 
 export default function AuctionBottomBar() {
-    const { auction } = auctionStore();
+    const { auction, pick } = auctionStore();
     const { mutate } = useSWRConfig();
     const searchParams = useSearchParams();
-    const tableSegment = useSelectedLayoutSegment("table");
     const [pending, setPending] = useState(false);
     const [isConnected, setIsConnected] = useState(socket.connected);
     const disabled = !auction || pending;
+    const [amount, setAmount] = useState("");
     const paramsString = useMemo(
         () =>
             new URLSearchParams(
@@ -27,26 +27,6 @@ export default function AuctionBottomBar() {
             ).toString(),
         [searchParams],
     );
-
-    const getBidErrorMessage = useCallback((error: any): string => {
-        const errorMessages: {
-            [key: number]: string | ((info: any) => string);
-        } = {
-            422: (info) => info.amount || "Validation error occurred.",
-            409: "Bid conflict: Someone already bid, try again.",
-            403: "Auction is not opening or may be finished.",
-            401: "Session has expired.",
-        };
-
-        if (errorMessages[error.status]) {
-            const message = errorMessages[error.status];
-            return typeof message === "function"
-                ? message(error.info)
-                : message;
-        }
-
-        return "Unknown Error";
-    }, []);
 
     const onBuyoutClick = async () => {
         if (!auction) return;
@@ -58,15 +38,15 @@ export default function AuctionBottomBar() {
 
             toast.success("Buyout Success");
         } catch (error: any) {
-            if (error.staus === 403) {
-                mutate(["/api/auctions", paramsString]);
-            }
+            toast.error(error.info.message);
         } finally {
+            pick(null);
+            setAmount("");
             setPending(false);
         }
     };
 
-    const mutateAuction = useCallback(
+    const mutateAuctionOnBid = useCallback(
         ({ user, auction }: SocketBid, buyout: boolean = false) => {
             mutate(
                 ["/api/auctions", paramsString],
@@ -93,13 +73,18 @@ export default function AuctionBottomBar() {
         [paramsString],
     );
 
+    const mutateAuction = useCallback(() => {
+        mutate(["/api/acutions", paramsString]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [paramsString]);
+
     useEffect(() => {
         function onConnect() {
             setIsConnected(true);
         }
 
         function onReconnect() {
-            // mutate(["/api/auctions", paramsString]);
+            mutateAuction();
         }
 
         function onDisconnect() {
@@ -107,11 +92,11 @@ export default function AuctionBottomBar() {
         }
 
         function onBid(data: SocketBid) {
-            mutateAuction(data);
+            mutateAuctionOnBid(data);
         }
 
         function onBuyout(data: SocketBid) {
-            mutateAuction(data, true);
+            mutateAuctionOnBid(data, true);
         }
 
         socket.on("connect", onConnect);
@@ -130,29 +115,23 @@ export default function AuctionBottomBar() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const onBidSumit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const onBidClick = async () => {
         if (!auction) return;
         setPending(true);
-        const form = e.currentTarget;
-        const formData = new FormData(form);
-        const amount = Number(formData.get("amount"));
         try {
             await fetchAPI(`/api/auctions/${auction.id}/bids`, {
                 method: "POST",
                 body: JSON.stringify({
-                    amount,
+                    amount: Number(amount),
                 }),
             });
 
             toast.success("Your Bid Success");
         } catch (error: any) {
-            if (error.staus === 403) {
-                mutate(["/api/auctions", paramsString]);
-            }
-            toast.error(getBidErrorMessage(error));
+            toast.error(error.info.message);
         } finally {
-            form.reset();
+            pick(null);
+            setAmount("");
             setPending(false);
         }
     };
@@ -164,17 +143,24 @@ export default function AuctionBottomBar() {
                     Copy Right©Clover Auction
                 </p>
             </div>
-            <form
-                onSubmit={onBidSumit}
-                className={`space-x-3 flex ${tableSegment === "page$" ? "visible" : " invisible"}`}
-                method="POST"
-            >
+            <div className={`space-x-3 flex`}>
                 <div className="flex items-center space-x-2">
                     <Label>Bid</Label>
-                    <Input name="amount" type="text" disabled={disabled} />
+                    <Input
+                        name="amount"
+                        type="number"
+                        value={amount}
+                        disabled={disabled}
+                        onChange={(e) => setAmount(e.currentTarget.value)}
+                    />
                 </div>
                 <div>
-                    <Button size={"sm"} disabled={disabled}>
+                    <Button
+                        type="button"
+                        onClick={onBidClick}
+                        size={"sm"}
+                        disabled={disabled}
+                    >
                         Bid
                     </Button>
                 </div>
@@ -187,7 +173,7 @@ export default function AuctionBottomBar() {
                         Buyout
                     </Button>
                 </div>
-            </form>
+            </div>
         </div>
     );
 }

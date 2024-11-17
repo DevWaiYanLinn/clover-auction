@@ -19,6 +19,7 @@ import { fetchAPI } from "@/lib/fetch";
 import { Button } from "../ui/button";
 import { UsersRound } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "../ui/badge";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
@@ -41,8 +42,8 @@ const AuctionTable = function () {
         ["/api/auctions", paramsString],
         ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
         {
-            refreshInterval: 1000 * 60 * 5,
             revalidateOnReconnect: true,
+            revalidateIfStale: true,
         },
     );
 
@@ -65,6 +66,7 @@ const AuctionTable = function () {
                 ["/api/auctions", paramsString],
                 (data: AuctionTableData[] | undefined) => {
                     return data?.map((a) => {
+                        console.log(a);
                         const status = a.userId
                             ? AuctionStatus.FINISHED
                             : getAuctionStatus(a.startTime, a.endTime);
@@ -94,11 +96,10 @@ const AuctionTable = function () {
                         <TableHead>Status</TableHead>
                         <TableHead>Image</TableHead>
                         <TableHead>Seller</TableHead>
-                        <TableHead>Winner</TableHead>
                         <TableHead>Starting Price</TableHead>
                         <TableHead>Buyout Price</TableHead>
                         <TableHead>Current Bid</TableHead>
-                        <TableHead className="text-right">Bidder</TableHead>
+                        <TableHead className="text-right">Detail</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -112,10 +113,13 @@ const AuctionTable = function () {
                                 <TableCell className="font-medium">
                                     {a.item.name}
                                 </TableCell>
-                                <TableCell
-                                    className={`${a.status === AuctionStatus.OPEN ? "text-green-400" : "text-red-500"} font-bold capitalize`}
-                                >
-                                    {a.status.toLowerCase()}
+                                <TableCell className={`capitalize`}>
+                                    <span
+                                        className={`${a.status === AuctionStatus.OPEN ? "text-green-600" : "text-red-500"} font-bold py-[0.2rem] px-2 bg-white rounded-2xl`}
+                                    >
+                                        {a.status.toLowerCase()}
+                                    </span>{" "}
+                                    {a.buyout ? "(buyout)" : ""}
                                 </TableCell>
                                 <TableCell>
                                     <Avatar>
@@ -132,7 +136,6 @@ const AuctionTable = function () {
                                 >
                                     {a.item.seller.name}
                                 </TableCell>
-                                <TableCell>{a.winner?.name || "-"}</TableCell>
                                 <TableCell>
                                     ${Number(a.startingPrice).toFixed(2)}
                                 </TableCell>

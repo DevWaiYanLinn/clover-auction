@@ -116,6 +116,7 @@ export async function POST(
                 auction: {
                     id: result.id,
                     amount: Number(result.currentBid),
+                    buyout: false,
                 },
             }),
         );

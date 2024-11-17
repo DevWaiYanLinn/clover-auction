@@ -74,5 +74,9 @@ export type findOrCreateUserType = {
 
 export type SocketBid = {
     user: { id: number };
-    auction: { id: number; amount: number };
+    auction: { id: number; amount: number; buyout: boolean };
 };
+
+type a = { a: string; b: string };
+
+type j = { [key in keyof a]?: a[key] };

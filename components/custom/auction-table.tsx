@@ -19,7 +19,6 @@ import { fetchAPI } from "@/lib/fetch";
 import { Button } from "../ui/button";
 import { UsersRound } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "../ui/badge";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
@@ -42,23 +41,15 @@ const AuctionTable = function () {
         ["/api/auctions", paramsString],
         ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
         {
+            dedupingInterval: 1000 * 60,
             revalidateOnReconnect: true,
             revalidateIfStale: true,
         },
     );
 
     const onAutionPick = (auction: AuctionTableData) => {
-        if (
-            auction.item.seller.id === user?.id ||
-            auction.status !== AuctionStatus.OPEN ||
-            auction.userId
-        ) {
-            return;
-        }
-
         pick(auction);
     };
-
     useEffect(() => {
         let timeInterval;
         timeInterval = setInterval(() => {
@@ -66,14 +57,13 @@ const AuctionTable = function () {
                 ["/api/auctions", paramsString],
                 (data: AuctionTableData[] | undefined) => {
                     return data?.map((a) => {
-                        console.log(a);
                         const status = a.userId
                             ? AuctionStatus.FINISHED
                             : getAuctionStatus(a.startTime, a.endTime);
                         if (status !== a.status) {
                             return {
                                 ...a,
-                                status,
+                                ...Object.assign(a, { status }),
                             };
                         }
                         return a;
@@ -108,7 +98,7 @@ const AuctionTable = function () {
                             <TableRow
                                 onClick={() => onAutionPick(a)}
                                 key={a.id}
-                                className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : null} ${a.status === "OPEN" ? "cursor-pointer" : "cursor-default"}`}
+                                className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : "bg-inherit"} cursor-pointer`}
                             >
                                 <TableCell className="font-medium">
                                     {a.item.name}
@@ -147,9 +137,6 @@ const AuctionTable = function () {
                                 </TableCell>
                                 <TableCell className="text-right text-black bg-white">
                                     <Link
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                        }}
                                         href={`/auction/${a.id}/bid`}
                                         prefetch={false}
                                     >

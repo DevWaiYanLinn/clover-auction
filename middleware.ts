@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { auth } from "@/lib/session";
 
 const publicRoutes = ["/", "/verify"];
 const authRoutes = [
@@ -13,7 +13,7 @@ export default async function middleware(req: NextRequest, res: NextResponse) {
     const path = req.nextUrl.pathname;
     const isPublicRoute = publicRoutes.includes(path);
 
-    const session = await getSession();
+    const session = await auth();
 
     const device = req.headers.get("User-Agent");
     const authenticated = session && session.device === device;

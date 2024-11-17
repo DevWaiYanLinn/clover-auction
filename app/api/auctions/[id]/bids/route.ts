@@ -1,7 +1,7 @@
 import prisma from "@/database/prisma";
 import publisher from "@/database/redis/publisher";
 import { HttpError } from "@/lib/exception";
-import { getSession } from "@/lib/session";
+import { auth } from "@/lib/session";
 import { AuctionStatus } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { NextRequest } from "next/server";
@@ -17,7 +17,7 @@ export async function POST(
 ) {
     const body = await request.json();
 
-    const validatedFields = bidSchema.safeParse(body);
+    const validatedFields = await bidSchema.spa(body);
 
     try {
         if (!validatedFields.success) {
@@ -59,7 +59,7 @@ export async function POST(
         }
 
         const currentBid =
-            Number(found.currentBid) || Number(found.startingPrice);
+            found.currentBid.toNumber() || found.startingPrice.toNumber();
 
         if (data.amount < currentBid + (found.increase / 100) * currentBid) {
             throw new HttpError({
@@ -70,7 +70,7 @@ export async function POST(
             });
         }
 
-        const session = await getSession();
+        const session = await auth();
 
         if (!session) {
             throw new HttpError({
@@ -101,7 +101,7 @@ export async function POST(
 
             await prisma.bid.create({
                 data: {
-                    userId: session!.user.id,
+                    userId: session.user.id,
                     amount: auction.currentBid!,
                     auctionId: auction.id,
                 },
@@ -112,10 +112,10 @@ export async function POST(
         await publisher.publish(
             "bid",
             JSON.stringify({
-                user: { id: session!.user.id },
+                user: { id: session.user.id },
                 auction: {
                     id: result.id,
-                    amount: Number(result.currentBid),
+                    amount: result.currentBid.toNumber(),
                     buyout: false,
                 },
             }),

@@ -6,7 +6,6 @@ import { AuctionStatus, PrismaClient } from "@prisma/client";
 const prismaClientSingleton = () => {
     const prisma = new PrismaClient();
     return prisma.$extends({
-        name: "extend-client-1",
         model: {
             user: {
                 async findOrCreate({ email, data }: findOrCreateUserType) {

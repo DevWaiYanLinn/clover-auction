@@ -56,7 +56,7 @@ export const login = async (user: { id: number }) => {
     });
 };
 
-export const getSession = cache(async (): Promise<Session | null> => {
+export const auth = cache(async (): Promise<Session | null> => {
     const cookie = (await cookies()).get(config.session.cookieName)?.value;
     const session = cookie && (await decrypt(cookie));
     return session ? session : null;

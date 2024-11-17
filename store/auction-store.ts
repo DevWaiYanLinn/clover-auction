@@ -1,9 +1,9 @@
-import { AuctionTableData } from "@/types";
+import { AuctionJson } from "@/types";
 import { create } from "zustand";
 
 interface PickAuctionState {
-    auction: AuctionTableData | null;
-    pick: (auction: AuctionTableData | null) => void;
+    auction: AuctionJson | null;
+    pick: (auction: AuctionJson | null) => void;
 }
 
 const auctionStore = create<PickAuctionState>()((set) => ({

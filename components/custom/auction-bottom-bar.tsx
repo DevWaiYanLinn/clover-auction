@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { fetchAPI } from "@/lib/fetch";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { AuctionTableData, AuthUser, SocketBid } from "@/types";
+import { AuctionJson, AuthUser, FetchError, SocketBid } from "@/types";
 import { socket } from "@/socket/socket-io";
 import { AuctionStatus } from "@prisma/client";
 
@@ -42,11 +42,11 @@ export default function AuctionBottomBar() {
 
     const mutateAuctionOnBid = useCallback(
         (auction: {
-            [key in keyof AuctionTableData]?: AuctionTableData[key];
+            [key in keyof AuctionJson]?: AuctionJson[key];
         }) => {
             mutate(
                 ["/api/auctions", paramsString],
-                (data: AuctionTableData[] | undefined) => {
+                (data: AuctionJson[] | undefined) => {
                     return data?.map((a) => {
                         if (a.id === auction.id) {
                             return { ...a, ...Object.assign(a, auction) };
@@ -82,14 +82,14 @@ export default function AuctionBottomBar() {
         function onBid({ auction }: SocketBid) {
             mutateAuctionOnBid({
                 id: auction.id,
-                currentBid: auction.amount as any,
+                currentBid: auction.amount,
             });
         }
 
         function onBuyout({ user, auction }: SocketBid) {
             mutateAuctionOnBid({
                 id: auction.id,
-                currentBid: auction.amount as any,
+                currentBid: auction.amount,
                 userId: user.id,
                 buyout: true,
                 status: AuctionStatus.FINISHED,

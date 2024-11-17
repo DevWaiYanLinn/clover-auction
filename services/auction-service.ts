@@ -1,5 +1,7 @@
 import prisma from "@/database/prisma";
-import { AuctionStatus } from "@prisma/client";
+import { BidRecord } from "@/types";
+import { AuctionStatus, Prisma } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export const getAllAuctions = async ({
     subcategory,
@@ -27,7 +29,7 @@ export const getAllAuctions = async ({
         filter["status"] = status as AuctionStatus;
     }
 
-    return prisma.auction.findMany({
+    const auctions = await prisma.auction.findMany({
         include: {
             winner: {
                 select: {
@@ -51,4 +53,45 @@ export const getAllAuctions = async ({
             id: "desc",
         },
     });
+
+    return auctions.map(
+        ({ startingPrice, buyoutPrice, currentBid, ...others }) => ({
+            ...others,
+            startingPrice: startingPrice.toNumber(),
+            buyoutPrice: buyoutPrice.toNumber(),
+            currentBid: currentBid.toNumber(),
+        }),
+    );
+};
+
+export const auctionRankById = async (id: string | number) => {
+    const query: any = Prisma.sql`
+   SELECT 
+        b.id,
+        b.bid_time as bidTime,
+        b.amount,
+        LAG(b.amount) OVER (ORDER BY b.bid_time) AS previousAmount,
+        b.amount - LAG(b.amount) OVER (ORDER BY b.bid_time) AS difference,
+        u.id AS userId,
+        u.name as username
+    FROM bids b
+    JOIN users u ON b.user_id = u.id
+    WHERE b.auction_id = ?
+    ORDER BY b.amount desc
+    LIMIT 10;
+`;
+    query.values = [id];
+
+    const bids = await prisma.$queryRaw<Array<any>>(query);
+    return bids.map(
+        ({ amount, previousAmount, difference, bidTime, ...others }) => {
+            return {
+                amount: (amount as Decimal).toNumber(),
+                previousAmount: Number(previousAmount),
+                difference: Number(difference),
+                bidTime: (bidTime as Date).toDateString(),
+                ...others,
+            };
+        },
+    );
 };

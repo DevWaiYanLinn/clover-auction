@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
 import useSWR, { mutate } from "swr";
-import { AuctionTableData, AuthUser } from "@/types";
+import { AuctionJson, AuthUser } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
 import { useEffect, useMemo } from "react";
@@ -37,7 +37,7 @@ const AuctionTable = function () {
         { revalidateOnMount: false },
     );
 
-    const { data } = useSWR<AuctionTableData[]>(
+    const { data } = useSWR<AuctionJson[]>(
         ["/api/auctions", paramsString],
         ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
         {
@@ -46,8 +46,7 @@ const AuctionTable = function () {
             revalidateIfStale: true,
         },
     );
-
-    const onAutionPick = (auction: AuctionTableData) => {
+    const onAutionPick = (auction: AuctionJson) => {
         pick(auction);
     };
     useEffect(() => {
@@ -55,7 +54,7 @@ const AuctionTable = function () {
         timeInterval = setInterval(() => {
             mutate(
                 ["/api/auctions", paramsString],
-                (data: AuctionTableData[] | undefined) => {
+                (data: AuctionJson[] | undefined) => {
                     return data?.map((a) => {
                         const status = a.userId
                             ? AuctionStatus.FINISHED
@@ -127,13 +126,13 @@ const AuctionTable = function () {
                                     {a.item.seller.name}
                                 </TableCell>
                                 <TableCell>
-                                    ${Number(a.startingPrice).toFixed(2)}
+                                    ${a.startingPrice.toFixed(2)}
                                 </TableCell>
                                 <TableCell>
-                                    ${Number(a.buyoutPrice).toFixed(2)}
+                                    ${a.buyoutPrice.toFixed(2)}
                                 </TableCell>
                                 <TableCell>
-                                    ${Number(a.currentBid).toFixed(2)}
+                                    ${a.currentBid.toFixed(2)}
                                 </TableCell>
                                 <TableCell className="text-right text-black bg-white">
                                     <Link

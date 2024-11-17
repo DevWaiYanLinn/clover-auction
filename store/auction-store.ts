@@ -1,9 +1,9 @@
-import { type Auction } from "@prisma/client";
+import { AuctionJson } from "@/types";
 import { create } from "zustand";
 
 interface PickAuctionState {
-    auction: Auction | null;
-    pick: (auction: Auction | null) => void;
+    auction: AuctionJson | null;
+    pick: (auction: AuctionJson | null) => void;
 }
 
 const auctionStore = create<PickAuctionState>()((set) => ({

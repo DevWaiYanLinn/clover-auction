@@ -1,25 +1,25 @@
 import prisma from "@/database/prisma";
-import { getSession } from "@/lib/session";
+import { auth } from "@/lib/session";
 
 export const getAllItems = async (
-    filters: {
+    query: {
         [key: string]: string | string[] | undefined;
     } = {},
 ) => {
-    const where: { name?: string; subcategory?: number } = {};
+    const filter: { name?: string; subcategory?: number } = {};
 
-    const session = await getSession();
+    const session = await auth();
 
-    if (filters["name"]) {
-        where["name"] = filters["name"] as string;
+    if (query["name"]) {
+        filter["name"] = query["name"] as string;
     }
 
-    if (filters["subcategory"]) {
-        where["subcategory"] = Number(filters["subcategory"]);
+    if (query["subcategory"]) {
+        filter["subcategory"] = Number(query["subcategory"]);
     }
 
     return prisma.item.findMany({
-        where: { userId: session!.user.id, ...where },
+        where: { userId: session?.user.id, ...filter },
         orderBy: {
             id: "desc",
         },

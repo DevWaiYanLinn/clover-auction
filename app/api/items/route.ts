@@ -1,6 +1,6 @@
 import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/constants";
 import prisma from "@/database/prisma";
-import { getSession } from "@/lib/session";
+import { auth } from "@/lib/session";
 import { getAllItems } from "@/services/item-service";
 import { type NextRequest } from "next/server";
 import z from "zod";
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
             where: { id: Number(data.subcategory) },
         });
 
-        const session = await getSession();
+        const session = await auth();
 
         const item = await prisma.item.create({
             data: {

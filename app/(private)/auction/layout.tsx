@@ -1,5 +1,4 @@
 import AuctionBottomBar from "@/components/custom/auction-bottom-bar";
-import AuctionMenu from "@/components/custom/auction-menu";
 
 export default function Layout({
     children,

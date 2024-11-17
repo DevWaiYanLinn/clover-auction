@@ -1,7 +1,7 @@
 import prisma from "@/database/prisma";
 import publisher from "@/database/redis/publisher";
 import { HttpError } from "@/lib/exception";
-import { getSession } from "@/lib/session";
+import { auth } from "@/lib/session";
 import { AuctionStatus } from "@prisma/client";
 import { type NextRequest } from "next/server";
 
@@ -19,7 +19,7 @@ export async function POST(
         },
     });
 
-    const session = await getSession();
+    const session = await auth();
 
     try {
         if (!session) {
@@ -107,6 +107,7 @@ export async function POST(
                 auction: {
                     id: result.id,
                     amount: Number(result.buyoutPrice),
+                    buyout: true,
                 },
             }),
         );

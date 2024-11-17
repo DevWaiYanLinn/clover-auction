@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
 import useSWR, { mutate } from "swr";
-import { AuctionTableData, AuthUser } from "@/types";
+import { AuctionJson, AuthUser } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
 import { useEffect, useMemo } from "react";
@@ -19,7 +19,6 @@ import { fetchAPI } from "@/lib/fetch";
 import { Button } from "../ui/button";
 import { UsersRound } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "../ui/badge";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
@@ -38,42 +37,32 @@ const AuctionTable = function () {
         { revalidateOnMount: false },
     );
 
-    const { data } = useSWR<AuctionTableData[]>(
+    const { data } = useSWR<AuctionJson[]>(
         ["/api/auctions", paramsString],
         ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
         {
+            dedupingInterval: 1000 * 60,
             revalidateOnReconnect: true,
             revalidateIfStale: true,
         },
     );
-
-    const onAutionPick = (auction: AuctionTableData) => {
-        if (
-            auction.item.seller.id === user?.id ||
-            auction.status !== AuctionStatus.OPEN ||
-            auction.userId
-        ) {
-            return;
-        }
-
+    const onAutionPick = (auction: AuctionJson) => {
         pick(auction);
     };
-
     useEffect(() => {
         let timeInterval;
         timeInterval = setInterval(() => {
             mutate(
                 ["/api/auctions", paramsString],
-                (data: AuctionTableData[] | undefined) => {
+                (data: AuctionJson[] | undefined) => {
                     return data?.map((a) => {
-                        console.log(a);
                         const status = a.userId
                             ? AuctionStatus.FINISHED
                             : getAuctionStatus(a.startTime, a.endTime);
                         if (status !== a.status) {
                             return {
                                 ...a,
-                                status,
+                                ...Object.assign(a, { status }),
                             };
                         }
                         return a;
@@ -108,7 +97,7 @@ const AuctionTable = function () {
                             <TableRow
                                 onClick={() => onAutionPick(a)}
                                 key={a.id}
-                                className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : null} ${a.status === "OPEN" ? "cursor-pointer" : "cursor-default"}`}
+                                className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : "bg-inherit"} cursor-pointer`}
                             >
                                 <TableCell className="font-medium">
                                     {a.item.name}
@@ -137,19 +126,16 @@ const AuctionTable = function () {
                                     {a.item.seller.name}
                                 </TableCell>
                                 <TableCell>
-                                    ${Number(a.startingPrice).toFixed(2)}
+                                    ${a.startingPrice.toFixed(2)}
                                 </TableCell>
                                 <TableCell>
-                                    ${Number(a.buyoutPrice).toFixed(2)}
+                                    ${a.buyoutPrice.toFixed(2)}
                                 </TableCell>
                                 <TableCell>
-                                    ${Number(a.currentBid).toFixed(2)}
+                                    ${a.currentBid.toFixed(2)}
                                 </TableCell>
                                 <TableCell className="text-right text-black bg-white">
                                     <Link
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                        }}
                                         href={`/auction/${a.id}/bid`}
                                         prefetch={false}
                                     >

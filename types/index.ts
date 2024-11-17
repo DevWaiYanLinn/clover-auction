@@ -36,7 +36,14 @@ export interface ConfirmMail extends MailTemplateBuilder {
     url: string;
 }
 
-export type AuctionTableData = Auction & {
+export type AuctionJson = Omit<
+    Auction,
+    "startingPrice" | "buyoutPrice" | "currentBid"
+> & {
+    startingPrice: number;
+    buyoutPrice: number;
+    currentBid: number;
+} & {
     winner: Pick<User, "name" | "id"> | null;
 } & {
     item: Item & {
@@ -54,7 +61,7 @@ export type searchParamsPromise = Promise<{ [key: string]: string }>;
 
 export type BidRecord = {
     id: number;
-    bidTime: Date;
+    bidTime: string;
     amount: number;
     previousAmount: number;
     difference: number;
@@ -74,5 +81,11 @@ export type findOrCreateUserType = {
 
 export type SocketBid = {
     user: { id: number };
-    auction: { id: number; amount: number };
+    auction: { id: number; amount: number; buyout: boolean };
+};
+
+export type FetchError = {
+    info: { [key: string]: string | string[] };
+    status: number;
+    message: string;
 };

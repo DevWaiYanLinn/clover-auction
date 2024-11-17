@@ -77,6 +77,7 @@ export async function POST(
                 data: {
                     userId: session!.user.id,
                     currentBid: found.buyoutPrice,
+                    buyout: true,
                 },
             });
 
@@ -102,7 +103,7 @@ export async function POST(
         await publisher.publish(
             "buyout",
             JSON.stringify({
-                user: session.user.id,
+                user: { id: session.user.id },
                 auction: {
                     id: result.id,
                     amount: Number(result.buyoutPrice),

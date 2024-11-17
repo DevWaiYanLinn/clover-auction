@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 interface PickAuctionState {
     auction: Auction | null;
-    pick: (auction: Auction) => void;
+    pick: (auction: Auction | null) => void;
 }
 
 const auctionStore = create<PickAuctionState>()((set) => ({

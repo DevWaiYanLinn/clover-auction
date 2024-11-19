@@ -1,7 +1,6 @@
 import prisma from "@/database/prisma";
 import { ParamsPromise } from "@/types";
 import Image from "next/legacy/image";
-import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: ParamsPromise }) {
     const id = await (await params).id;
@@ -16,11 +15,9 @@ export default async function Page({ params }: { params: ParamsPromise }) {
             },
         },
     });
-    if (!auction) {
-        return notFound();
-    }
-    return (
-        <div className="justify-center p-5 space-y-3 overflow-hidden overflow-y-auto">
+
+    return auction ? (
+        <div className="p-5 space-y-3 overflow-hidden overflow-y-auto">
             <div className="flex justify-center">
                 <div className="border p-3 rounded-md">
                     <Image
@@ -43,5 +40,7 @@ export default async function Page({ params }: { params: ParamsPromise }) {
                 </li>
             </ul>
         </div>
+    ) : (
+        <div className="flex h-full justify-center items-center">Not Found</div>
     );
 }

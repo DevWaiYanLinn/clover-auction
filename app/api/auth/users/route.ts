@@ -1,8 +1,8 @@
 import { auth } from "@/lib/session";
-import { getAuthUser } from "@/services/user-service";
+import { getUserById } from "@/services/user-service";
 
 export async function GET() {
     const session = await auth();
-    const user = await getAuthUser(session!.user.id);
+    const user = await getUserById(session!.user.id);
     return Response.json(user, { status: 200 });
 }

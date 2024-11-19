@@ -1,13 +1,11 @@
-import AuctionBottomBar from "@/components/custom/auction-bottom-bar";
-
 export default function Layout({
-    children,
+    bottom,
     sidebar,
     table,
     menu,
 }: Readonly<{
     table: React.ReactNode;
-    children: React.ReactNode;
+    bottom: React.ReactNode;
     sidebar: React.ReactNode;
     menu: React.ReactNode;
 }>) {
@@ -21,7 +19,7 @@ export default function Layout({
                     </div>
                     {table}
                 </div>
-                <AuctionBottomBar />
+                {bottom}
             </div>
         </div>
     );

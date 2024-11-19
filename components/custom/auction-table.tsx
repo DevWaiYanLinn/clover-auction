@@ -19,6 +19,12 @@ import { fetchAPI } from "@/lib/fetch";
 import { Button } from "../ui/button";
 import { UsersRound } from "lucide-react";
 import Link from "next/link";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
@@ -81,9 +87,11 @@ const AuctionTable = function () {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="min-w-[100px]">Item</TableHead>
+                        <TableHead>Item</TableHead>
+
+                        <TableHead className="min-w-[100px]">Name</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead>Image</TableHead>
+
                         <TableHead>Seller</TableHead>
                         <TableHead>Starting Price</TableHead>
                         <TableHead>Buyout Price</TableHead>
@@ -99,23 +107,36 @@ const AuctionTable = function () {
                                 key={a.id}
                                 className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : "bg-inherit"} cursor-pointer`}
                             >
-                                <TableCell className="font-medium">
-                                    {a.item.name}
-                                </TableCell>
-                                <TableCell className={`capitalize`}>
-                                    <span
-                                        className={`${a.status === AuctionStatus.OPEN ? "text-green-600" : "text-red-500"} font-bold py-[0.2rem] px-2 bg-white rounded-2xl`}
-                                    >
-                                        {a.status.toLowerCase()}
-                                    </span>{" "}
-                                    {a.buyout ? "(buyout)" : ""}
-                                </TableCell>
                                 <TableCell>
                                     <Avatar>
                                         <AvatarImage src={a.item.imageUrl} />
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                 </TableCell>
+                                <TableCell className="font-medium">
+                                    {a.item.name}
+                                </TableCell>
+                                <TableCell className={`capitalize`}>
+                                    {a.buyout ? (
+                                        <span>(buyout)</span>
+                                    ) : (
+                                        <TooltipProvider delayDuration={300}>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <span
+                                                        className={`${a.status === AuctionStatus.OPEN ? "text-green-600" : "text-red-500"} font-bold py-[0.2rem] px-2 bg-white rounded-2xl`}
+                                                    >
+                                                        {a.status.toLowerCase()}
+                                                    </span>
+                                                </TooltipTrigger>
+                                                <TooltipContent className="border border-slate-400 bg-white text-black">
+                                                    {a.startTime}-{a.endTime}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    )}
+                                </TableCell>
+
                                 <TableCell
                                     className={`${
                                         a.item.seller.id === user?.id
@@ -136,6 +157,7 @@ const AuctionTable = function () {
                                 </TableCell>
                                 <TableCell className="text-right text-black bg-white">
                                     <Link
+                                        onClick={(e) => e.stopPropagation()}
                                         href={`/auction/${a.id}/bid`}
                                         prefetch={false}
                                     >

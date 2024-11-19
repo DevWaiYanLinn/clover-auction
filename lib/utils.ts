@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export function getAuctionStatus(start: Date, end: Date) {
+export function getAuctionStatus(start: Date | string, end: Date | string) {
     const startTime = new Date(start).getTime();
     const endTime = new Date(end).getTime();
     const currentTime = new Date().getTime();

@@ -4,6 +4,7 @@ import type {
     Item,
     SubCategory,
     User as PrismaUser,
+    Bid,
 } from "@prisma/client";
 
 export type User = {
@@ -38,11 +39,13 @@ export interface ConfirmMail extends MailTemplateBuilder {
 
 export type AuctionJson = Omit<
     Auction,
-    "startingPrice" | "buyoutPrice" | "currentBid"
+    "startingPrice" | "buyoutPrice" | "currentBid" | "startTime" | "endTime"
 > & {
     startingPrice: number;
     buyoutPrice: number;
     currentBid: number;
+    startTime: string;
+    endTime: string;
 } & {
     winner: Pick<User, "name" | "id"> | null;
 } & {
@@ -88,4 +91,18 @@ export type FetchError = {
     info: { [key: string]: string | string[] };
     status: number;
     message: string;
+};
+
+export type UserBidJson = Omit<Bid, "amount"> & {
+    amount: number;
+    auction: {
+        id: number;
+        userId: number | null;
+        endTime: string;
+        item: {
+            id: number;
+            imageUrl: string;
+            name: string;
+        };
+    };
 };

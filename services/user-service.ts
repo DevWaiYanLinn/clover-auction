@@ -1,7 +1,7 @@
 import prisma from "@/database/prisma";
 import { findOrCreateUserType } from "@/types";
 
-export const getAuthUser = async (id: number) => {
+export const getUserById = async (id: number) => {
     return prisma.user.findUnique({
         where: { id },
         omit: {

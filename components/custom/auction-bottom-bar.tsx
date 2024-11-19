@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { fetchAPI } from "@/lib/fetch";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { AuctionJson, AuthUser, FetchError, SocketBid } from "@/types";
+import { AuctionJson, AuthUser, SocketBid } from "@/types";
 import { socket } from "@/socket/socket-io";
 import { AuctionStatus } from "@prisma/client";
 

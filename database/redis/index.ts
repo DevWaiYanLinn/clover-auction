@@ -3,19 +3,21 @@ import config from "@/config";
 import Redis from "ioredis";
 
 const redisClientSingleton = () => {
-    return process.env.NODE_ENV !== "production"
-        ? new Redis({ maxRetriesPerRequest: null })
-        : new Redis(config.redis.url, { maxRetriesPerRequest: null });
+    const connection =
+        process.env.NODE_ENV !== "production"
+            ? new Redis({ maxRetriesPerRequest: null })
+            : new Redis(config.redis.url, { maxRetriesPerRequest: null });
+    const pub = connection.duplicate();
+    return { connection, pub };
 };
 
 declare const globalThis: {
     redisGlobal: ReturnType<typeof redisClientSingleton>;
 } & typeof global;
 
-const redis = globalThis.redisGlobal ?? redisClientSingleton();
-
-export default redis;
+export const { connection, pub } =
+    globalThis.redisGlobal ?? redisClientSingleton();
 
 if (process.env.NODE_ENV !== "production") {
-    globalThis.redisGlobal = redis;
+    globalThis.redisGlobal = { connection, pub };
 }

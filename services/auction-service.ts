@@ -1,5 +1,4 @@
 import prisma from "@/database/prisma";
-import { BidRecord } from "@/types";
 import { AuctionStatus, Prisma } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 

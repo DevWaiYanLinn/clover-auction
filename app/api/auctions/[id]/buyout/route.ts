@@ -1,5 +1,5 @@
 import prisma from "@/database/prisma";
-import publisher from "@/database/redis/publisher";
+import { pub } from "@/database/redis";
 import { HttpError } from "@/lib/exception";
 import { auth } from "@/lib/session";
 import { AuctionStatus } from "@prisma/client";
@@ -100,7 +100,7 @@ export async function POST(
             return auction;
         });
 
-        await publisher.publish(
+        await pub.publish(
             "buyout",
             JSON.stringify({
                 user: { id: session.user.id },

@@ -1,15 +1,15 @@
 import { Queue, Worker } from "bullmq";
 import { transporter } from "@/lib/node-mailer";
-import redis from "@/database/redis";
+import { connection } from "@/database/redis";
 
-export const mailQueue = new Queue("mail", { connection: redis });
+export const mailQueue = new Queue("mail", { connection });
 
 const worker = new Worker(
     "mail",
     async (job) => {
         await transporter.sendMail(job.data);
     },
-    { connection: redis },
+    { connection },
 );
 
 worker.on("completed", (job: any) => {

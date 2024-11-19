@@ -59,7 +59,7 @@ export async function POST(
             });
         }
 
-        if (Number(found.buyoutPrice) <= Number(found.currentBid)) {
+        if (found.buyoutPrice.toNumber() <= found.currentBid.toNumber()) {
             throw new HttpError({
                 status: 422,
                 info: {
@@ -106,7 +106,7 @@ export async function POST(
                 user: { id: session.user.id },
                 auction: {
                     id: result.id,
-                    amount: Number(result.buyoutPrice),
+                    amount: result.buyoutPrice.toNumber(),
                     buyout: true,
                 },
             }),

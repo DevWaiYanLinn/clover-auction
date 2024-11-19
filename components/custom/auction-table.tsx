@@ -46,7 +46,7 @@ const AuctionTable = function () {
             revalidateIfStale: true,
         },
     );
-    const onAutionPick = (auction: AuctionJson) => {
+    const onAuctionPick = (auction: AuctionJson) => {
         pick(auction);
     };
     useEffect(() => {
@@ -95,7 +95,7 @@ const AuctionTable = function () {
                     {data?.map((a) => {
                         return (
                             <TableRow
-                                onClick={() => onAutionPick(a)}
+                                onClick={() => onAuctionPick(a)}
                                 key={a.id}
                                 className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : "bg-inherit"} cursor-pointer`}
                             >

@@ -65,8 +65,8 @@ export async function POST(
                 },
             });
         }
-        const result = await prisma.$transaction(async () => {
-            const auction = await prisma.auction.update({
+        const result = await prisma.$transaction(async (tx) => {
+            const auction = await tx.auction.update({
                 where: {
                     id: found.id,
                     updatedAt: found.updatedAt,
@@ -95,7 +95,7 @@ export async function POST(
             });
 
             if (!bid) {
-                await prisma.bid.create({
+                await tx.bid.create({
                     data: {
                         auctionId: auction.id,
                         userId: session.user.id,
@@ -103,9 +103,9 @@ export async function POST(
                     },
                 });
             } else {
-                await prisma.bid.update({
+                await tx.bid.update({
                     where: {
-                        id: auction.id,
+                        id: bid.id,
                     },
                     data: {
                         amount: auction.currentBid,

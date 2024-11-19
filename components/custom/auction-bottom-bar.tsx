@@ -11,6 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { AuctionJson, AuthUser, SocketBid } from "@/types";
 import { socket } from "@/socket/socket-io";
 import { AuctionStatus } from "@prisma/client";
+import UserBid from "./user-bid";
 
 export default function AuctionBottomBar() {
     const { auction } = auctionStore();
@@ -61,56 +62,51 @@ export default function AuctionBottomBar() {
         [paramsString],
     );
 
-    // const mutateAuction = useCallback(() => {
-    //     mutate(["/api/acutions", paramsString]);
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [paramsString]);
+    useEffect(() => {
+        function onConnect() {
+            setIsConnected(true);
+        }
 
-    // useEffect(() => {
-    //     function onConnect() {
-    //         setIsConnected(true);
-    //     }
+        function onReconnect() {
+            // mutateAuction();
+        }
 
-    //     function onReconnect() {
-    //         // mutateAuction();
-    //     }
+        function onDisconnect() {
+            setIsConnected(false);
+        }
 
-    //     function onDisconnect() {
-    //         setIsConnected(false);
-    //     }
+        function onBid({ auction }: SocketBid) {
+            mutateAuctionOnBid({
+                id: auction.id,
+                currentBid: auction.amount,
+            });
+        }
 
-    //     function onBid({ auction }: SocketBid) {
-    //         mutateAuctionOnBid({
-    //             id: auction.id,
-    //             currentBid: auction.amount,
-    //         });
-    //     }
+        function onBuyout({ user, auction }: SocketBid) {
+            mutateAuctionOnBid({
+                id: auction.id,
+                currentBid: auction.amount,
+                userId: user.id,
+                buyout: true,
+                status: AuctionStatus.FINISHED,
+            });
+        }
 
-    //     function onBuyout({ user, auction }: SocketBid) {
-    //         mutateAuctionOnBid({
-    //             id: auction.id,
-    //             currentBid: auction.amount,
-    //             userId: user.id,
-    //             buyout: true,
-    //             status: AuctionStatus.FINISHED,
-    //         });
-    //     }
+        socket.on("connect", onConnect);
+        socket.on("reconnect", onReconnect);
+        socket.on("disconnect", onDisconnect);
+        socket.on("bid", onBid);
+        socket.on("buyout", onBuyout);
 
-    //     socket.on("connect", onConnect);
-    //     socket.on("reconnect", onReconnect);
-    //     socket.on("disconnect", onDisconnect);
-    //     socket.on("bid", onBid);
-    //     socket.on("buyout", onBuyout);
-
-    //     return () => {
-    //         socket.off("connect", onConnect);
-    //         socket.off("disconnect", onDisconnect);
-    //         socket.off("bid", onBid);
-    //         socket.on("buyout", onBuyout);
-    //         socket.off("reconnect", onReconnect);
-    //     };
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, []);
+        return () => {
+            socket.off("connect", onConnect);
+            socket.off("disconnect", onDisconnect);
+            socket.off("bid", onBid);
+            socket.on("buyout", onBuyout);
+            socket.off("reconnect", onReconnect);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const onBuyoutClick = async () => {
         setPending(true);
@@ -147,10 +143,11 @@ export default function AuctionBottomBar() {
     };
 
     return (
-        <div className="flex justify-between items-center mt-5 border rounded-md p-3">
-            <p className="italic text-md font-bold">
-                Copy Right©Clover Auction
-            </p>
+        <div className="flex justify-between items-center mt-5">
+            <div className="flex space-x-3">
+                <UserBid />
+                <Button size={"sm"}>Auctions</Button>
+            </div>
             <div className={`space-x-3 flex`}>
                 <div className="flex items-center space-x-2">
                     <Label>Bid</Label>
@@ -162,6 +159,7 @@ export default function AuctionBottomBar() {
                         onChange={(e) => setAmount(e.currentTarget.value)}
                     />
                 </div>
+
                 <Button
                     type="button"
                     onClick={onBidClick}

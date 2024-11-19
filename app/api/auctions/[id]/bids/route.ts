@@ -81,8 +81,8 @@ export async function POST(
             });
         }
 
-        const result = await prisma.$transaction(async () => {
-            const auction = await prisma.auction.update({
+        const result = await prisma.$transaction(async (tx) => {
+            const auction = await tx.auction.update({
                 where: {
                     id: found.id,
                     updatedAt: found.updatedAt,
@@ -107,7 +107,7 @@ export async function POST(
             });
 
             if (!bid) {
-                await prisma.bid.create({
+                await tx.bid.create({
                     data: {
                         userId: session.user.id,
                         amount: auction.currentBid,
@@ -115,9 +115,9 @@ export async function POST(
                     },
                 });
             } else {
-                await prisma.bid.update({
+                await tx.bid.update({
                     where: {
-                        id: auction.id,
+                        id: bid.id,
                     },
                     data: {
                         amount: auction.currentBid,
@@ -140,6 +140,7 @@ export async function POST(
         );
         return Response.json(result, { status: 200 });
     } catch (error: unknown) {
+        console.log(error);
         const [data, init] =
             error instanceof HttpError
                 ? [

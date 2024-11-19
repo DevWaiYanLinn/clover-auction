@@ -99,13 +99,31 @@ export async function POST(
                 });
             }
 
-            await prisma.bid.create({
-                data: {
-                    userId: session.user.id,
-                    amount: auction.currentBid!,
+            const bid = await prisma.bid.findFirst({
+                where: {
                     auctionId: auction.id,
+                    userId: session.user.id,
                 },
             });
+
+            if (!bid) {
+                await prisma.bid.create({
+                    data: {
+                        userId: session.user.id,
+                        amount: auction.currentBid,
+                        auctionId: auction.id,
+                    },
+                });
+            } else {
+                await prisma.bid.update({
+                    where: {
+                        id: auction.id,
+                    },
+                    data: {
+                        amount: auction.currentBid,
+                    },
+                });
+            }
 
             return auction;
         });

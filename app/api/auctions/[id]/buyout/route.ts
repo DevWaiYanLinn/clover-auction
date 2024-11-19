@@ -3,10 +3,9 @@ import { pub } from "@/database/redis";
 import { HttpError } from "@/lib/exception";
 import { auth } from "@/lib/session";
 import { AuctionStatus } from "@prisma/client";
-import { type NextRequest } from "next/server";
 
 export async function POST(
-    request: NextRequest,
+    request: Request,
     { params }: { params: Promise<{ id: string }> },
 ) {
     const id = (await params).id;
@@ -14,8 +13,6 @@ export async function POST(
     const found = await prisma.auction.findUnique({
         where: {
             id: Number(id),
-            userId: null,
-            buyout: false,
         },
     });
 
@@ -75,7 +72,7 @@ export async function POST(
                     updatedAt: found.updatedAt,
                 },
                 data: {
-                    userId: session!.user.id,
+                    userId: session.user.id,
                     currentBid: found.buyoutPrice,
                     buyout: true,
                 },
@@ -90,13 +87,31 @@ export async function POST(
                 });
             }
 
-            await prisma.bid.create({
-                data: {
+            const bid = await prisma.bid.findFirst({
+                where: {
                     auctionId: auction.id,
-                    userId: session!.user.id,
-                    amount: auction.buyoutPrice,
+                    userId: session.user.id,
                 },
             });
+
+            if (!bid) {
+                await prisma.bid.create({
+                    data: {
+                        auctionId: auction.id,
+                        userId: session.user.id,
+                        amount: auction.buyoutPrice,
+                    },
+                });
+            } else {
+                await prisma.bid.update({
+                    where: {
+                        id: auction.id,
+                    },
+                    data: {
+                        amount: auction.currentBid,
+                    },
+                });
+            }
             return auction;
         });
 

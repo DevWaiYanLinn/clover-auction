@@ -66,51 +66,51 @@ export default function AuctionBottomBar() {
     //     // eslint-disable-next-line react-hooks/exhaustive-deps
     // }, [paramsString]);
 
-    useEffect(() => {
-        function onConnect() {
-            setIsConnected(true);
-        }
+    // useEffect(() => {
+    //     function onConnect() {
+    //         setIsConnected(true);
+    //     }
 
-        function onReconnect() {
-            // mutateAuction();
-        }
+    //     function onReconnect() {
+    //         // mutateAuction();
+    //     }
 
-        function onDisconnect() {
-            setIsConnected(false);
-        }
+    //     function onDisconnect() {
+    //         setIsConnected(false);
+    //     }
 
-        function onBid({ auction }: SocketBid) {
-            mutateAuctionOnBid({
-                id: auction.id,
-                currentBid: auction.amount,
-            });
-        }
+    //     function onBid({ auction }: SocketBid) {
+    //         mutateAuctionOnBid({
+    //             id: auction.id,
+    //             currentBid: auction.amount,
+    //         });
+    //     }
 
-        function onBuyout({ user, auction }: SocketBid) {
-            mutateAuctionOnBid({
-                id: auction.id,
-                currentBid: auction.amount,
-                userId: user.id,
-                buyout: true,
-                status: AuctionStatus.FINISHED,
-            });
-        }
+    //     function onBuyout({ user, auction }: SocketBid) {
+    //         mutateAuctionOnBid({
+    //             id: auction.id,
+    //             currentBid: auction.amount,
+    //             userId: user.id,
+    //             buyout: true,
+    //             status: AuctionStatus.FINISHED,
+    //         });
+    //     }
 
-        socket.on("connect", onConnect);
-        socket.on("reconnect", onReconnect);
-        socket.on("disconnect", onDisconnect);
-        socket.on("bid", onBid);
-        socket.on("buyout", onBuyout);
+    //     socket.on("connect", onConnect);
+    //     socket.on("reconnect", onReconnect);
+    //     socket.on("disconnect", onDisconnect);
+    //     socket.on("bid", onBid);
+    //     socket.on("buyout", onBuyout);
 
-        return () => {
-            socket.off("connect", onConnect);
-            socket.off("disconnect", onDisconnect);
-            socket.off("bid", onBid);
-            socket.on("buyout", onBuyout);
-            socket.off("reconnect", onReconnect);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    //     return () => {
+    //         socket.off("connect", onConnect);
+    //         socket.off("disconnect", onDisconnect);
+    //         socket.off("bid", onBid);
+    //         socket.on("buyout", onBuyout);
+    //         socket.off("reconnect", onReconnect);
+    //     };
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, []);
 
     const onBuyoutClick = async () => {
         setPending(true);

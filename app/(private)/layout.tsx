@@ -1,5 +1,5 @@
 import { auth } from "@/lib/session";
-import PreFetch from "./pre-fetch";
+import SwrProvider from "./swr-provider";
 import { getUserById } from "@/services/user-service";
 import { getAllCategories } from "@/services/category-service";
 
@@ -12,13 +12,13 @@ export default async function Layout({
     const user = await getUserById(session!.user.id);
     const categories = await getAllCategories();
     return (
-        <PreFetch
+        <SwrProvider
             prefetch={{
-                "/api/auth/users": user,
+                "/api/auth/user": user,
                 "/api/categories": categories,
             }}
         >
             {children}
-        </PreFetch>
+        </SwrProvider>
     );
 }

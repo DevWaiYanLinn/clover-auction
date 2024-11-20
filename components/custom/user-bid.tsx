@@ -22,7 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Button } from "../ui/button";
 import { CircleDollarSign, RefreshCcw } from "lucide-react";
-import dayjs from "@/lib/day";
+import dayjs from "@/lib/dayjs";
 
 const UserBid = memo(() => {
     const {

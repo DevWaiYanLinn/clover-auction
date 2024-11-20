@@ -21,7 +21,8 @@ import useSWR from "swr";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Button } from "../ui/button";
-import { RefreshCcw } from "lucide-react";
+import { CircleDollarSign, RefreshCcw } from "lucide-react";
+import dayjs from "@/lib/day";
 
 const UserBid = memo(() => {
     const {
@@ -40,6 +41,7 @@ const UserBid = memo(() => {
             }}
         >
             <DialogTrigger className="h-8 rounded-md px-3 text-xs inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90">
+                <CircleDollarSign />
                 Bids
             </DialogTrigger>
             <DialogContent className="min-w-[1200px] h-[600px]">
@@ -63,8 +65,8 @@ const UserBid = memo(() => {
                             <TableHead>Item</TableHead>
                             <TableHead>Name</TableHead>
                             <TableHead>Bid Amount</TableHead>
-                            <TableHead>End In</TableHead>
-                            <TableHead>Win</TableHead>
+                            <TableHead>End Time</TableHead>
+                            <TableHead>Status</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -94,11 +96,13 @@ const UserBid = memo(() => {
                                         <TableCell>
                                             {b.auction.item.name}
                                         </TableCell>
-                                        <TableCell>{b.amount}</TableCell>
+                                        <TableCell>${b.amount}</TableCell>
                                         <TableCell>
-                                            {b.auction.endTime}
+                                            {dayjs(b.auction.endTime).format(
+                                                "LLL",
+                                            )}
                                         </TableCell>
-                                        <TableCell>pending</TableCell>
+                                        <TableCell>Pending</TableCell>
                                     </TableRow>
                                 );
                             })

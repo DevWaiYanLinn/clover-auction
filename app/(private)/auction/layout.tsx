@@ -14,9 +14,7 @@ export default function Layout({
             <div className="rounded-md bg-white flex-1 flex flex-col w-full h-full overflow-hidden border shadow-md p-5">
                 {menu}
                 <div className="flex flex-1 mt-5 space-x-3 overflow-hidden">
-                    <div className="max-w-[300px] w-full flex flex-col border rounded-md px-2">
-                        {sidebar}
-                    </div>
+                    {sidebar}
                     {table}
                 </div>
                 {bottom}

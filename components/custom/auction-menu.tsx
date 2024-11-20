@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogOut, Search } from "lucide-react";
+import { LogOut, RefreshCcw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -79,13 +79,17 @@ const AuctionMenu = () => {
                         </SelectContent>
                     </Select>
                 </div>
+                <Button onClick={onSearch}>
+                    <Search />
+                    Search
+                </Button>
             </div>
             <div className="flex-1 flex justify-end">
                 <div>
                     <div className="text-center space-x-3">
-                        <Button onClick={onSearch}>
-                            <Search />
-                            Search
+                        <Button>
+                            <RefreshCcw />
+                            Reset
                         </Button>
                         <Button
                             variant={"destructive"}

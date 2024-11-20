@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -10,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Check, CirclePlus, Coins, RefreshCcw, X } from "lucide-react";
+import { Box, Check, CirclePlus, RefreshCcw, X } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAllItems } from "@/services/item-service";
@@ -27,9 +26,9 @@ export default async function Page({
             <div className="h-full bg-white rounded-md shadow-md px-5">
                 <div className="flex justify-end items-center space-x-2 mb-2 p-3 py-5">
                     <Link href={"/item"}>
-                        <Button size={"sm"} variant={"destructive"}>
+                        <Button size={"sm"}>
                             <RefreshCcw />
-                            Reset
+                            Refresh
                         </Button>
                     </Link>
                     <Link href={"/item/create"} className="flex">
@@ -47,11 +46,11 @@ export default async function Page({
                             <TableHead className="min-w-[100px]">
                                 Name
                             </TableHead>
-                            <TableHead>Image</TableHead>
+                            <TableHead>Item</TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead>SubCategory</TableHead>
                             <TableHead>Date</TableHead>
-                            <TableHead>Auction</TableHead>
+                            <TableHead>Status</TableHead>
                             <TableHead className="text-right">
                                 Auction
                             </TableHead>
@@ -86,13 +85,13 @@ export default async function Page({
                                     {!item.auction ? (
                                         <Link href={`/item/${item.id}/auction`}>
                                             <Button size={"sm"}>
-                                                <Coins />
+                                                <Box />
                                                 Auction
                                             </Button>
                                         </Link>
                                     ) : (
                                         <Button disabled size={"sm"}>
-                                            <Coins />
+                                            <Box />
                                             Auction
                                         </Button>
                                     )}

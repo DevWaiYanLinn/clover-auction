@@ -1,5 +1,4 @@
 import { io } from "socket.io-client";
-const URL =
-    process.env.NODE_ENV === "production" ? undefined : "http://localhost:3001";
+const URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 
 export const socket = io(URL);

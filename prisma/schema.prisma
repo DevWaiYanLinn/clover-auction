@@ -31,7 +31,7 @@ model User {
     roles           UserRole[]
     items           Item[]
     bids            Bid[]
-    transcations    Transaction[]
+    transaction     Transaction[]
     token           Token[]
     auction         Auction[]
 
@@ -139,6 +139,7 @@ enum AuctionStatus {
     OPEN
     CLOSED
     FINISHED
+    BUYOUT
 }
 
 model Auction {
@@ -161,7 +162,7 @@ model Auction {
     updatedAt     DateTime      @updatedAt @map("updated_at")
     deleted       Boolean       @default(false)
     bids          Bid[]
-    transcation   Transaction?  @relation()
+    transaction   Transaction?  @relation()
 
     @@unique([itemId])
     @@map("auctions")
@@ -193,12 +194,12 @@ model Transaction {
     userId           Int               @map("user_id")
     buyer            User              @relation(fields: [userId], references: [id])
     finalPrice       Decimal           @map("final_price") @db.Decimal(10, 2)
-    transactionStart DateTime?         @map("transcation_start")
-    transcationEnd   DateTime?         @map("transcation_end")
+    transactionStart DateTime?         @map("transaction_start")
+    transactionEnd   DateTime?         @map("transaction_end")
     status           TransactionStatus @default(PENDING)
     createdAt        DateTime          @default(now()) @map("created_at")
     updatedAt        DateTime          @updatedAt @map("updated_at")
     deleted          Boolean           @default(false)
 
-    @@map("transcations")
+    @@map("transactions")
 }

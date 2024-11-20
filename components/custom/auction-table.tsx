@@ -25,6 +25,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import dayjs from "dayjs";
 
 const AuctionTable = function () {
     const searchParams = useSearchParams();
@@ -62,9 +63,11 @@ const AuctionTable = function () {
                 ["/api/auctions", paramsString],
                 (data: AuctionJson[] | undefined) => {
                     return data?.map((a) => {
-                        const status = a.userId
-                            ? AuctionStatus.FINISHED
-                            : getAuctionStatus(a.startTime, a.endTime);
+                        const status = getAuctionStatus(
+                            a.startTime,
+                            a.endTime,
+                            a.buyout,
+                        );
                         if (status !== a.status) {
                             return {
                                 ...a,
@@ -90,12 +93,11 @@ const AuctionTable = function () {
                         <TableHead>Item</TableHead>
 
                         <TableHead className="min-w-[100px]">Name</TableHead>
-                        <TableHead>Status</TableHead>
-
                         <TableHead>Seller</TableHead>
                         <TableHead>Starting Price</TableHead>
                         <TableHead>Buyout Price</TableHead>
                         <TableHead>Current Bid</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead className="text-right">Detail</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -116,27 +118,6 @@ const AuctionTable = function () {
                                 <TableCell className="font-medium">
                                     {a.item.name}
                                 </TableCell>
-                                <TableCell className={`capitalize`}>
-                                    {a.buyout ? (
-                                        <span>(buyout)</span>
-                                    ) : (
-                                        <TooltipProvider delayDuration={300}>
-                                            <Tooltip>
-                                                <TooltipTrigger>
-                                                    <span
-                                                        className={`${a.status === AuctionStatus.OPEN ? "text-green-600" : "text-red-500"} font-bold py-[0.2rem] px-2 bg-white rounded-2xl`}
-                                                    >
-                                                        {a.status.toLowerCase()}
-                                                    </span>
-                                                </TooltipTrigger>
-                                                <TooltipContent className="border border-slate-400 bg-white text-black">
-                                                    {a.startTime}-{a.endTime}
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    )}
-                                </TableCell>
-
                                 <TableCell
                                     className={`${
                                         a.item.seller.id === user?.id
@@ -154,6 +135,26 @@ const AuctionTable = function () {
                                 </TableCell>
                                 <TableCell>
                                     ${a.currentBid.toFixed(2)}
+                                </TableCell>
+                                <TableCell>
+                                    <TooltipProvider delayDuration={300}>
+                                        <Tooltip>
+                                            <TooltipTrigger>
+                                                <span
+                                                    className={`${a.status === AuctionStatus.OPEN ? "text-green-600" : "text-red-500"} font-bold py-[0.2rem] px-2 bg-white rounded-2xl capitalize`}
+                                                >
+                                                    {a.status.toLowerCase()}
+                                                </span>
+                                            </TooltipTrigger>
+                                            <TooltipContent className="border border-slate-400 bg-white text-black">
+                                                {dayjs(a.startTime).format(
+                                                    "LLL",
+                                                )}{" "}
+                                                -{" "}
+                                                {dayjs(a.endTime).format("LLL")}
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
                                 </TableCell>
                                 <TableCell className="text-right text-black bg-white">
                                     <Link

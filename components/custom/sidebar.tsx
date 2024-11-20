@@ -31,48 +31,46 @@ const Sidebar = function () {
     );
 
     return (
-        <>
-            <div className="max-w-[300px] w-full flex flex-col border rounded-md px-2">
-                <div className="flex justify-center items-center py-2">
-                    <h2 className="font-medium text-xl">Category</h2>
-                </div>
-                <div className="space-y-3 h-full overflow-y-scroll">
-                    <Accordion
-                        defaultValue={`item-${searchParams.get("category")}`}
-                        type="single"
-                        collapsible
-                        className="w-full p-2"
-                    >
-                        {data?.map((category) => {
-                            return (
-                                <AccordionItem
-                                    key={category.id}
-                                    value={`item-${category.id}`}
-                                >
-                                    <AccordionTrigger>
-                                        {category.name}
-                                    </AccordionTrigger>
-                                    {category.subcategories.map((s) => {
-                                        return (
-                                            <AccordionContent
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onPick(s.id, category.id);
-                                                }}
-                                                className={`cursor-pointer ${Number(searchParams.get("subcategory")) === s.id ? "text-primary" : null}`}
-                                                key={s.id}
-                                            >
-                                                {s.name}
-                                            </AccordionContent>
-                                        );
-                                    })}
-                                </AccordionItem>
-                            );
-                        })}
-                    </Accordion>
-                </div>
+        <div className="max-w-[300px] w-full flex flex-col border rounded-md px-2">
+            <div className="flex justify-center items-center py-2">
+                <h2 className="font-medium text-xl">Category</h2>
             </div>
-        </>
+            <div className="space-y-3 h-full overflow-y-scroll">
+                <Accordion
+                    defaultValue={`item-${searchParams.get("category")}`}
+                    type="single"
+                    collapsible
+                    className="w-full p-2"
+                >
+                    {data?.map((category) => {
+                        return (
+                            <AccordionItem
+                                key={category.id}
+                                value={`item-${category.id}`}
+                            >
+                                <AccordionTrigger>
+                                    {category.name}
+                                </AccordionTrigger>
+                                {category.subcategories.map((s) => {
+                                    return (
+                                        <AccordionContent
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onPick(s.id, category.id);
+                                            }}
+                                            className={`cursor-pointer ${Number(searchParams.get("subcategory")) === s.id ? "text-primary" : null}`}
+                                            key={s.id}
+                                        >
+                                            {s.name}
+                                        </AccordionContent>
+                                    );
+                                })}
+                            </AccordionItem>
+                        );
+                    })}
+                </Accordion>
+            </div>
+        </div>
     );
 };
 

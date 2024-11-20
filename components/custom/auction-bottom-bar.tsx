@@ -21,33 +21,28 @@ export default function AuctionBottomBar() {
     const [pending, setPending] = useState(false);
     const [isConnected, setIsConnected] = useState(socket.connected);
     const [amount, setAmount] = useState("");
-    const paramsString = useMemo(
-        () =>
-            new URLSearchParams(
-                Object.fromEntries(searchParams.entries()),
-            ).toString(),
-        [searchParams],
-    );
 
     const { data: user } = useSWR<AuthUser>(
-        "/api/auth/users",
+        "/api/auth/user",
         (url: string) => fetchAPI(url),
         { revalidateOnMount: false },
     );
 
-    const disabled =
-        !auction ||
-        pending ||
-        auction.item.seller.id === user?.id ||
-        auction.status !== AuctionStatus.OPEN ||
-        auction.userId !== null;
-
+    const disabled = useMemo(
+        () =>
+            !auction ||
+            pending ||
+            auction.item.seller.id === user?.id ||
+            auction.status !== AuctionStatus.OPEN,
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [auction, pending],
+    );
     const mutateAuctionOnBid = useCallback(
         (auction: {
             [key in keyof AuctionJson]?: AuctionJson[key];
         }) => {
             mutate(
-                ["/api/auctions", paramsString],
+                ["/api/auctions", searchParams.toString()],
                 (data: AuctionJson[] | undefined) => {
                     return data?.map((a) => {
                         if (a.id === auction.id) {
@@ -60,16 +55,12 @@ export default function AuctionBottomBar() {
             );
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [paramsString],
+        [searchParams],
     );
 
     useEffect(() => {
         function onConnect() {
             setIsConnected(true);
-        }
-
-        function onReconnect() {
-            // mutateAuction();
         }
 
         function onDisconnect() {
@@ -94,7 +85,6 @@ export default function AuctionBottomBar() {
         }
 
         socket.on("connect", onConnect);
-        socket.on("reconnect", onReconnect);
         socket.on("disconnect", onDisconnect);
         socket.on("bid", onBid);
         socket.on("buyout", onBuyout);
@@ -104,7 +94,6 @@ export default function AuctionBottomBar() {
             socket.off("disconnect", onDisconnect);
             socket.off("bid", onBid);
             socket.on("buyout", onBuyout);
-            socket.off("reconnect", onReconnect);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

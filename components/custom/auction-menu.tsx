@@ -21,28 +21,27 @@ const AuctionMenu = () => {
     const [search, setSearch] = useState({
         name: searchParams.get("name") ?? "",
         status: searchParams.get("status") ?? "",
+        date: searchParams.get("date") ?? "",
     });
     const onSearch = () => {
-        const paramsObj = Object.fromEntries(searchParams.entries());
-        paramsObj.name = search.name;
-        paramsObj.status = search.status;
-
-        for (let key in paramsObj) {
-            if (!paramsObj[key] || paramsObj[key] === "0") {
-                delete paramsObj[key];
+        const searchParamsObj: { [key: string]: any } = { ...search };
+        for (let key in searchParamsObj) {
+            if (!searchParamsObj[key] || searchParamsObj[key] === "0") {
+                delete searchParamsObj[key];
             }
         }
 
-        router.push("/auction?" + new URLSearchParams(paramsObj).toString());
+        router.push(
+            "/auction?" + new URLSearchParams(searchParamsObj).toString(),
+        );
     };
     return (
         <div className="flex items-end">
-            <div className="flex-1 flex space-x-5 items-end">
-                <div>
+            <div className="flex flex-1 space-x-5 items-end">
+                <div className="min-w-[200px]">
                     <Label htmlFor="name">Name</Label>
                     <Input
                         type="name"
-                        id="email"
                         value={search.name}
                         placeholder="Name"
                         onChange={(e) =>
@@ -53,7 +52,21 @@ const AuctionMenu = () => {
                         }
                     />
                 </div>
-                <div title="not stable">
+                <div className="min-w-[200px]">
+                    <Label htmlFor="date">Min Date</Label>
+                    <Input
+                        type="date"
+                        placeholder="From Start Date"
+                        value={search.date}
+                        onChange={(e) => {
+                            setSearch({
+                                ...search,
+                                date: e.currentTarget.value,
+                            });
+                        }}
+                    />
+                </div>
+                <div className="min-w-[200px]" title="not stable">
                     <Label htmlFor="order">Status</Label>
                     <Select
                         disabled
@@ -62,7 +75,7 @@ const AuctionMenu = () => {
                             setSearch({ ...search, status: value })
                         }
                     >
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="w-full">
                             <SelectValue placeholder="Auction Status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -84,7 +97,7 @@ const AuctionMenu = () => {
                     Search
                 </Button>
             </div>
-            <div className="flex-1 flex justify-end">
+            <div className="flex justify-end">
                 <div>
                     <div className="text-center space-x-3">
                         <Button>

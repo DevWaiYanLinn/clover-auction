@@ -12,6 +12,7 @@ import { AuctionJson, AuthUser, SocketBid } from "@/types";
 import { socket } from "@/socket/socket-io";
 import { AuctionStatus } from "@prisma/client";
 import UserBid from "./user-bid";
+import { Box, Coins, HandCoins } from "lucide-react";
 
 export default function AuctionBottomBar() {
     const { auction } = auctionStore();
@@ -88,7 +89,7 @@ export default function AuctionBottomBar() {
                 currentBid: auction.amount,
                 userId: user.id,
                 buyout: true,
-                status: AuctionStatus.FINISHED,
+                status: AuctionStatus.BUYOUT,
             });
         }
 
@@ -146,7 +147,10 @@ export default function AuctionBottomBar() {
         <div className="flex justify-between items-center mt-5">
             <div className="flex space-x-3">
                 <UserBid />
-                <Button size={"sm"}>Auctions</Button>
+                <Button size={"sm"}>
+                    <Box />
+                    Auctions
+                </Button>
             </div>
             <div className={`space-x-3 flex`}>
                 <div className="flex items-center space-x-2">
@@ -166,6 +170,7 @@ export default function AuctionBottomBar() {
                     size={"sm"}
                     disabled={disabled}
                 >
+                    <HandCoins />
                     Bid
                 </Button>
                 <Button
@@ -174,6 +179,7 @@ export default function AuctionBottomBar() {
                     size={"sm"}
                     disabled={disabled}
                 >
+                    <Coins />
                     Buyout
                 </Button>
             </div>

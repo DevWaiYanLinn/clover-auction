@@ -4,14 +4,6 @@ This project aims to build a full-stack application using Next.js and other usef
 
 ## Auction
 <img width="1470" alt="image" src="https://github.com/user-attachments/assets/00421058-efb2-4e75-a866-b4b2c6110cfd">
-## Bid Ranking
-![image](https://github.com/user-attachments/assets/c45ee69a-1bb6-45f6-b779-1e9ac2bb0fd6)
-## Item list
-![image](https://github.com/user-attachments/assets/dbb2212d-ce72-4dc0-a1c3-b0bbc3279c02)
-## Create Item
-![image](https://github.com/user-attachments/assets/03e5aab8-8203-4d99-bd32-dbff7e6d21a4)
-## Create Auction
-![image](https://github.com/user-attachments/assets/1d323c46-b6cd-4029-ace3-f5926c040afd)
 
 
 ## Important

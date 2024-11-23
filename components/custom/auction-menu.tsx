@@ -53,7 +53,7 @@ const AuctionMenu = () => {
                     />
                 </div>
                 <div className="min-w-[200px]">
-                    <Label htmlFor="date">Min Date</Label>
+                    <Label htmlFor="date">From Date</Label>
                     <Input
                         type="date"
                         placeholder="From Start Date"

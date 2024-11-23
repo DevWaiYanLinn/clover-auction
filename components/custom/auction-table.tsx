@@ -56,8 +56,8 @@ const AuctionTable = function () {
 
     useEffect(() => {
         let timeInterval;
-        timeInterval = setInterval(() => {
-            mutate(
+        timeInterval = setInterval(async () => {
+            await mutate(
                 ["/api/auctions", searchParams.toString()],
                 (data: AuctionJson[] | undefined) => {
                     return data?.map((a) => {
@@ -94,7 +94,6 @@ const AuctionTable = function () {
                         <TableHead>Buyout Price</TableHead>
                         <TableHead>Current Bid</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Detail</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -162,17 +161,6 @@ const AuctionTable = function () {
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
-                                    </TableCell>
-                                    <TableCell className="text-right text-black bg-white">
-                                        <Link
-                                            onClick={(e) => e.stopPropagation()}
-                                            href={`/auction/${a.id}/bid`}
-                                            prefetch={false}
-                                        >
-                                            <Button>
-                                                <UsersRound />
-                                            </Button>
-                                        </Link>
                                     </TableCell>
                                 </TableRow>
                             );

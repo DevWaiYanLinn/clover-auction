@@ -33,7 +33,7 @@ const Sidebar = function () {
     return (
         <div className="max-w-[300px] w-full flex flex-col border rounded-md px-2">
             <div className="flex justify-center items-center py-2">
-                <h2 className="font-medium text-xl">Category</h2>
+                <h2 className="font-medium text-xl">Categories</h2>
             </div>
             <div className="space-y-3 h-full overflow-y-scroll">
                 <Accordion

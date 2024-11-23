@@ -13,6 +13,7 @@ import { socket } from "@/socket/socket-io";
 import { AuctionStatus } from "@prisma/client";
 import UserBid from "./user-bid";
 import { Box, Coins, HandCoins } from "lucide-react";
+import UserAuction from "@/components/custom/user-auction";
 
 export default function AuctionBottomBar() {
     const { auction } = auctionStore();
@@ -38,10 +39,10 @@ export default function AuctionBottomBar() {
         [auction, pending],
     );
     const mutateAuctionOnBid = useCallback(
-        (auction: {
+        async (auction: {
             [key in keyof AuctionJson]?: AuctionJson[key];
-        }) => {
-            mutate(
+        }): Promise<void> => {
+            await mutate(
                 ["/api/auctions", searchParams.toString()],
                 (data: AuctionJson[] | undefined) => {
                     return data?.map((a) => {
@@ -67,15 +68,15 @@ export default function AuctionBottomBar() {
             setIsConnected(false);
         }
 
-        function onBid({ auction }: SocketBid) {
-            mutateAuctionOnBid({
+        async function onBid({ auction }: SocketBid) {
+            await mutateAuctionOnBid({
                 id: auction.id,
                 currentBid: auction.amount,
             });
         }
 
-        function onBuyout({ user, auction }: SocketBid) {
-            mutateAuctionOnBid({
+        async function onBuyout({ user, auction }: SocketBid) {
+            await mutateAuctionOnBid({
                 id: auction.id,
                 currentBid: auction.amount,
                 userId: user.id,
@@ -136,10 +137,7 @@ export default function AuctionBottomBar() {
         <div className="flex justify-between items-center mt-5">
             <div className="flex space-x-3">
                 <UserBid />
-                <Button size={"sm"}>
-                    <Box />
-                    Auctions
-                </Button>
+                <UserAuction />
             </div>
             <div className={`space-x-3 flex`}>
                 <div className="flex items-center space-x-2">

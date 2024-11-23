@@ -3,15 +3,7 @@
 This project aims to build a full-stack application using Next.js and other useful libraries. It incorporates various tools commonly used in real-world applications, ensuring scalability and performance.
 
 ## Auction
-![image](https://github.com/user-attachments/assets/893d03d5-c0de-40b5-b2cf-eb2b058d0389)
-## Bid Ranking
-![image](https://github.com/user-attachments/assets/c45ee69a-1bb6-45f6-b779-1e9ac2bb0fd6)
-## Item list
-![image](https://github.com/user-attachments/assets/dbb2212d-ce72-4dc0-a1c3-b0bbc3279c02)
-## Create Item
-![image](https://github.com/user-attachments/assets/03e5aab8-8203-4d99-bd32-dbff7e6d21a4)
-## Create Auction
-![image](https://github.com/user-attachments/assets/1d323c46-b6cd-4029-ace3-f5926c040afd)
+<img width="1470" alt="image" src="https://github.com/user-attachments/assets/00421058-efb2-4e75-a866-b4b2c6110cfd">
 
 
 ## Important

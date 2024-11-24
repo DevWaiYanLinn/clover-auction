@@ -1,4 +1,4 @@
-# Project Overview: Building a Full-Stack Application with Next.js
+# The modern cutting-edge auction website
 
 This project aims to build a full-stack application using Next.js and other useful libraries. It incorporates various tools commonly used in real-world applications, ensuring scalability and performance.
 
@@ -17,7 +17,7 @@ This project aims to build a full-stack application using Next.js and other usef
 
 ## Concept: Creating an Auction App Inspired by WoW
 
-The user interface of auction for my auction app draws inspiration from the game World of Warcraft (WoW), aiming for an engaging and immersive user experience.
+The user interface of auction for my auction app draws inspiration from the game World of Warcraft's auction house, aiming for an engaging and immersive user experience.
 
 ## Current Features Implemented
 

@@ -106,3 +106,13 @@ export type UserBidJson = Omit<Bid, "amount"> & {
         };
     };
 };
+
+export type UserAuctionJson = Omit<
+    Auction,
+    "startingPrice" | "buyoutPrice" | "currentBid"
+> & {
+    startingPrice: number;
+    buyoutPrice: number;
+    currentBid: number;
+    item: Item;
+};

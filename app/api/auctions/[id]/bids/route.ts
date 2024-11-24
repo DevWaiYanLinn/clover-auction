@@ -76,7 +76,7 @@ export async function POST(
             throw new HttpError({
                 status: 401,
                 info: {
-                    message: "Autentication is required.",
+                    message: "Authentication is required.",
                 },
             });
         }
@@ -140,7 +140,6 @@ export async function POST(
         );
         return Response.json(result, { status: 200 });
     } catch (error: unknown) {
-        console.log(error);
         const [data, init] =
             error instanceof HttpError
                 ? [

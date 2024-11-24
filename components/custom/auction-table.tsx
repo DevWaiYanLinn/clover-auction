@@ -10,15 +10,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
 import useSWR, { mutate } from "swr";
-import { AuctionJson, AuthUser } from "@/types";
+import { AuctionJson, AuthUser, SocketBid } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
-import { useCallback, useEffect } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { getAuctionStatus } from "@/lib/utils";
 import { fetchAPI } from "@/lib/fetch";
-import { Button } from "../ui/button";
-import { UsersRound } from "lucide-react";
-import Link from "next/link";
 import {
     Tooltip,
     TooltipContent,
@@ -26,32 +23,133 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import dayjs from "dayjs";
+import { socket } from "@/socket/socket-io";
 
-const AuctionTable = function () {
-    const searchParams = useSearchParams();
-    const { auction, pick } = auctionStore();
+const AuctionStatusTooltip = memo(
+    ({
+        startTime,
+        endTime,
+        status,
+    }: {
+        startTime: string;
+        endTime: string;
+        status: AuctionStatus;
+    }) => {
+        return (
+            <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <span
+                            className={`${status === AuctionStatus.OPEN ? "text-green-600" : "text-red-500"} font-bold py-[0.2rem] px-2 bg-white rounded-2xl capitalize`}
+                        >
+                            {status.toLowerCase()}
+                        </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="border border-slate-400 bg-white text-black">
+                        {dayjs(startTime).format("LLL")} -{" "}
+                        {dayjs(endTime).format("LLL")}
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        );
+    },
+);
 
-    const { data: user } = useSWR<AuthUser>(
-        "/api/auth/user",
-        (url: string) => fetchAPI(url),
-        { revalidateOnMount: false },
-    );
+AuctionStatusTooltip.displayName = "AuctionStatusTooltip";
 
-    const { data, isLoading, error } = useSWR<AuctionJson[]>(
-        ["/api/auctions", searchParams.toString()],
-        ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
-        {
-            dedupingInterval: 1000 * 60,
-            revalidateOnReconnect: true,
-            revalidateIfStale: true,
-        },
-    );
+const AuctionItemRow = ({
+    auction: a,
+    user,
+}: {
+    auction: AuctionJson;
+    user: AuthUser | undefined;
+}) => {
+    const [auction, setAuction] = useState<AuctionJson>(a);
+    useEffect(() => {
+        function onBid({ auction }: SocketBid) {
+            setAuction(() => ({
+                ...Object.assign(a, { currentBid: auction.amount }),
+            }));
+        }
+        function onBuyout({ auction, user }: SocketBid) {
+            setAuction(() => ({
+                ...Object.assign(a, {
+                    currentBid: auction.amount,
+                    userId: user.id,
+                    buyout: true,
+                    status: AuctionStatus.BUYOUT,
+                }),
+            }));
+        }
+        socket.on(`bid-${auction.id}`, onBid);
+        socket.on(`buyout-${auction.id}`, onBuyout);
+        return () => {
+            socket.off(`bid-${auction.id}`, onBid);
+            socket.off(`buyout-${auction.id}`, onBuyout);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const onAuctionPick = useCallback(
         (auction: AuctionJson) => {
             pick(auction);
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [],
+    );
+    const { auction: pickAuction, pick } = auctionStore();
+    return (
+        <TableRow
+            onClick={() => onAuctionPick(auction)}
+            key={auction.id}
+            className={`${pickAuction?.id === auction.id ? "!bg-primary/90 text-white" : "bg-inherit"} cursor-pointer`}
+        >
+            <TableCell>
+                <Avatar>
+                    <AvatarImage src={auction.item.imageUrl} />
+                    <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+            </TableCell>
+            <TableCell className="font-medium">{auction.item.name}</TableCell>
+            <TableCell
+                className={`${
+                    auction.item.seller.id === user?.id
+                        ? "text-green-500 font-bold"
+                        : null
+                }`}
+            >
+                {auction.item.seller.name}
+            </TableCell>
+            <TableCell>${auction.startingPrice.toFixed(2)}</TableCell>
+            <TableCell>${auction.buyoutPrice.toFixed(2)}</TableCell>
+            <TableCell>${auction.currentBid.toFixed(2)}</TableCell>
+            <TableCell>
+                <AuctionStatusTooltip
+                    status={auction.status}
+                    startTime={auction.startTime}
+                    endTime={auction.endTime}
+                />
+            </TableCell>
+        </TableRow>
+    );
+};
+
+const AuctionTable = function () {
+    const searchParams = useSearchParams();
+
+    const { data, isLoading, error } = useSWR<AuctionJson[]>(
+        ["/api/auctions", searchParams.toString()],
+        ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
+        {
+            revalidateOnReconnect: true,
+            revalidateIfStale: true,
+        },
+    );
+
+    const { data: user } = useSWR<AuthUser>(
+        "/api/auth/user",
+        (url: string) => fetchAPI(url),
+        { revalidateOnMount: false },
     );
 
     useEffect(() => {
@@ -104,67 +202,13 @@ const AuctionTable = function () {
                             </TableCell>
                         </TableRow>
                     ) : (
-                        data?.map((a) => {
-                            return (
-                                <TableRow
-                                    onClick={() => onAuctionPick(a)}
-                                    key={a.id}
-                                    className={`${auction?.id === a.id ? "!bg-primary/90 text-white" : "bg-inherit"} cursor-pointer`}
-                                >
-                                    <TableCell>
-                                        <Avatar>
-                                            <AvatarImage
-                                                src={a.item.imageUrl}
-                                            />
-                                            <AvatarFallback>CN</AvatarFallback>
-                                        </Avatar>
-                                    </TableCell>
-                                    <TableCell className="font-medium">
-                                        {a.item.name}
-                                    </TableCell>
-                                    <TableCell
-                                        className={`${
-                                            a.item.seller.id === user?.id
-                                                ? "text-green-500 font-bold"
-                                                : null
-                                        }`}
-                                    >
-                                        {a.item.seller.name}
-                                    </TableCell>
-                                    <TableCell>
-                                        ${a.startingPrice.toFixed(2)}
-                                    </TableCell>
-                                    <TableCell>
-                                        ${a.buyoutPrice.toFixed(2)}
-                                    </TableCell>
-                                    <TableCell>
-                                        ${a.currentBid.toFixed(2)}
-                                    </TableCell>
-                                    <TableCell>
-                                        <TooltipProvider delayDuration={300}>
-                                            <Tooltip>
-                                                <TooltipTrigger>
-                                                    <span
-                                                        className={`${a.status === AuctionStatus.OPEN ? "text-green-600" : "text-red-500"} font-bold py-[0.2rem] px-2 bg-white rounded-2xl capitalize`}
-                                                    >
-                                                        {a.status.toLowerCase()}
-                                                    </span>
-                                                </TooltipTrigger>
-                                                <TooltipContent className="border border-slate-400 bg-white text-black">
-                                                    {dayjs(a.startTime).format(
-                                                        "LLL",
-                                                    )}{" "}
-                                                    -{" "}
-                                                    {dayjs(a.endTime).format(
-                                                        "LLL",
-                                                    )}
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })
+                        data?.map((auction) => (
+                            <AuctionItemRow
+                                user={user}
+                                auction={auction}
+                                key={auction.id}
+                            />
+                        ))
                     )}
                 </TableBody>
             </Table>

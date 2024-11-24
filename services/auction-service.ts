@@ -97,3 +97,25 @@ export const auctionRankById = async (id: string | number) => {
         },
     );
 };
+
+export const getAllAuctionsByUser = async (userId: number) => {
+    const auctions = await prisma.auction.findMany({
+        where: {
+            item: {
+                userId: userId,
+            },
+        },
+        include: {
+            item: true,
+        },
+    });
+
+    return auctions.map((auction) => {
+        return {
+            ...auction,
+            currentBid: auction.currentBid.toNumber(),
+            startingPrice: auction.startingPrice.toNumber(),
+            buyoutPrice: auction.buyoutPrice.toNumber(),
+        };
+    });
+};

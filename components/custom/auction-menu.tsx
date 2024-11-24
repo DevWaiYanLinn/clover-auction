@@ -100,7 +100,7 @@ const AuctionMenu = () => {
             <div className="flex justify-end">
                 <div>
                     <div className="text-center space-x-3">
-                        <Button>
+                        <Button onClick={() => router.refresh()}>
                             <RefreshCcw />
                             Reset
                         </Button>

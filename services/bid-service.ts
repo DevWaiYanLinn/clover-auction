@@ -6,7 +6,11 @@ export const getAllBidsByUser = async (id: number) => {
             userId: id,
         },
         include: {
-            auction: true,
+            auction: {
+                include: {
+                    item: true,
+                },
+            },
         },
     });
 

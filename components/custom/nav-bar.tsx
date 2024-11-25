@@ -31,7 +31,7 @@ export default function NavBar() {
                 </Link>
             </li>
             <li
-                className={`py-2 border-b-[5px] ${pathname === "/auction" ? "border-primary" : "border-transparent"}`}
+                className={`py-2 border-b-[5px] ${pathname.startsWith("/auction") ? "border-primary" : "border-transparent"}`}
             >
                 <Link
                     prefetch
@@ -42,7 +42,7 @@ export default function NavBar() {
                 </Link>
             </li>
             <li
-                className={`py-2 border-b-[5px] ${pathname === "/item" ? "border-primary" : "border-transparent"}`}
+                className={`py-2 border-b-[5px] ${pathname.startsWith("/item") ? "border-primary" : "border-transparent"}`}
             >
                 <Link prefetch className="text-lg font-medium " href={"/item"}>
                     Item

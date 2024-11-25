@@ -99,11 +99,7 @@ export type UserBidJson = Omit<Bid, "amount"> & {
         id: number;
         userId: number | null;
         endTime: string;
-        item: {
-            id: number;
-            imageUrl: string;
-            name: string;
-        };
+        item: Item;
     };
 };
 

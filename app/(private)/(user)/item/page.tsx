@@ -50,10 +50,8 @@ export default async function Page({
                             <TableHead>Category</TableHead>
                             <TableHead>SubCategory</TableHead>
                             <TableHead>Date</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">
-                                Auction
-                            </TableHead>
+                            <TableHead>Auction</TableHead>
+                            <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

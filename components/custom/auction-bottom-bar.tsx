@@ -48,7 +48,6 @@ export default function AuctionBottomBar() {
             setPending(false);
         }
     };
-
     const onBidClick = async () => {
         setPending(true);
         try {

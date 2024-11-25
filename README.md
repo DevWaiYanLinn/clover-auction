@@ -8,10 +8,10 @@ This project aims to build a full-stack application using Next.js and other usef
 
 ## Important
 
--   Currently **Clover Auction** is not stable and keep developing.
--   You can meet dependencies conflict when "npm install" because of "Shadcn".Don't worry you can fix it using "npm --legacy-peer-deps install".
+-   Currently, **Clover Auction** is currently bid, buyout, are stable and others are keep developing.
+-   You can meet dependencies conflict when "npm install" because of "Shadcn".You can fix it using "npm --legacy-peer-deps install".
 -   You have to read prisma documentation to migrate database.
--   Real time bidding and mail service will not workling if you don't setup redis server
+-   Real time bidding and mail service will not working if you don't set up redis server
 -   Before cloning and setting up this project, you must first set up and run the [Socket Server](https://github.com/DevWaiYanLinn/clover-auction-socket-server)
     .
 

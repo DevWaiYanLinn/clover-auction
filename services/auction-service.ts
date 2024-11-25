@@ -28,8 +28,8 @@ export const getAllAuctions = async ({
         filter["status"] = status as AuctionStatus;
     }
 
-    const sevenDayAgo = new Date();
-    sevenDayAgo.setDate(sevenDayAgo.getDate() - 14);
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
 
     const auctions = await prisma.auction.findMany({
         include: {
@@ -50,7 +50,7 @@ export const getAllAuctions = async ({
                 },
             },
         },
-        where: { startTime: { gte: sevenDayAgo }, ...filter },
+        where: { startTime: { gte: oneMonthAgo }, ...filter },
         orderBy: {
             id: "desc",
         },

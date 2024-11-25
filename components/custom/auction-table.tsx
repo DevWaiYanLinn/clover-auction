@@ -137,7 +137,11 @@ const AuctionItemRow = ({
 const AuctionTable = function () {
     const searchParams = useSearchParams();
 
-    const { data, isLoading, error } = useSWR<AuctionJson[]>(
+    const {
+        data: auctions,
+        isLoading,
+        error,
+    } = useSWR<AuctionJson[]>(
         ["/api/auctions", searchParams.toString()],
         ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
         {
@@ -158,19 +162,18 @@ const AuctionTable = function () {
             await mutate(
                 ["/api/auctions", searchParams.toString()],
                 (data: AuctionJson[] | undefined) => {
-                    return data?.map((a) => {
+                    return data?.map((auction) => {
                         const status = getAuctionStatus(
-                            a.startTime,
-                            a.endTime,
-                            a.buyout,
+                            auction.startTime,
+                            auction.endTime,
+                            auction.buyout,
                         );
-                        if (status !== a.status) {
+                        if (status !== auction.status) {
                             return {
-                                ...a,
-                                ...Object.assign(a, { status }),
+                                ...Object.assign(auction, { status }),
                             };
                         }
-                        return a;
+                        return auction;
                     });
                 },
                 { revalidate: false },
@@ -202,7 +205,7 @@ const AuctionTable = function () {
                             </TableCell>
                         </TableRow>
                     ) : (
-                        data?.map((auction) => (
+                        auctions?.map((auction) => (
                             <AuctionItemRow
                                 user={user}
                                 auction={auction}

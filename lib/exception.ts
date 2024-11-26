@@ -44,3 +44,20 @@ export class HttpError extends Error {
         return `HttpError { status: ${this.status}, message: "${this.message}", info: ${JSON.stringify(this.info)} }`;
     }
 }
+
+export const parseError = (error: unknown) => {
+    return error instanceof HttpError
+        ? [
+              { info: error.info, message: error.message },
+              { status: error.status },
+          ]
+        : [
+              {
+                  info: {
+                      message: "Server Error",
+                  },
+                  message: "unknown error",
+              },
+              { status: 500 },
+          ];
+};

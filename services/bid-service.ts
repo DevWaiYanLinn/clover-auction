@@ -78,6 +78,7 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
             info: { message: "You can't bid your own auction." },
         });
     }
+    const buyout = amount.toNumber() > found.buyoutPrice.toNumber();
 
     const result = await prisma.$transaction(async (tx) => {
         const auction = await tx.auction.update({
@@ -87,6 +88,8 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
             },
             data: {
                 currentBid: amount,
+                buyout,
+                userId: buyout ? session.user.id : null,
             },
         });
 
@@ -126,13 +129,12 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
         return auction;
     });
     await pub.publish(
-        "bid",
+        buyout ? "buyout" : "bid",
         JSON.stringify({
             user: { id: session.user.id },
             auction: {
                 id: result.id,
                 amount: result.currentBid.toNumber(),
-                buyout: false,
             },
         }),
     );
@@ -188,16 +190,6 @@ export const buyoutByAuctionId = async (id: number) => {
             info: {
                 message:
                     "Auction has already concluded, no more bids can be placed.",
-            },
-        });
-    }
-
-    if (found.buyoutPrice.toNumber() <= found.currentBid.toNumber()) {
-        throw new HttpError({
-            status: 422,
-            info: {
-                message:
-                    "Current bid Price greater than or equal buyout price.",
             },
         });
     }
@@ -258,7 +250,6 @@ export const buyoutByAuctionId = async (id: number) => {
             auction: {
                 id: result.id,
                 amount: result.buyoutPrice.toNumber(),
-                buyout: true,
             },
         }),
     );

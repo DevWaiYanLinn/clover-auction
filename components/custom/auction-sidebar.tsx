@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import useSWR from "swr";
 
-const Sidebar = function () {
+const AuctionSidebar = function () {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -74,4 +74,4 @@ const Sidebar = function () {
     );
 };
 
-export default Sidebar;
+export default AuctionSidebar;

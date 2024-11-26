@@ -1,5 +1,5 @@
-import Sidebar from "@/components/custom/sidebar";
+import AuctionSidebar from "@/components/custom/auction-sidebar";
 
 export default function Page() {
-    return <Sidebar />;
+    return <AuctionSidebar />;
 }

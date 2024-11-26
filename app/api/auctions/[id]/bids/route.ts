@@ -21,7 +21,6 @@ export async function POST(
         );
     }
     const id = (await params).id;
-
     try {
         const result = await bidByAuctionId(
             Number(id),

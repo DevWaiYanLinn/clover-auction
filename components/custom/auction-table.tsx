@@ -65,6 +65,7 @@ const AuctionItemRow = ({
     user: AuthUser | undefined;
 }) => {
     const [auction, setAuction] = useState<AuctionJson>(a);
+    const { auction: pickAuction, pick } = auctionStore();
     useEffect(() => {
         function onBid({ auction }: SocketBid) {
             setAuction(() => ({
@@ -97,7 +98,6 @@ const AuctionItemRow = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [],
     );
-    const { auction: pickAuction, pick } = auctionStore();
     return (
         <TableRow
             onClick={() => onAuctionPick(auction)}
@@ -135,6 +135,7 @@ const AuctionItemRow = ({
 };
 
 const AuctionTable = function () {
+    const { pick } = auctionStore();
     const searchParams = useSearchParams();
 
     const {
@@ -180,8 +181,10 @@ const AuctionTable = function () {
             );
         }, 1000 * 60);
         return () => {
+            pick(null);
             clearInterval(timeInterval);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
     return (
         <div className="flex-1 border rounded-md overflow-y-scroll">

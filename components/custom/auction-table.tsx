@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
 import useSWR, { mutate } from "swr";
-import { AuctionJson, AuthUser, SocketBid } from "@/types";
+import { AuctionJson, AuthUser, SocketBidType } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
 import { memo, useCallback, useEffect, useState } from "react";
@@ -58,29 +58,43 @@ const AuctionStatusTooltip = memo(
 AuctionStatusTooltip.displayName = "AuctionStatusTooltip";
 
 const AuctionItemRow = ({
-    auction: a,
+    auction,
     user,
 }: {
     auction: AuctionJson;
     user: AuthUser | undefined;
 }) => {
-    const [auction, setAuction] = useState<AuctionJson>(a);
+    const searchParams = useSearchParams();
     const { auction: pickAuction, pick } = auctionStore();
+
+    const mutateAuctionOnBid = (data: {
+        [key in keyof AuctionJson]?: AuctionJson[key];
+    }) => {
+        void mutate(
+            ["/api/auctions", searchParams.toString()],
+            (auctions: AuctionJson[] | undefined) => {
+                return auctions?.map((auction) => {
+                    if (auction.id === data.id) {
+                        return { ...auction, ...data };
+                    }
+                    return auction;
+                });
+            },
+            { revalidate: false },
+        );
+    };
+
     useEffect(() => {
-        function onBid({ auction }: SocketBid) {
-            setAuction(() => ({
-                ...Object.assign(a, { currentBid: auction.amount }),
-            }));
+        function onBid({ auction }: SocketBidType) {
+            mutateAuctionOnBid({ currentBid: auction.amount });
         }
-        function onBuyout({ auction, user }: SocketBid) {
-            setAuction(() => ({
-                ...Object.assign(a, {
-                    currentBid: auction.amount,
-                    userId: user.id,
-                    buyout: true,
-                    status: AuctionStatus.BUYOUT,
-                }),
-            }));
+        function onBuyout({ auction, user }: SocketBidType) {
+            mutateAuctionOnBid({
+                currentBid: auction.amount,
+                userId: user.id,
+                buyout: true,
+                status: AuctionStatus.BUYOUT,
+            });
         }
         socket.on(`bid-${auction.id}`, onBid);
         socket.on(`buyout-${auction.id}`, onBuyout);
@@ -159,8 +173,8 @@ const AuctionTable = function () {
 
     useEffect(() => {
         let timeInterval;
-        timeInterval = setInterval(async () => {
-            await mutate(
+        timeInterval = setInterval(() => {
+            void mutate(
                 ["/api/auctions", searchParams.toString()],
                 (data: AuctionJson[] | undefined) => {
                     return data?.map((auction) => {

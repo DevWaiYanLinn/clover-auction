@@ -185,7 +185,8 @@ const AuctionTable = function () {
                         );
                         if (status !== auction.status) {
                             return {
-                                ...Object.assign(auction, { status }),
+                                ...auction,
+                                status,
                             };
                         }
                         return auction;

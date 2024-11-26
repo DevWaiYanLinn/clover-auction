@@ -81,6 +81,13 @@ export async function POST(
             });
         }
 
+        if (found.userId === session.user.id) {
+            throw new HttpError({
+                status: 403,
+                info: { message: "You can't bid your own auction." },
+            });
+        }
+
         const result = await prisma.$transaction(async (tx) => {
             const auction = await tx.auction.update({
                 where: {

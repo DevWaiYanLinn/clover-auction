@@ -86,10 +86,11 @@ const AuctionItemRow = ({
 
     useEffect(() => {
         function onBid({ auction }: SocketBidType) {
-            mutateAuctionOnBid({ currentBid: auction.amount });
+            mutateAuctionOnBid({ currentBid: auction.amount, id: auction.id });
         }
         function onBuyout({ auction, user }: SocketBidType) {
             mutateAuctionOnBid({
+                id: auction.id,
                 currentBid: auction.amount,
                 userId: user.id,
                 buyout: true,
@@ -105,16 +106,9 @@ const AuctionItemRow = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const onAuctionPick = useCallback(
-        (auction: AuctionJson) => {
-            pick(auction);
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
     return (
         <TableRow
-            onClick={() => onAuctionPick(auction)}
+            onClick={() => pick(auction)}
             key={auction.id}
             className={`${pickAuction?.id === auction.id ? "!bg-primary/90 text-white" : "bg-inherit"} cursor-pointer`}
         >

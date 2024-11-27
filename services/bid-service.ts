@@ -36,7 +36,12 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
     }
 
     if (found.status !== AuctionStatus.OPEN) {
-        throw new HttpError({ status: 403 });
+        throw new HttpError({
+            status: 403,
+            info: {
+                message: "Auction is no longer opening.",
+            },
+        });
     }
 
     if (found.userId) {

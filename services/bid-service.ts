@@ -5,7 +5,7 @@ import { AuctionStatus } from "@prisma/client";
 import { auth } from "@/lib/session";
 import { pub } from "@/database/redis";
 
-export const getAllBidsByUser = async (id: number) => {
+export const getAllBidsByUserId = async (id: number) => {
     const bids = await prisma.bid.findMany({
         where: {
             userId: id,
@@ -65,7 +65,6 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
             },
         });
     }
-
     const session = await auth();
 
     if (!session) {
@@ -83,7 +82,7 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
             info: { message: "You can't bid your own auction." },
         });
     }
-    const buyout = amount.toNumber() > found.buyoutPrice.toNumber();
+    const buyout = amount.toNumber() >= found.buyoutPrice.toNumber();
 
     const result = await prisma.$transaction(async (tx) => {
         const auction = await tx.auction.update({
@@ -94,7 +93,7 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
             data: {
                 currentBid: amount,
                 buyout,
-                userId: buyout ? session.user.id : null,
+                userId: session.user.id,
             },
         });
 
@@ -182,7 +181,7 @@ export const buyoutByAuctionId = async (id: number) => {
 
     if (found.status !== AuctionStatus.OPEN) {
         throw new HttpError({
-            status: 422,
+            status: 403,
             info: {
                 message: "Auction no longer open.",
             },

@@ -13,7 +13,7 @@ import useSWR, { mutate } from "swr";
 import { AuctionJson, AuthUser, SocketBidType } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useEffect } from "react";
 import { getAuctionStatus } from "@/lib/utils";
 import { fetchAPI } from "@/lib/fetch";
 import {

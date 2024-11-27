@@ -98,7 +98,7 @@ export const auctionRankById = async (id: string | number) => {
     );
 };
 
-export const getAllAuctionsByUser = async (userId: number) => {
+export const getAllAuctionsByUserId = async (userId: number) => {
     const auctions = await prisma.auction.findMany({
         where: {
             item: {

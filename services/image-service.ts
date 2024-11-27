@@ -9,7 +9,7 @@ class ImageService {
         file: File,
     ): Promise<UploadApiResponse | undefined> {
         const arrayBuffer = await file.arrayBuffer();
-        const buffer = await new Uint8Array(arrayBuffer);
+        const buffer = new Uint8Array(arrayBuffer);
         return new Promise((resolve, reject) => {
             cloudinary.uploader
                 .upload_stream(

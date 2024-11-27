@@ -82,9 +82,9 @@ export type findOrCreateUserType = {
     data: { name: string; email: string; password: string };
 };
 
-export type SocketBid = {
+export type SocketBidType = {
     user: { id: number };
-    auction: { id: number; amount: number; buyout: boolean };
+    auction: { id: number; amount: number };
 };
 
 export type FetchError = {

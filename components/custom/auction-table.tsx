@@ -10,10 +10,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import auctionStore from "@/store/auction-store";
 import useSWR, { mutate } from "swr";
-import { AuctionJson, AuthUser, SocketBid } from "@/types";
+import { AuctionJson, AuthUser, SocketBidType } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useEffect } from "react";
 import { getAuctionStatus } from "@/lib/utils";
 import { fetchAPI } from "@/lib/fetch";
 import {
@@ -58,28 +58,44 @@ const AuctionStatusTooltip = memo(
 AuctionStatusTooltip.displayName = "AuctionStatusTooltip";
 
 const AuctionItemRow = ({
-    auction: a,
+    auction,
     user,
 }: {
     auction: AuctionJson;
     user: AuthUser | undefined;
 }) => {
-    const [auction, setAuction] = useState<AuctionJson>(a);
+    const searchParams = useSearchParams();
+    const { auction: pickAuction, pick } = auctionStore();
+
+    const mutateAuctionOnBid = (data: {
+        [key in keyof AuctionJson]?: AuctionJson[key];
+    }) => {
+        void mutate(
+            ["/api/auctions", searchParams.toString()],
+            (auctions: AuctionJson[] | undefined) => {
+                return auctions?.map((auction) => {
+                    if (auction.id === data.id) {
+                        return { ...auction, ...data };
+                    }
+                    return auction;
+                });
+            },
+            { revalidate: false },
+        );
+    };
+
     useEffect(() => {
-        function onBid({ auction }: SocketBid) {
-            setAuction(() => ({
-                ...Object.assign(a, { currentBid: auction.amount }),
-            }));
+        function onBid({ auction }: SocketBidType) {
+            mutateAuctionOnBid({ currentBid: auction.amount, id: auction.id });
         }
-        function onBuyout({ auction, user }: SocketBid) {
-            setAuction(() => ({
-                ...Object.assign(a, {
-                    currentBid: auction.amount,
-                    userId: user.id,
-                    buyout: true,
-                    status: AuctionStatus.BUYOUT,
-                }),
-            }));
+        function onBuyout({ auction, user }: SocketBidType) {
+            mutateAuctionOnBid({
+                id: auction.id,
+                currentBid: auction.amount,
+                userId: user.id,
+                buyout: true,
+                status: AuctionStatus.BUYOUT,
+            });
         }
         socket.on(`bid-${auction.id}`, onBid);
         socket.on(`buyout-${auction.id}`, onBuyout);
@@ -90,17 +106,9 @@ const AuctionItemRow = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const onAuctionPick = useCallback(
-        (auction: AuctionJson) => {
-            pick(auction);
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
-    const { auction: pickAuction, pick } = auctionStore();
     return (
         <TableRow
-            onClick={() => onAuctionPick(auction)}
+            onClick={() => pick(auction)}
             key={auction.id}
             className={`${pickAuction?.id === auction.id ? "!bg-primary/90 text-white" : "bg-inherit"} cursor-pointer`}
         >
@@ -135,6 +143,7 @@ const AuctionItemRow = ({
 };
 
 const AuctionTable = function () {
+    const { pick } = auctionStore();
     const searchParams = useSearchParams();
 
     const {
@@ -158,8 +167,8 @@ const AuctionTable = function () {
 
     useEffect(() => {
         let timeInterval;
-        timeInterval = setInterval(async () => {
-            await mutate(
+        timeInterval = setInterval(() => {
+            void mutate(
                 ["/api/auctions", searchParams.toString()],
                 (data: AuctionJson[] | undefined) => {
                     return data?.map((auction) => {
@@ -170,7 +179,8 @@ const AuctionTable = function () {
                         );
                         if (status !== auction.status) {
                             return {
-                                ...Object.assign(auction, { status }),
+                                ...auction,
+                                status,
                             };
                         }
                         return auction;
@@ -180,8 +190,10 @@ const AuctionTable = function () {
             );
         }, 1000 * 60);
         return () => {
+            pick(null);
             clearInterval(timeInterval);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
     return (
         <div className="flex-1 border rounded-md overflow-y-scroll">

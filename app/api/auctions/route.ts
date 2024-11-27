@@ -3,8 +3,7 @@ import { type NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
-    const auctions = await getAllAuctions(
-        Object.fromEntries(searchParams.entries()),
-    );
+    const paramsToObj = Object.fromEntries(searchParams.entries());
+    const auctions = await getAllAuctions(paramsToObj);
     return Response.json(auctions);
 }

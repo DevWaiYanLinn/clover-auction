@@ -2,7 +2,6 @@ import { Session } from "@/types";
 import { cookies, headers } from "next/headers";
 import * as jose from "jose";
 import config from "@/config";
-import { cache } from "react";
 
 let keyPromise: Promise<{
     privateKey: jose.KeyLike;
@@ -56,8 +55,18 @@ export const login = async (user: { id: number }) => {
     });
 };
 
-export const auth = cache(async (): Promise<Session | null> => {
+export const auth = async (): Promise<Session | null> => {
     const cookie = (await cookies()).get(config.session.cookieName)?.value;
-    const session = cookie && (await decrypt(cookie));
-    return session ? session : null;
-});
+    return !cookie ? null : await decrypt(cookie);
+};
+
+export const logout = async () => {
+    const cookie = await cookies();
+    cookie.delete(config.session.cookieName);
+};
+
+export const session = async (): Promise<Session | null> => {
+    const heads = await headers();
+    const session = heads.get("x-session");
+    return session ? JSON.parse(session) : null;
+};

@@ -13,7 +13,7 @@ export default function PreFetch({
         <SWRConfig
             value={{
                 fallback: prefetch,
-                revalidateOnMount: true,
+                revalidateOnMount: false,
                 revalidateIfStale: false,
                 revalidateOnReconnect: false,
                 revalidateOnFocus: false,

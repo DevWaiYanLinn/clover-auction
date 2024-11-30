@@ -1,10 +1,10 @@
 import prisma from "@/database/prisma";
-import { auth } from "@/lib/session";
-import ImageService from "@/services/image-service";
+import ImageService from "@/services/user/image-service";
 import { v4 as uuidv4 } from "uuid";
 import { HttpError } from "@/lib/exception";
 import { createAuctionSchemaType } from "@/validation/auction-schema";
 import { CreateItemSchemaType } from "@/validation/item-schema";
+import { authenticatedUser } from "@/services/user/auth-service";
 
 export const getAllItems = async (
     query: {
@@ -12,8 +12,7 @@ export const getAllItems = async (
     } = {},
 ) => {
     const filter: { name?: string; subcategory?: number } = {};
-
-    const session = await auth();
+    const user = await authenticatedUser();
 
     if (query["name"]) {
         filter["name"] = query["name"] as string;
@@ -24,7 +23,7 @@ export const getAllItems = async (
     }
 
     return prisma.item.findMany({
-        where: { userId: session?.user.id, ...filter },
+        where: { userId: user.id, ...filter },
         orderBy: {
             id: "desc",
         },
@@ -45,6 +44,7 @@ export const getAllItems = async (
 };
 
 export const createItem = async (data: CreateItemSchemaType) => {
+    const user = await authenticatedUser();
     const imageService = new ImageService();
 
     const result = await imageService.nextUploadStream(
@@ -64,8 +64,6 @@ export const createItem = async (data: CreateItemSchemaType) => {
         where: { id: data.subcategory },
     });
 
-    const session = await auth();
-
     return await prisma.item.create({
         data: {
             categoryId: subcategory!.categoryId,
@@ -73,19 +71,22 @@ export const createItem = async (data: CreateItemSchemaType) => {
             description: data.description,
             imageUrl: result.secure_url,
             subCategoryId: subcategory!.id,
-            userId: session!.user.id,
+            userId: user.id,
             publicImageId: result.public_id,
         },
     });
 };
 
 export const createAuctionByItemId = async (
-    id: number,
+    itemId: number,
     data: createAuctionSchemaType,
 ) => {
+    const user = await authenticatedUser();
+
     const item = await prisma.item.findUnique({
         where: {
-            id,
+            id: itemId,
+            userId: user.id,
         },
     });
 
@@ -93,9 +94,7 @@ export const createAuctionByItemId = async (
         throw new HttpError({ status: 404 });
     }
 
-    const auction = await prisma.auction.create({
+    return await prisma.auction.create({
         data: { ...data, itemId: item.id },
     });
-
-    return Response.json(auction, { status: 200 });
 };

@@ -2,13 +2,15 @@ import prisma from "@/database/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { HttpError } from "@/lib/exception";
 import { AuctionStatus } from "@prisma/client";
-import { auth } from "@/lib/session";
 import { pub } from "@/database/redis";
+import { authenticatedUser } from "@/services/user/auth-service";
+import { findAuctionById } from "@/services/user/auction-service";
 
-export const getAllBidsByUserId = async (id: number) => {
+export const getAllBidsByUser = async () => {
+    const user = await authenticatedUser();
     const bids = await prisma.bid.findMany({
         where: {
-            userId: id,
+            userId: user.id,
         },
         include: {
             auction: {
@@ -25,31 +27,21 @@ export const getAllBidsByUserId = async (id: number) => {
 };
 
 export const bidByAuctionId = async (id: number, amount: Decimal) => {
-    const found = await prisma.auction.findUnique({
-        where: {
-            id: Number(id),
-        },
-    });
+    const user = await authenticatedUser();
+    const found = await findAuctionById(id);
 
-    if (!found) {
-        throw new HttpError({ status: 404, message: "Auction not found." });
+    if (found.userId === user.id) {
+        throw new HttpError({
+            status: 403,
+            info: { message: "You can't bid your own auction." },
+        });
     }
 
-    if (found.status !== AuctionStatus.OPEN) {
+    if (found.status !== AuctionStatus.Open) {
         throw new HttpError({
             status: 403,
             info: {
                 message: "Auction is no longer opening.",
-            },
-        });
-    }
-
-    if (found.userId) {
-        throw new HttpError({
-            status: 403,
-            info: {
-                message:
-                    "Auction has already concluded, no more bids can be placed.",
             },
         });
     }
@@ -65,23 +57,7 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
             },
         });
     }
-    const session = await auth();
 
-    if (!session) {
-        throw new HttpError({
-            status: 401,
-            info: {
-                message: "Authentication is required.",
-            },
-        });
-    }
-
-    if (found.userId === session.user.id) {
-        throw new HttpError({
-            status: 403,
-            info: { message: "You can't bid your own auction." },
-        });
-    }
     const buyout = amount.toNumber() >= found.buyoutPrice.toNumber();
 
     const result = await prisma.$transaction(async (tx) => {
@@ -92,8 +68,7 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
             },
             data: {
                 currentBid: amount,
-                buyout,
-                userId: session.user.id,
+                userId: user.id,
             },
         });
 
@@ -107,14 +82,14 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
         const bid = await prisma.bid.findFirst({
             where: {
                 auctionId: auction.id,
-                userId: session.user.id,
+                userId: user.id,
             },
         });
 
         if (!bid) {
             await tx.bid.create({
                 data: {
-                    userId: session.user.id,
+                    userId: user.id,
                     amount: auction.currentBid,
                     auctionId: auction.id,
                 },
@@ -135,7 +110,7 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
     await pub.publish(
         buyout ? "buyout" : "bid",
         JSON.stringify({
-            user: { id: session.user.id },
+            user: { id: user.id },
             auction: {
                 id: result.id,
                 amount: result.currentBid.toNumber(),
@@ -147,56 +122,25 @@ export const bidByAuctionId = async (id: number, amount: Decimal) => {
 };
 
 export const buyoutByAuctionId = async (id: number) => {
-    const session = await auth();
-    if (!session) {
-        throw new HttpError({
-            status: 401,
-            info: {
-                message: "Session Expired.",
-            },
-        });
-    }
+    const user = await authenticatedUser();
+    const found = await findAuctionById(id);
 
-    const found = await prisma.auction.findUnique({
-        where: {
-            id: Number(id),
-        },
-    });
-
-    if (!found) {
-        throw new HttpError({
-            status: 403,
-            info: {
-                message: "Auction not found.",
-            },
-        });
-    }
-
-    if (found.userId === session.user.id) {
+    if (found.userId === user.id) {
         throw new HttpError({
             status: 403,
             info: { message: "You can't buyout your own auction." },
         });
     }
 
-    if (found.status !== AuctionStatus.OPEN) {
+    if (found.status !== AuctionStatus.Open) {
         throw new HttpError({
             status: 403,
             info: {
-                message: "Auction no longer open.",
+                message: "Auction is no longer open.",
             },
         });
     }
 
-    if (found.userId) {
-        throw new HttpError({
-            status: 403,
-            info: {
-                message:
-                    "Auction has already concluded, no more bids can be placed.",
-            },
-        });
-    }
     const result = await prisma.$transaction(async (tx) => {
         const auction = await tx.auction.update({
             where: {
@@ -204,9 +148,8 @@ export const buyoutByAuctionId = async (id: number) => {
                 updatedAt: found.updatedAt,
             },
             data: {
-                userId: session.user.id,
+                userId: user.id,
                 currentBid: found.buyoutPrice,
-                buyout: true,
             },
         });
 
@@ -222,7 +165,7 @@ export const buyoutByAuctionId = async (id: number) => {
         const bid = await prisma.bid.findFirst({
             where: {
                 auctionId: auction.id,
-                userId: session.user.id,
+                userId: user.id,
             },
         });
 
@@ -230,7 +173,7 @@ export const buyoutByAuctionId = async (id: number) => {
             await tx.bid.create({
                 data: {
                     auctionId: auction.id,
-                    userId: session.user.id,
+                    userId: user.id,
                     amount: auction.buyoutPrice,
                 },
             });
@@ -250,7 +193,7 @@ export const buyoutByAuctionId = async (id: number) => {
     await pub.publish(
         "buyout",
         JSON.stringify({
-            user: { id: session.user.id },
+            user: { id: user.id },
             auction: {
                 id: result.id,
                 amount: result.buyoutPrice.toNumber(),

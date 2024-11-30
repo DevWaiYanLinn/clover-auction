@@ -14,9 +14,9 @@ export default async function middleware(req: NextRequest, res: NextResponse) {
     const isPublicRoute = publicRoutes.includes(path);
 
     const session = await auth();
-
     const device = req.headers.get("User-Agent");
     const authenticated = session && session.device === device;
+    req.headers.set("x-session", JSON.stringify(session));
 
     if (!authenticated && !isPublicRoute && !authRoutes.includes(path)) {
         return NextResponse.redirect(new URL("/login", req.nextUrl));
@@ -26,7 +26,11 @@ export default async function middleware(req: NextRequest, res: NextResponse) {
         return NextResponse.redirect(new URL("/profile", req.nextUrl));
     }
 
-    return NextResponse.next();
+    return NextResponse.next({
+        request: {
+            headers: req.headers,
+        },
+    });
 }
 export const config = {
     matcher: [

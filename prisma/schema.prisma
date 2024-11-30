@@ -19,7 +19,7 @@ model User {
     name            String        @db.VarChar(50)
     email           String        @unique @db.VarChar(100)
     password        String        @db.VarChar(255)
-    profileUrl      String        @map("profile_url") @db.VarChar(255)
+    profileUrl      String?       @map("profile_url") @db.VarChar(255)
     balance         Decimal       @default(0) @db.Decimal(10, 2)
     reputation      Int           @default(3)
     phoneNumber     String?       @map("phone_number") @db.VarChar(50)
@@ -137,10 +137,10 @@ model Item {
 }
 
 enum AuctionStatus {
-    OPEN
-    CLOSED
-    FINISHED
-    BUYOUT
+    Open
+    Close
+    Finshed
+    Buyout
 }
 
 model Auction {
@@ -156,9 +156,8 @@ model Auction {
     startTime     DateTime      @map("start_time")
     endTime       DateTime      @map("end_Time")
     description   String?       @db.MediumText()
-    status        AuctionStatus @default(CLOSED)
     approved      Boolean       @default(false)
-    buyout        Boolean       @default(false)
+    status        AuctionStatus @default(Close)
     createdAt     DateTime      @default(now()) @map("created_at")
     updatedAt     DateTime      @updatedAt @map("updated_at")
     deleted       Boolean       @default(false)

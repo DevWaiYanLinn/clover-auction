@@ -4,7 +4,7 @@ import {
 } from "@/components/custom/alert-destructive";
 import { Button } from "@/components/ui/button";
 import { jwtVerify } from "@/lib/jwt";
-import { verifyUser } from "@/services/user-service";
+import { verifyUser } from "@/services/user/user-service";
 import { searchParamsPromise } from "@/types";
 
 const verified = async (token: string) => {

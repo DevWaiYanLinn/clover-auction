@@ -1,6 +1,6 @@
 import { parseError } from "@/lib/exception";
 import { NextRequest } from "next/server";
-import { bidByAuctionId } from "@/services/bid-service";
+import { bidByAuctionId } from "@/services/user/bid-service";
 import { AuctionBidSchema } from "@/validation/auction-schema";
 
 export async function POST(

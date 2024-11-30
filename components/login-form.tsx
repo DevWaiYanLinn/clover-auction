@@ -20,6 +20,7 @@ const initialState = {
 export function LoginForm() {
     const [state, formAction] = useActionState(singIn, initialState);
     const [name, setName] = useState("");
+
     return (
         <Card className="mx-auto max-w-sm">
             <CardHeader>

@@ -1,18 +1,12 @@
-import { auth } from "@/lib/session";
-import { getAllAuctionsByUserId } from "@/services/auction-service";
+import { getAllAuctionsByUser } from "@/services/user/auction-service";
+import { parseError } from "@/lib/exception";
 
 export async function GET() {
-    const session = await auth();
-    if (!session) {
-        return Response.json(
-            {
-                info: {
-                    message: "Authentication error.",
-                },
-            },
-            { status: 401 },
-        );
+    try {
+        const auctions = await getAllAuctionsByUser();
+        return Response.json(auctions, { status: 200 });
+    } catch (error) {
+        const [data, init] = parseError(error);
+        return Response.json(data, init);
     }
-    const auctions = await getAllAuctionsByUserId(session.user.id);
-    return Response.json(auctions, { status: 200 });
 }

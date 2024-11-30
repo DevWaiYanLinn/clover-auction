@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "../ui/button";
 import auctionStore from "@/store/auction-store";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { toast } from "react-toastify";
 import { fetchAPI } from "@/lib/fetch";
 import { useMemo, useState } from "react";
@@ -12,11 +12,13 @@ import { AuctionStatus } from "@prisma/client";
 import UserBid from "./user-bid";
 import { Coins, HandCoins } from "lucide-react";
 import UserAuction from "@/components/custom/user-auction";
+import { useSearchParams } from "next/navigation";
 
 export default function AuctionBottomBar() {
     const { auction } = auctionStore();
     const [pending, setPending] = useState(false);
     const [amount, setAmount] = useState("");
+    const searchParams = useSearchParams();
 
     const { data: user } = useSWR<AuthUser>(
         "/api/auth/user",
@@ -29,7 +31,7 @@ export default function AuctionBottomBar() {
             !auction ||
             pending ||
             auction.item.seller.id === user?.id ||
-            auction.status !== AuctionStatus.OPEN,
+            auction.status !== AuctionStatus.Open,
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [auction, pending],
     );
@@ -42,6 +44,9 @@ export default function AuctionBottomBar() {
             });
             toast.success("Buyout Success");
         } catch (error: any) {
+            if (error.status === 403) {
+                void mutate(["/api/auctions", searchParams.toString()]);
+            }
             toast.error(error.info.message);
         } finally {
             setAmount("");
@@ -60,6 +65,9 @@ export default function AuctionBottomBar() {
 
             toast.success("Bid Success");
         } catch (error: any) {
+            if (error.status === 403) {
+                void mutate(["/api/auctions", searchParams.toString()]);
+            }
             toast.error(error.info.message);
         } finally {
             setAmount("");

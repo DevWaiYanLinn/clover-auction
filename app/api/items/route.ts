@@ -1,4 +1,4 @@
-import { createItem, getAllItems } from "@/services/item-service";
+import { createItem, getAllItems } from "@/services/user/item-service";
 import { type NextRequest } from "next/server";
 import { parseError } from "@/lib/exception";
 import { CreateItemSchema } from "@/validation/item-schema";

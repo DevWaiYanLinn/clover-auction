@@ -1,4 +1,4 @@
-import { getAllCategories } from "@/services/category-service";
+import { getAllCategories } from "@/services/user/category-service";
 import { type NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {

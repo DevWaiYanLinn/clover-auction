@@ -14,7 +14,6 @@ import { AuctionJson, AuthUser, SocketBidType } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { AuctionStatus } from "@prisma/client";
 import { memo, useEffect } from "react";
-import { getAuctionStatus } from "@/lib/utils";
 import { fetchAPI } from "@/lib/fetch";
 import {
     Tooltip,
@@ -40,9 +39,9 @@ const AuctionStatusTooltip = memo(
                 <Tooltip>
                     <TooltipTrigger>
                         <span
-                            className={`${status === AuctionStatus.OPEN ? "text-green-600" : "text-red-500"} font-bold py-[0.2rem] px-2 bg-white rounded-2xl capitalize`}
+                            className={`${status === AuctionStatus.Open ? "text-green-600" : "text-red-500"} font-bold py-[0.2rem] px-2 bg-white rounded-2xl`}
                         >
-                            {status.toLowerCase()}
+                            {status}
                         </span>
                     </TooltipTrigger>
                     <TooltipContent className="border border-slate-400 bg-white text-black">
@@ -93,8 +92,7 @@ const AuctionItemRow = ({
                 id: auction.id,
                 currentBid: auction.amount,
                 userId: user.id,
-                buyout: true,
-                status: AuctionStatus.BUYOUT,
+                status: AuctionStatus.Buyout,
             });
         }
         socket.on(`bid-${auction.id}`, onBid);
@@ -155,6 +153,7 @@ const AuctionTable = function () {
         ([url, paramsString]) => fetchAPI(`${url}?${paramsString}`),
         {
             revalidateOnReconnect: true,
+            revalidateOnMount: true,
             revalidateIfStale: true,
         },
     );
@@ -166,35 +165,11 @@ const AuctionTable = function () {
     );
 
     useEffect(() => {
-        let timeInterval;
-        timeInterval = setInterval(() => {
-            void mutate(
-                ["/api/auctions", searchParams.toString()],
-                (data: AuctionJson[] | undefined) => {
-                    return data?.map((auction) => {
-                        const status = getAuctionStatus(
-                            auction.startTime,
-                            auction.endTime,
-                            auction.buyout,
-                        );
-                        if (status !== auction.status) {
-                            return {
-                                ...auction,
-                                status,
-                            };
-                        }
-                        return auction;
-                    });
-                },
-                { revalidate: false },
-            );
-        }, 1000 * 60);
         return () => {
             pick(null);
-            clearInterval(timeInterval);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams]);
+    }, []);
     return (
         <div className="flex-1 border rounded-md overflow-y-scroll">
             <Table>

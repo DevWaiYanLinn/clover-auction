@@ -3,7 +3,7 @@ import { hash } from "@/lib/bcrypt";
 import prisma from "@/database/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import MailService from "@/services/mail-service";
+import MailService from "@/services/user/mail-service";
 import { ConfirmMail } from "@/types";
 import { CONFIRM_EMAIL } from "@/constants";
 import { signJwt } from "@/lib/jwt";

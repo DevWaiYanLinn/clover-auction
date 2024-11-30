@@ -16,7 +16,7 @@ export default function AuctionItemCreate() {
 
     const [pending, setPending] = useState(false);
 
-    const onAuctionSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const onAuctionSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         setPending(true);
         e.preventDefault();
         const form = e.currentTarget;
@@ -43,7 +43,7 @@ export default function AuctionItemCreate() {
 
     return (
         <form
-            onSubmit={onAuctionSumbit}
+            onSubmit={onAuctionSubmit}
             className="min-w-[500px] p-5 space-y-5 rounded-md shadow-md bg-white"
         >
             <h2 className="text-2xl font-medium">Create Auction</h2>
@@ -78,7 +78,7 @@ export default function AuctionItemCreate() {
                     <Label htmlFor="Start Time">Staring Date</Label>
                     <Input
                         disabled={pending}
-                        type="datetime-local"
+                        type="date"
                         name="startTime"
                         placeholder="Pick Date"
                     />
@@ -90,7 +90,7 @@ export default function AuctionItemCreate() {
                     <Label htmlFor="endTime">End Date</Label>
                     <Input
                         disabled={pending}
-                        type="datetime-local"
+                        type="date"
                         name="endTime"
                         placeholder="Pick Date"
                     />

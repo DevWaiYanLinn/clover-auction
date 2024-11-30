@@ -1,6 +1,7 @@
 import prisma from "@/database/prisma";
 import { AuctionStatus, Prisma } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
+import { HttpError } from "@/lib/exception";
+import { authenticatedUser } from "@/services/user/auth-service";
 
 export const getAllAuctions = async ({
     subcategory,
@@ -88,7 +89,7 @@ export const auctionRankById = async (id: string | number) => {
     return bids.map(
         ({ amount, previousAmount, difference, bidTime, ...others }) => {
             return {
-                amount: (amount as Decimal).toNumber(),
+                amount: Number(amount),
                 previousAmount: Number(previousAmount),
                 difference: Number(difference),
                 bidTime: (bidTime as Date).toDateString(),
@@ -98,11 +99,30 @@ export const auctionRankById = async (id: string | number) => {
     );
 };
 
-export const getAllAuctionsByUserId = async (userId: number) => {
+export const findAuctionById = async (id: number) => {
+    const auction = await prisma.auction.findUnique({
+        where: {
+            id: Number(id),
+        },
+    });
+
+    if (!auction) {
+        throw new HttpError({
+            status: 403,
+            info: {
+                message: "Auction not found.",
+            },
+        });
+    }
+    return auction;
+};
+
+export const getAllAuctionsByUser = async () => {
+    const user = await authenticatedUser();
     const auctions = await prisma.auction.findMany({
         where: {
             item: {
-                userId: userId,
+                userId: user.id,
             },
         },
         include: {

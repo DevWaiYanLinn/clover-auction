@@ -1,5 +1,5 @@
 import { parseError } from "@/lib/exception";
-import { buyoutByAuctionId } from "@/services/bid-service";
+import { buyoutByAuctionId } from "@/services/user/bid-service";
 
 export async function POST(
     request: Request,

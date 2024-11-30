@@ -8,7 +8,7 @@ import { login } from "@/lib/session";
 const schema = z.object({
     email: z
         .string({ required_error: "Invalid Input." })
-        .email("Invalid eamil format"),
+        .email("Invalid email format"),
     password: z.string({ required_error: "Invalid Input." }).min(1, "required"),
 });
 

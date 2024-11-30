@@ -1,15 +1,13 @@
-import { auth } from "@/lib/session";
 import SwrProvider from "./swr-provider";
-import { getUserById } from "@/services/user-service";
-import { getAllCategories } from "@/services/category-service";
-
+import { authenticatedUser } from "@/services/user/auth-service";
+import { getAllCategories } from "@/services/user/category-service";
+import React from "react";
 export default async function Layout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const session = await auth();
-    const user = await getUserById(session!.user.id);
+    const user = await authenticatedUser();
     const categories = await getAllCategories();
     return (
         <SwrProvider

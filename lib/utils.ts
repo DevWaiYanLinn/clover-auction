@@ -6,26 +6,20 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export function getAuctionStatus(
-    start: Date | string,
-    end: Date | string,
-    buyout: boolean = false,
-) {
-    if (buyout) return AuctionStatus.BUYOUT;
-
+export function getAuctionStatus(start: Date | string, end: Date | string) {
     const startTime = new Date(start).getTime();
     const endTime = new Date(end).getTime();
     const currentTime = new Date().getTime();
 
     if (startTime <= currentTime && endTime > currentTime) {
-        return AuctionStatus.OPEN;
+        return AuctionStatus.Open;
     }
 
     if (startTime >= currentTime) {
-        return AuctionStatus.CLOSED;
+        return AuctionStatus.Close;
     }
 
-    return AuctionStatus.FINISHED;
+    return AuctionStatus.Finshed;
 }
 
 export const sleep = (time: number): Promise<void> => {

@@ -12,7 +12,7 @@ import {
 import { Box, Check, CirclePlus, RefreshCcw, X } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getAllItems } from "@/services/item-service";
+import { getAllItems } from "@/services/user/item-service";
 
 export default async function Page({
     searchParams,

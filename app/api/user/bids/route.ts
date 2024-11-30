@@ -1,18 +1,12 @@
-import { auth } from "@/lib/session";
-import { getAllBidsByUserId } from "@/services/bid-service";
+import { getAllBidsByUser } from "@/services/user/bid-service";
+import { parseError } from "@/lib/exception";
 
-export async function GET(request: Request) {
-    const session = await auth();
-    if (!session) {
-        return Response.json(
-            {
-                info: {
-                    message: "Authentication error.",
-                },
-            },
-            { status: 401 },
-        );
+export async function GET() {
+    try {
+        const bids = await getAllBidsByUser();
+        return Response.json(bids, { status: 200 });
+    } catch (error) {
+        const [data, init] = parseError(error);
+        return Response.json(data, init);
     }
-    const user = await getAllBidsByUserId(session.user.id);
-    return Response.json(user, { status: 200 });
 }

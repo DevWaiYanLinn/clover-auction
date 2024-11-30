@@ -1,4 +1,4 @@
-import { auctionRankById } from "@/services/auction-service";
+import { auctionRankById } from "@/services/user/auction-service";
 import { type NextRequest } from "next/server";
 
 export async function GET(

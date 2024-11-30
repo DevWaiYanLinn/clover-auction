@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 import { v4 as uuidv4 } from "uuid";
 import { login } from "@/lib/session";
-import { findOrCreateUser } from "@/services/user-service";
+import { findOrCreateUser } from "@/services/user/user-service";
 import { HttpError } from "@/lib/exception";
 
 export async function GET(request: NextRequest, response: NextResponse) {

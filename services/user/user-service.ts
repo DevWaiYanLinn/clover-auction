@@ -6,9 +6,9 @@ export const getUserById = async (id: number) => {
         where: { id },
         omit: {
             password: true,
+            balance: true,
             createdAt: true,
             updatedAt: true,
-            balance: true,
         },
     });
 };

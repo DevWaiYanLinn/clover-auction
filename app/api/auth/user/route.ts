@@ -1,8 +1,12 @@
-import { auth } from "@/lib/session";
-import { getUserById } from "@/services/user-service";
+import { authenticatedUser } from "@/services/user/auth-service";
+import { parseError } from "@/lib/exception";
 
 export async function GET() {
-    const session = await auth();
-    const user = await getUserById(session!.user.id);
-    return Response.json(user, { status: 200 });
+    try {
+        const user = await authenticatedUser();
+        return Response.json(user, { status: 200 });
+    } catch (error) {
+        const [data, init] = parseError(error);
+        return Response.json(data, init);
+    }
 }

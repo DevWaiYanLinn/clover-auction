@@ -8,13 +8,14 @@ This project aims to build a full-stack application using Next.js and other usef
 
 ## Important
 
+-   This project is just refrence version of Word Of Warcraft auction house and for next.js learning purpose.
 -   Currently, **Clover Auction** is currently bid, buyout, are stable and others are keep developing.
 -   You can meet dependencies conflict when "npm install" because of "Shadcn".You can fix it using "npm --legacy-peer-deps install".
 -   You have to read prisma documentation to migrate database.
 -   Real time bidding and mail service will not working if you don't set up redis server
 -   Before cloning and setting up this project, you must first set up and run the [Socket Server](https://github.com/DevWaiYanLinn/clover-auction-socket-server)
--   This project is just refrence of Word Of Warcraft auction house.
--   Here is the alternative version of using pgsql instead of mysql ([Clover Auction Nest](https://clover-auction-front.vercel.app/auctions))
+-   Here is the alternative development version of using **pgsql** instead of mysql. ([Clover Auction Nest](https://clover-auction-front.vercel.app))
+
 ## Concept: Creating an Auction App Inspired by WoW
 
 The user interface of auction for my auction app draws inspiration from the game World of Warcraft's auction house, aiming for an engaging and immersive user experience.

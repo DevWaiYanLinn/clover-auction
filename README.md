@@ -13,9 +13,8 @@ This project aims to build a full-stack application using Next.js and other usef
 -   You have to read prisma documentation to migrate database.
 -   Real time bidding and mail service will not working if you don't set up redis server
 -   Before cloning and setting up this project, you must first set up and run the [Socket Server](https://github.com/DevWaiYanLinn/clover-auction-socket-server)
--   We plan to separate the backend code from the frontend in the future. Currently, the project's source code is messy because it combines both the frontend and backend. This restructuring will help improve code organization and maintainability.
--   [Api documentation Link 1](https://clover-auction-backend.onrender.com)
--   [Api documentation Link 2](https://waiyanlynn-clover-auction.hf.space)
+-   This project is just refrence of Word Of Warcraft auction house.
+-   Here is the alternative version of using pgsql instead of mysql ([Clover Auction Nest](https://clover-auction-front.vercel.app/auctions))
 ## Concept: Creating an Auction App Inspired by WoW
 
 The user interface of auction for my auction app draws inspiration from the game World of Warcraft's auction house, aiming for an engaging and immersive user experience.
